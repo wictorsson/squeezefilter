@@ -33,7 +33,7 @@
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SqueezeFilter"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="SqueezeFilter" vst3BinaryLocation="/Library/Audio/Plug-Ins/VST3"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="SqueezeFilter"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

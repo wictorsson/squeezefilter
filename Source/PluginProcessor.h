@@ -22,7 +22,7 @@ struct ChainSettings
 {
     float peakFreq {0}, peakGainDecibels{0}, peakQuality {1.0f};
     float lowCutFreq {0}, highCutFreq{0};
-    Slope lowCutSlope {Slope::Slope_12}, highCutSlope{Slope::Slope_12};
+    Slope lowCutSlope{Slope::Slope_12}, highCutSlope{Slope::Slope_12};
 };
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
@@ -97,14 +97,16 @@ private:
     using Coefficients = Filter::CoefficientsPtr;
     static void updateCoefficiants(Coefficients& old, const Coefficients& replacements);
     
-    template<typename ChainType, typename CoefficientType>
-    void updateCutFilter(ChainType &leftLowCut, const CoefficientType& cutCoefficients, const Slope& lowCutSlope)
+    template<int Index, typename ChainType, typename CoefficientType>
+    void update(ChainType& chain, const CoefficientType& coefficients)
     {
-        
-//        auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq, getSampleRate(), 2 * (chainSettings.lowCutSlope) + 1);
-//        
-//        auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
-//        
+        updateCoefficiants(chain.template get<Index>().coefficients, coefficients[Index]);
+        chain.template setBypassed<Index>(false);
+    }
+    
+    template<typename ChainType, typename CoefficientType>
+    void updateCutFilter(ChainType &leftLowCut, const CoefficientType& cutCoefficients, const Slope &lowCutSlope)
+    {
         leftLowCut.template setBypassed<0>(true);
         leftLowCut.template setBypassed<1>(true);
         leftLowCut.template setBypassed<2>(true);
@@ -112,37 +114,34 @@ private:
         
         switch(lowCutSlope)
         {
-        
-            case Slope_12:
+            case Slope_48:
             {
-                *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
-                leftLowCut.template setBypassed<0>(false);
-                break;
-            }
-            case Slope_24:
-            {
-                *leftLowCut.template get<1>().coefficients = *cutCoefficients[1];
-                leftLowCut.template setBypassed<1>(false);
+                update<3>(leftLowCut, cutCoefficients);
+               
                 break;
             }
             case Slope_36:
             {
-                *leftLowCut.template get<2>().coefficients = *cutCoefficients[2];
-                leftLowCut.template setBypassed<2>(false);
+                update<2>(leftLowCut, cutCoefficients);
                 break;
             }
-            case Slope_48:
+            case Slope_24:
             {
-                *leftLowCut.template get<3>().coefficients = *cutCoefficients[3];
-                leftLowCut.template setBypassed<3>(false);
+                update<1>(leftLowCut, cutCoefficients);
+                break;
+            }
+            case Slope_12:
+            {
+                update<0>(leftLowCut, cutCoefficients);
                 break;
             }
         }
-        
-       
-        
     }
-    //void updateCutFilter(ChainType rightLowCut, const CoefficientType& cutCoefficients, const ChainSettings& chainSettings);
+    
+    void updateLowCutFilters(const ChainSettings& chainSettings);
+    void updateHighCutFilters(const ChainSettings& chainSettings);
+    
+    void updateFilters();
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SqueezeFilterAudioProcessor)
 };

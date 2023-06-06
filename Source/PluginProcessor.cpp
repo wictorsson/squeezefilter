@@ -106,10 +106,7 @@ void SqueezeFilterAudioProcessor::prepareToPlay (double sampleRate, int samplesP
     rightChain.prepare(spec);
     
     auto chainSettings = getChainSettings(apvts);
-    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, chainSettings.peakFreq, chainSettings.peakQuality, juce::Decibels::decibelsToGain(chainSettings.peakGainDecibels));
-    
-    *leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
-    *rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+    updatePeakFilter(chainSettings);
     
     auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq, sampleRate, 2 * (chainSettings.lowCutSlope) + 1);
     
@@ -230,10 +227,7 @@ void SqueezeFilterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
         buffer.clear (i, 0, buffer.getNumSamples());
 
     auto chainSettings = getChainSettings(apvts);
-    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), chainSettings.peakFreq, chainSettings.peakQuality, juce::Decibels::decibelsToGain(chainSettings.peakGainDecibels));
-    
-    *leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
-    *rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+    updatePeakFilter(chainSettings);
     
     auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq, getSampleRate(), 2 * (chainSettings.lowCutSlope) + 1);
     
@@ -358,6 +352,22 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
     return settings;
 }
 
+void SqueezeFilterAudioProcessor::updatePeakFilter(const ChainSettings &chainSettings)
+{
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), chainSettings.peakFreq, chainSettings.peakQuality, juce::Decibels::decibelsToGain(chainSettings.peakGainDecibels));
+    
+  //  *leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+   // *rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+    updateCoefficiants(leftChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+    updateCoefficiants(rightChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+    
+}
+
+void SqueezeFilterAudioProcessor::updateCoefficiants(Coefficients& old, const Coefficients& replacements)
+{
+
+    *old = *replacements;
+}
 
 juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor::createParameterLayout(){
     juce::AudioProcessorValueTreeState::ParameterLayout layout;

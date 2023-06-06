@@ -92,6 +92,11 @@ private:
         HighCut,
         
     };
+    
+    void updatePeakFilter(const ChainSettings& chainSettings);
+    using Coefficients = Filter::CoefficientsPtr;
+    static void updateCoefficiants(Coefficients& old, const Coefficients& replacements);
+    void updateCutFilter(const ChainSettings& chainSettings);
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SqueezeFilterAudioProcessor)
 };

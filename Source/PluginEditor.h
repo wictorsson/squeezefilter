@@ -80,7 +80,8 @@ private:
     highCutFreqSlider,
     lowCutSlopeSlider,
     highCutSlopeSlider,
-    squeezeSlider;
+    squeezeSlider,
+    offsetSlider;
     
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
@@ -92,7 +93,8 @@ private:
     highCutFreqSliderAttachment,
     lowCutSlopeSliderAttachment,
     highCutSlopeSliderAttachment,
-    squeezeSliderAttachment;
+    squeezeSliderAttachment,
+    offsetSliderAttachment;
     
     ResponseCurveComponent responseCurveComponent;
     std::vector<juce::Component*> getComps();

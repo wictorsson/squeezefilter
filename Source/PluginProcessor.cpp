@@ -201,8 +201,23 @@ void SqueezeFilterAudioProcessor::setStateInformation (const void* data, int siz
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
     ChainSettings settings;
-    settings.lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load();
-    settings.highCutFreq = apvts.getRawParameterValue("HighCutFreq")->load() * (1 - apvts.getRawParameterValue("SqueezeValue")->load());
+    auto offset = apvts.getRawParameterValue("OffsetValue")->load();
+    DBG(apvts.getRawParameterValue("LowCutFreq")->load());
+//    if(apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() < 21 || apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() > 20000)
+//    {
+//        offset = 0;
+//    }
+    if(apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() + offset > 15 && apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() + offset < 20020)
+    {
+        settings.lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() + offset ;
+    }
+    else
+    {
+        settings.lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load();
+    }
+    
+ 
+    settings.highCutFreq = apvts.getRawParameterValue("HighCutFreq")->load() /** (1 - apvts.getRawParameterValue("SqueezeValue")->load())* apvts.getRawParameterValue("OffsetValue")->load()*/;
     settings.peakFreq = apvts.getRawParameterValue("PeakFreq")->load();
     settings.peakGainDecibels = apvts.getRawParameterValue("PeakGain")->load();
     settings.peakQuality = apvts.getRawParameterValue("PeakQuality")->load();
@@ -255,6 +270,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
     layout.add(std::make_unique<juce::AudioParameterFloat>("SqueezeValue",
                                                            "SqueezeValue",
                                                            juce::NormalisableRange<float>(0.001f, 1.0f),0.01f));
+    
+    layout.add(std::make_unique<juce::AudioParameterFloat>("OffsetValue",
+                                                           "OffsetValue",
+                                                           juce::NormalisableRange<float>(-20000.f, 20000.f,0.01), 0.f));
     
     return layout;
 }

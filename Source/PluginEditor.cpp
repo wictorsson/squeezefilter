@@ -21,11 +21,25 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     {
         addAndMakeVisible(comp);
     }
+    
+    const auto& params = audioProcessor.getParameters();
+    for(auto param : params)
+    {
+        param->addListener(this);
+    }
+    
+    startTimerHz(60);
+    
     setSize (600, 400);
 }
 
 SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
 {
+    const auto& params = audioProcessor.getParameters();
+    for(auto param : params)
+    {
+        param->removeListener(this);
+    }
 }
 
 //==============================================================================
@@ -101,6 +115,7 @@ void SqueezeFilterAudioProcessorEditor::paint (juce::Graphics& g)
         return jmap(input, -24.0, 24.0, outputMin, outputMax);
     };
     
+   // responseCurve.startNewSubPath(responseArea.getX(), map(mags.front()));
     responseCurve.startNewSubPath(responseArea.getX(), map(mags.front()));
     
     for( size_t i = 1; i < mags.size(); ++i)
@@ -147,7 +162,11 @@ void SqueezeFilterAudioProcessorEditor::timerCallback()
 {
     if(parametersChanged.compareAndSetBool(false, true))
     {
+        auto chainSettings = getChainSettings(audioProcessor.apvts);
+        auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
+        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
         
+        repaint();
     }
 }
 

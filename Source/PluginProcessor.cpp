@@ -211,9 +211,8 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
     return settings;
 }
 
-void SqueezeFilterAudioProcessor::updateCoefficiants(Coefficients& old, const Coefficients& replacements)
+void SqueezeFilterAudioProcessor::updateCoefficients(Coefficients& old, const Coefficients& replacements)
 {
-
     *old = *replacements;
 }
 
@@ -260,8 +259,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
 void SqueezeFilterAudioProcessor::updatePeakFilter(const ChainSettings &chainSettings)
 {
     auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), chainSettings.peakFreq, chainSettings.peakQuality, juce::Decibels::decibelsToGain(chainSettings.peakGainDecibels));
-    updateCoefficiants(leftChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-    updateCoefficiants(rightChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+    updateCoefficients(leftChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+    updateCoefficients(rightChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
     
 }
 

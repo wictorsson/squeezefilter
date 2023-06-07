@@ -27,6 +27,21 @@ struct ChainSettings
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
 
+using Filter = juce::dsp::IIR::Filter<float>;
+//CREATE 4 filters for the different slopes
+using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+//LowCut, Peak, HighCut
+using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+
+
+enum ChainPositions
+{
+    LowCut,
+    Peak,
+    HighCut,
+    
+};
+
 //==============================================================================
 /**
 */
@@ -77,30 +92,18 @@ public:
     juce::AudioProcessorValueTreeState apvts{*this, nullptr, "Parameters", createParameterLayout()};
 
 private:
-    using Filter = juce::dsp::IIR::Filter<float>;
-    //CREATE 4 filters for the different slopes
-    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-    //LowCut, Peak, HighCut
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+   
     //STEREO
     MonoChain leftChain, rightChain;
     
-    enum ChainPositions
-    {
-        LowCut,
-        Peak,
-        HighCut,
-        
-    };
-    
     void updatePeakFilter(const ChainSettings& chainSettings);
     using Coefficients = Filter::CoefficientsPtr;
-    static void updateCoefficiants(Coefficients& old, const Coefficients& replacements);
+    static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
     
     template<int Index, typename ChainType, typename CoefficientType>
     void update(ChainType& chain, const CoefficientType& coefficients)
     {
-        updateCoefficiants(chain.template get<Index>().coefficients, coefficients[Index]);
+        updateCoefficients(chain.template get<Index>().coefficients, coefficients[Index]);
         chain.template setBypassed<Index>(false);
     }
     

@@ -142,7 +142,7 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
 
 //==============================================================================
 SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFilterAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), peakFreqSliderAttachment(audioProcessor.apvts, "PeakFreq", peakFreqSlider),peakGainSliderAttachment(audioProcessor.apvts, "PeakGain", peakGainSlider),peakQualitySliderAttachment(audioProcessor.apvts, "PeakQuality", peakQualitySlider),lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCutFreq", lowCutFreqSlider),highCutFreqSliderAttachment(audioProcessor.apvts, "HighCutFreq", highCutFreqSlider),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),responseCurveComponent(audioProcessor)
+    : AudioProcessorEditor (&p), audioProcessor (p), peakFreqSliderAttachment(audioProcessor.apvts, "PeakFreq", peakFreqSlider),peakGainSliderAttachment(audioProcessor.apvts, "PeakGain", peakGainSlider),peakQualitySliderAttachment(audioProcessor.apvts, "PeakQuality", peakQualitySlider),lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCutFreq", lowCutFreqSlider),highCutFreqSliderAttachment(audioProcessor.apvts, "HighCutFreq", highCutFreqSlider),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider) ,responseCurveComponent(audioProcessor)
 
 {
     // Make sure that before the constructor has finished, you've set the
@@ -179,18 +179,21 @@ void SqueezeFilterAudioProcessorEditor::resized()
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.33f);
     
     responseCurveComponent.setBounds(responseArea);
+    auto filterKnobsArea = bounds.removeFromTop(bounds.getHeight() * 0.66f);
     
-    auto lowCutArea = bounds.removeFromLeft(bounds.getWidth() * 0.33f);
-    auto highCutArea = bounds.removeFromRight(bounds.getWidth() * 0.5f);
+    auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
+    auto highCutArea = filterKnobsArea.removeFromRight(filterKnobsArea.getWidth() * 0.5f);
     
     lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()* 0.5f));
     lowCutSlopeSlider.setBounds(lowCutArea);
     highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()* 0.5f));
     highCutSlopeSlider.setBounds(highCutArea);
     
-    peakFreqSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.33f));
-    peakGainSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.5f));
-    peakQualitySlider.setBounds(bounds);
+//    peakFreqSlider.setBounds(filterKnobsArea.removeFromTop(filterKnobsArea.getHeight() * 0.33f));
+//    peakGainSlider.setBounds(filterKnobsArea.removeFromTop(filterKnobsArea.getHeight() * 0.5f));
+//    peakQualitySlider.setBounds(filterKnobsArea);
+    
+    squeezeSlider.setBounds(bounds);
     
 }
 
@@ -207,6 +210,7 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
         &highCutFreqSlider,
         &lowCutSlopeSlider,
         &highCutSlopeSlider,
+        &squeezeSlider,
         &responseCurveComponent
     };
 }

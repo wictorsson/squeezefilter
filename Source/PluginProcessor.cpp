@@ -273,13 +273,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
         stringArray.add(str);
     }
     
-    layout.add(std::make_unique<juce::AudioParameterChoice>("LowCutSlope", "LowCutSlope", stringArray, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("LowCutSlope", "LowCutSlope", stringArray, 1));
     
-    layout.add(std::make_unique<juce::AudioParameterChoice>("HighCutSlope", "HighCutSlope", stringArray, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("HighCutSlope", "HighCutSlope", stringArray, 1));
     
     layout.add(std::make_unique<juce::AudioParameterFloat>("SqueezeValue",
                                                            "SqueezeValue",
-                                                           juce::NormalisableRange<float>(0.001f, 1.0f),0.01f));
+                                                           juce::NormalisableRange<float>(0.001f, 1.0f),1.f));
     
     layout.add(std::make_unique<juce::AudioParameterFloat>("OffsetValue",
                                                            "OffsetValue",

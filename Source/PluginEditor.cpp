@@ -55,10 +55,10 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
 {
     using namespace juce;
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (Colours::black);
+    g.fillAll (Colour::fromFloatRGBA (0.08f, 0.08f, 0.08f, 1.0f));
 
     g.drawImage(background, getLocalBounds().toFloat());
-    auto bounds = getLocalBounds();
+   // auto bounds = getLocalBounds();
     auto responseArea = getAnalysisArea();
     auto w = responseArea.getWidth();
     auto& lowcut = monoChain.get<ChainPositions::LowCut>();
@@ -132,7 +132,7 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
         responseCurve.lineTo(responseArea.getX() + i, map(mags[i]));
     }
     
-    g.setColour(Colours:: orange);
+    g.setColour(Colours::darkgrey);
     g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f);
     
     g.setColour(Colours::white);
@@ -149,7 +149,7 @@ void ResponseCurveComponent::resized()
     
     Array<float> freqs
     {
-        20,30,40,50,100,200,300,400,500,1000,2000,3000,4000,5000,10000,20000
+        50,100,500,1000,2000,5000,10000
     };
     
     auto renderArea = getAnalysisArea();
@@ -167,7 +167,7 @@ void ResponseCurveComponent::resized()
         xs.add(left + width * normX);
     }
     
-    g.setColour(Colours::orange);
+    g.setColour(Colours::darkgrey);
     for(auto x : xs)
     {
        
@@ -179,24 +179,53 @@ void ResponseCurveComponent::resized()
         -24, -12,0,12,24
     };
     
-  
-  
-    
+
     for(auto gDb : gain)
     {
         auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
         
-        g.setColour(gDb == 0.f ? Colours::green : Colours::orange);
+        g.setColour(gDb == 0.f ? Colours::orange : Colours::darkgrey);
         g.drawHorizontalLine(y, left, right);
     }
    // g.drawRect(getRenderArea());
+    
+    g.setColour(Colours::lightblue);
+    const int fontHeight = 10;
+    g.setFont(fontHeight);
+    
+    for(int i = 0; i < freqs.size(); ++i)
+    {
+        auto f = freqs[i];
+        auto x = xs[i];
+        
+        bool addK = false;
+        String str;
+        if(f>999.f)
+        {
+            addK = true;
+            f /= 1000.f;
+            
+        }
+        str << f;
+        if(addK)
+            str << "k";
+     //   str << "Hz";
+        
+        auto textWidth = g.getCurrentFont().getStringWidth(str);
+        
+        Rectangle<int> r;
+        r.setSize(textWidth, fontHeight);
+        r.setCentre(x, 0);
+        r.setY(1);
+        
+        g.drawFittedText(str, r, juce::Justification::centred, 1);
+        
+    }
 }
 
 juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
 {
     auto bounds = getLocalBounds();
-    
-    bounds.reduce(10, 8);
     
     bounds.removeFromTop(12);
     bounds.removeFromBottom(2);
@@ -228,7 +257,7 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     
    
     
-    setSize (600, 400);
+    setSize (650, 350);
 }
 
 SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
@@ -239,7 +268,7 @@ void SqueezeFilterAudioProcessorEditor::paint (juce::Graphics& g)
 {
     using namespace juce;
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-        g.fillAll (Colours::black);
+        g.fillAll (Colour::fromFloatRGBA (0.08f, 0.08f, 0.08f, 1.0f));
 
 }
 
@@ -249,10 +278,18 @@ void SqueezeFilterAudioProcessorEditor::resized()
     // subcomponents in your editor..
     
     auto bounds = getLocalBounds();
-    auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.33f);
+    auto marginTop = bounds.removeFromTop(bounds.getHeight() * 0.08f);
+    auto marginLeft = bounds.removeFromLeft(bounds.getWidth() * 0.01f);
+    auto marginRight = bounds.removeFromRight(bounds.getWidth() * 0.01f);
+    auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.5f);
+  
+    auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.33f);
+    
+    offsetSlider.setBounds(modifySliderArea.removeFromRight(modifySliderArea.getWidth()*0.5f));
+    squeezeSlider.setBounds(modifySliderArea);
     
     responseCurveComponent.setBounds(responseArea);
-    auto filterKnobsArea = bounds.removeFromTop(bounds.getHeight() * 0.66f);
+    auto filterKnobsArea = bounds.removeFromLeft(bounds.getWidth() * 0.66f);
     
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
     auto highCutArea = filterKnobsArea.removeFromRight(filterKnobsArea.getWidth() * 0.5f);
@@ -261,13 +298,6 @@ void SqueezeFilterAudioProcessorEditor::resized()
     lowCutSlopeSlider.setBounds(lowCutArea);
     highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()* 0.5f));
     highCutSlopeSlider.setBounds(highCutArea);
-    
-//    peakFreqSlider.setBounds(filterKnobsArea.removeFromTop(filterKnobsArea.getHeight() * 0.33f));
-//    peakGainSlider.setBounds(filterKnobsArea.removeFromTop(filterKnobsArea.getHeight() * 0.5f));
-//    peakQualitySlider.setBounds(filterKnobsArea);
-    
-    squeezeSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.5));
-    offsetSlider.setBounds(bounds);
     
 }
 

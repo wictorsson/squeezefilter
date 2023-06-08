@@ -107,6 +107,7 @@ private:
     ResponseCurveComponent responseCurveComponent;
     std::vector<juce::Component*> getComps();
 
+    juce::Label slopeLabel, slopeLabel2,  squeezeLabel, offsetLabel, freqLabel, freqLabel2;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SqueezeFilterAudioProcessorEditor)
 };

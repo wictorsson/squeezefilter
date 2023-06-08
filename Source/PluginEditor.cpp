@@ -254,8 +254,44 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     {
         addAndMakeVisible(comp);
     }
+    addAndMakeVisible(squeezeLabel);
+    squeezeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
+    squeezeLabel.setText("Squeeze", juce::dontSendNotification);
+    squeezeLabel.attachToComponent(&squeezeSlider, false);
+    squeezeLabel.setJustificationType(juce::Justification::centred);
     
-   
+    addAndMakeVisible(offsetLabel);
+    offsetLabel.setFont(juce::Font (12.0f, juce::Font::bold));
+    offsetLabel.setText("Offset", juce::dontSendNotification);
+    offsetLabel.attachToComponent(&offsetSlider, false);
+    offsetLabel.setJustificationType(juce::Justification::centred);
+    
+    
+    addAndMakeVisible(slopeLabel);
+    slopeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
+    slopeLabel.setText("Slope", juce::dontSendNotification);
+    slopeLabel.attachToComponent(&lowCutSlopeSlider, true);
+    slopeLabel.setJustificationType(juce::Justification::centred);
+    
+    addAndMakeVisible(slopeLabel2);
+    slopeLabel2.setFont(juce::Font (12.0f, juce::Font::bold));
+    slopeLabel2.setText("Slope", juce::dontSendNotification);
+    slopeLabel2.attachToComponent(&highCutSlopeSlider, true);
+    slopeLabel2.setJustificationType(juce::Justification::centred);
+    
+    addAndMakeVisible(freqLabel2);
+    freqLabel2.setFont(juce::Font (12.0f, juce::Font::bold));
+    freqLabel2.setText("Freq", juce::dontSendNotification);
+    freqLabel2.attachToComponent(&highCutFreqSlider, true);
+    freqLabel2.setJustificationType(juce::Justification::centred);
+ 
+    
+    addAndMakeVisible(freqLabel);
+    freqLabel.setFont(juce::Font (12.0f, juce::Font::bold));
+    freqLabel.setText("Freq", juce::dontSendNotification);
+    freqLabel.attachToComponent(&lowCutFreqSlider, true);
+    freqLabel.setJustificationType(juce::Justification::centred);
+    
     
     setSize (650, 350);
 }
@@ -283,12 +319,13 @@ void SqueezeFilterAudioProcessorEditor::resized()
     auto marginRight = bounds.removeFromRight(bounds.getWidth() * 0.01f);
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.5f);
   
-    auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.33f);
+    auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.25f);
     
     offsetSlider.setBounds(modifySliderArea.removeFromRight(modifySliderArea.getWidth()*0.5f));
     squeezeSlider.setBounds(modifySliderArea);
     
     responseCurveComponent.setBounds(responseArea);
+    auto marginRightMid = bounds.removeFromLeft(bounds.getWidth() * 0.08f);
     auto filterKnobsArea = bounds.removeFromLeft(bounds.getWidth() * 0.66f);
     
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
@@ -305,6 +342,10 @@ void SqueezeFilterAudioProcessorEditor::resized()
 
 std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
 {
+    lowCutSlopeSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    highCutSlopeSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    lowCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    highCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     return
     {
         &peakFreqSlider,

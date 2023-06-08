@@ -45,12 +45,20 @@ struct ResponseCurveComponent: juce::Component, juce::AudioProcessorParameter::L
     
     void paint(juce::Graphics& g) override;
     
+    void resized() override;
+    
 private:
     SqueezeFilterAudioProcessor& audioProcessor;
     juce::Atomic<bool>parametersChanged {false};
     MonoChain monoChain;
 
-   
+    juce::Image background;
+    
+    juce::Rectangle<int> getRenderArea();
+    
+    juce::Rectangle<int> getAnalysisArea();
+    
+    
 };
 //==============================================================================
 /**

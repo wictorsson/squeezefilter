@@ -106,6 +106,9 @@ void SqueezeFilterAudioProcessor::prepareToPlay (double sampleRate, int samplesP
     rightChain.prepare(spec);
     
     updateFilters();
+    
+    leftChannelFifo.prepare(samplesPerBlock);
+    rightChannelFifo.prepare(samplesPerBlock);
 
 }
 
@@ -162,6 +165,10 @@ void SqueezeFilterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     
     leftChain.process(leftContext);
     rightChain.process(rightContext);
+    
+    leftChannelFifo.update(buffer);
+    rightChannelFifo.update(buffer);
+    
 }
 
 //==============================================================================

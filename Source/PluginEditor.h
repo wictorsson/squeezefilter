@@ -200,6 +200,8 @@ private:
     
 };
 
+struct AnalyzerButton : juce::ToggleButton{};
+
 
 struct ResponseCurveComponent: juce::Component, juce::AudioProcessorParameter::Listener, juce::Timer
 {
@@ -229,6 +231,11 @@ struct ResponseCurveComponent: juce::Component, juce::AudioProcessorParameter::L
     
     void resized() override;
     
+    void toggleAnalyzerIsEnabled(bool enabled)
+    {
+        shouldShowFFTAnalysis = enabled;
+    };
+    
 private:
     SqueezeFilterAudioProcessor& audioProcessor;
     juce::Atomic<bool>parametersChanged {false};
@@ -241,6 +248,8 @@ private:
     juce::Rectangle<int> getAnalysisArea();
     
     PathProducer leftPathProducer, rightPathProducer;
+    
+    bool shouldShowFFTAnalysis = true;
 };
 //==============================================================================
 /**
@@ -285,6 +294,12 @@ private:
     highCutSlopeSliderAttachment,
     squeezeSliderAttachment,
     offsetSliderAttachment;
+    
+    AnalyzerButton analyzerEnabledButton;
+    using ButtonAttachment = APVTS::ButtonAttachment;
+    ButtonAttachment analyzerEnabledButtonAttachment;
+    
+    
     
     ResponseCurveComponent responseCurveComponent;
     std::vector<juce::Component*> getComps();

@@ -80,11 +80,14 @@ void PathProducer::process(juce::Rectangle<float>fftbounds, double sampleRate)
 
 void ResponseCurveComponent::timerCallback()
 {
-    auto fftBounds = getAnalysisArea().toFloat();
-    auto sampleRate = audioProcessor.getSampleRate();
     
-    leftPathProducer.process(fftBounds, sampleRate);
-    rightPathProducer.process(fftBounds, sampleRate);
+    if(shouldShowFFTAnalysis){
+        auto fftBounds = getAnalysisArea().toFloat();
+        auto sampleRate = audioProcessor.getSampleRate();
+        
+        leftPathProducer.process(fftBounds, sampleRate);
+        rightPathProducer.process(fftBounds, sampleRate);
+    }
 
     if(parametersChanged.compareAndSetBool(false, true))
     {
@@ -182,19 +185,22 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
         responseCurve.lineTo(responseArea.getX() + i, map(mags[i]));
     }
     
-    auto leftChannelFFTPath = leftPathProducer.getPath();
-    leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
-    
-    g.setColour(Colours::white);
-    g.strokePath(leftChannelFFTPath, PathStrokeType(1));
-    
-    auto rightChannelFFTPath = rightPathProducer.getPath();
-    rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
-    
-    g.setColour(Colours::white);
-    g.strokePath(rightChannelFFTPath, PathStrokeType(1));
-    
-    
+    if(shouldShowFFTAnalysis)
+    {
+        
+        auto leftChannelFFTPath = leftPathProducer.getPath();
+        leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
+        
+        g.setColour(Colours::white);
+        g.strokePath(leftChannelFFTPath, PathStrokeType(1));
+        
+        auto rightChannelFFTPath = rightPathProducer.getPath();
+        rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
+        
+        g.setColour(Colours::white);
+        g.strokePath(rightChannelFFTPath, PathStrokeType(1));
+        
+    }
     
     g.setColour(Colours::darkgrey);
     g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f);
@@ -234,7 +240,6 @@ void ResponseCurveComponent::resized()
     g.setColour(Colours::darkgrey);
     for(auto x : xs)
     {
-       
         g.drawVerticalLine(x, top, bottom);
     }
     
@@ -308,7 +313,7 @@ juce::Rectangle<int> ResponseCurveComponent::getAnalysisArea()
 
 //==============================================================================
 SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFilterAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), peakFreqSliderAttachment(audioProcessor.apvts, "PeakFreq", peakFreqSlider),peakGainSliderAttachment(audioProcessor.apvts, "PeakGain", peakGainSlider),peakQualitySliderAttachment(audioProcessor.apvts, "PeakQuality", peakQualitySlider),lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCutFreq", lowCutFreqSlider),highCutFreqSliderAttachment(audioProcessor.apvts, "HighCutFreq", highCutFreqSlider),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider) ,responseCurveComponent(audioProcessor)
+: AudioProcessorEditor (&p), audioProcessor (p), peakFreqSliderAttachment(audioProcessor.apvts, "PeakFreq", peakFreqSlider),peakGainSliderAttachment(audioProcessor.apvts, "PeakGain", peakGainSlider),peakQualitySliderAttachment(audioProcessor.apvts, "PeakQuality", peakQualitySlider),lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCutFreq", lowCutFreqSlider),highCutFreqSliderAttachment(audioProcessor.apvts, "HighCutFreq", highCutFreqSlider),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider), analyzerEnabledButtonAttachment(audioProcessor.apvts, "AnalyzerEnabled", analyzerEnabledButton) ,responseCurveComponent(audioProcessor)
 
 {
     // Make sure that before the constructor has finished, you've set the
@@ -318,6 +323,17 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     {
         addAndMakeVisible(comp);
     }
+    
+    auto safePtr = juce::Component::SafePointer<SqueezeFilterAudioProcessorEditor>(this);
+    analyzerEnabledButton.onClick = [safePtr]()
+    {
+        if(auto* comp = safePtr.getComponent())
+        {
+            auto enabled = comp->analyzerEnabledButton.getToggleState();
+            comp->responseCurveComponent.toggleAnalyzerIsEnabled(enabled);
+        }
+    };
+    
     addAndMakeVisible(squeezeLabel);
     squeezeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
     squeezeLabel.setText("Squeeze", juce::dontSendNotification);
@@ -388,6 +404,7 @@ void SqueezeFilterAudioProcessorEditor::resized()
     offsetSlider.setBounds(modifySliderArea.removeFromRight(modifySliderArea.getWidth()*0.5f));
     squeezeSlider.setBounds(modifySliderArea);
     
+    
     responseCurveComponent.setBounds(responseArea);
     auto marginRightMid = bounds.removeFromLeft(bounds.getWidth() * 0.08f);
     auto filterKnobsArea = bounds.removeFromLeft(bounds.getWidth() * 0.66f);
@@ -399,6 +416,7 @@ void SqueezeFilterAudioProcessorEditor::resized()
     lowCutSlopeSlider.setBounds(lowCutArea);
     highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()* 0.5f));
     highCutSlopeSlider.setBounds(highCutArea);
+    analyzerEnabledButton.setBounds(bounds);
     
 }
 
@@ -421,6 +439,7 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
         &highCutSlopeSlider,
         &squeezeSlider,
         &offsetSlider,
+        &analyzerEnabledButton,
         &responseCurveComponent
     };
 }

@@ -292,6 +292,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
                                                            "OffsetValue",
                                                            juce::NormalisableRange<float>(-19980.f, 19980.f,0.01), 0.f));
     
+    layout.add(std::make_unique<juce::AudioParameterBool>("AnalyzerEnabled", "AnalyzerEnabled", true));
+    
     return layout;
 }
 

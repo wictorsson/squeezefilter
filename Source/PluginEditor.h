@@ -11,6 +11,18 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+
+class CustomTwoValSliderLaf : public juce::LookAndFeel_V4
+
+{
+public:
+    void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
+                           float sliderPos, float minSliderPos, float maxSliderPos,
+                           const juce::Slider::SliderStyle, juce::Slider&) override;
+};
+
+
+
 enum FFTOrder
 {
     order2048 = 11,

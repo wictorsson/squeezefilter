@@ -191,13 +191,13 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
         auto leftChannelFFTPath = leftPathProducer.getPath();
         leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
         
-        g.setColour(Colours::white);
+        g.setColour(Colours::orange);
         g.strokePath(leftChannelFFTPath, PathStrokeType(1));
         
         auto rightChannelFFTPath = rightPathProducer.getPath();
         rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
         
-        g.setColour(Colours::white);
+        g.setColour(Colours::orange);
         g.strokePath(rightChannelFFTPath, PathStrokeType(1));
         
     }

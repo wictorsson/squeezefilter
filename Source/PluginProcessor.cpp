@@ -212,25 +212,49 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
 
     if(offset > 0)
     {
-        settings.lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() + offset *  (1 - apvts.getRawParameterValue("LowCutFreq")->load() / 19980);
+        settings.lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() + offset;
+        settings.highCutFreq = 20000.f - (20000.f - apvts.getRawParameterValue("HighCutFreq")->load()) * apvts.getRawParameterValue("SqueezeValue")->load() + offset;
 
-        settings.highCutFreq = 20000 - (20000 - apvts.getRawParameterValue("HighCutFreq")->load()) * apvts.getRawParameterValue("SqueezeValue")->load() + offset * (1 - apvts.getRawParameterValue("HighCutFreq")->load() / 19980);
+        if (settings.lowCutFreq > 20000.f)
+        {
+               settings.lowCutFreq = 20000.f;
+        }
         
+        if (settings.highCutFreq > 20000.f)
+        {
+            settings.highCutFreq = 20000.f;
+        }
     }
+    
     else if(offset < 0)
     {
-        settings.lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() + offset * apvts.getRawParameterValue("SqueezeValue")->load() *   (apvts.getRawParameterValue("LowCutFreq")->load()-20) / 19980;
-        
+        settings.lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() + offset;
       
-        settings.highCutFreq = 20020 - (20000 - apvts.getRawParameterValue("HighCutFreq")->load()) * apvts.getRawParameterValue("SqueezeValue")->load() + offset *  apvts.getRawParameterValue("HighCutFreq")->load() / 19980;
+        settings.highCutFreq = 20000.f - (20000.f - apvts.getRawParameterValue("HighCutFreq")->load()) * apvts.getRawParameterValue("SqueezeValue")->load() + offset;
+        
+        if (settings.lowCutFreq < 20.f) {
+            settings.lowCutFreq = 20.f;
+        }
+        
+        if (settings.highCutFreq < 20.f) {
+            settings.highCutFreq = 20.f;
+        }
         
     }
     else
     {
         settings.lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load();
         
-        settings.highCutFreq = 20000 - (20000 - apvts.getRawParameterValue("HighCutFreq")->load()) * apvts.getRawParameterValue("SqueezeValue")->load();
-       
+        if (settings.lowCutFreq < 20.f) {
+            settings.lowCutFreq = 20.f;
+        }
+        
+        DBG( settings.lowCutFreq);
+        settings.highCutFreq = 20000.f - (20000.f - apvts.getRawParameterValue("HighCutFreq")->load()) * apvts.getRawParameterValue("SqueezeValue")->load();
+       if(settings.highCutFreq > 20000.f)
+       {
+           settings.highCutFreq = 20000.f;
+       }
     }
     
    
@@ -291,6 +315,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
     layout.add(std::make_unique<juce::AudioParameterFloat>("OffsetValue",
                                                            "OffsetValue",
                                                            juce::NormalisableRange<float>(-19980.f, 19980.f,0.01), 0.f));
+    
+    
     
     layout.add(std::make_unique<juce::AudioParameterBool>("AnalyzerEnabled", "AnalyzerEnabled", true));
     

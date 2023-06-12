@@ -11,15 +11,10 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+//#include "./Custom/Params.h"
 
-class CustomTwoValSliderLaf : public juce::LookAndFeel_V4
 
-{
-public:
-    void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
-                           float sliderPos, float minSliderPos, float maxSliderPos,
-                           const juce::Slider::SliderStyle, juce::Slider&) override;
-};
+
 
 
 
@@ -262,6 +257,8 @@ private:
     PathProducer leftPathProducer, rightPathProducer;
     
     bool shouldShowFFTAnalysis = true;
+    
+   //AnalyzerButton analyzerEnabledButton;
 };
 //==============================================================================
 /**
@@ -292,6 +289,7 @@ private:
     lowCutSlopeSlider,
     highCutSlopeSlider,
     squeezeSlider,
+    twoValueSlider,
     offsetSlider;
     
     using APVTS = juce::AudioProcessorValueTreeState;
@@ -317,6 +315,7 @@ private:
     std::vector<juce::Component*> getComps();
 
     juce::Label slopeLabel, slopeLabel2,  squeezeLabel, offsetLabel, freqLabel, freqLabel2;
+    
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SqueezeFilterAudioProcessorEditor)
 };

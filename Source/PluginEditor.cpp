@@ -20,7 +20,7 @@ leftPathProducer(audioProcessor.leftChannelFifo), rightPathProducer(audioProcess
         param->addListener(this);
     }
     
-   
+   // addAndMakeVisible(analyzerEnabledButton);
     
     startTimerHz(60); 
 }
@@ -215,6 +215,17 @@ void ResponseCurveComponent::resized()
     using namespace juce;
     background = Image(Image::PixelFormat::RGB, getWidth(),getHeight(), true);
     
+//    auto bounds = getLocalBounds();
+//
+//       // Calculate the center of the rectangle
+//       auto centerX = bounds.getWidth() / 2;
+//       auto centerY = bounds.getHeight() / 2;
+//
+//       // Set the size and position of the analyzerEnabledButton
+//       auto buttonSize = juce::Point<int>(100, 50); // Adjust the size as needed
+//       auto buttonBounds = juce::Rectangle<int>(centerX - buttonSize.x / 2, centerY - buttonSize.y / 2, buttonSize.x, buttonSize.y);
+//       analyzerEnabledButton.setBounds(buttonBounds);
+    
     Graphics g(background);
     
     Array<float> freqs
@@ -289,6 +300,8 @@ void ResponseCurveComponent::resized()
         
         g.drawFittedText(str, r, juce::Justification::centred, 1);
         
+      
+        
     }
 }
 
@@ -333,6 +346,14 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
             comp->responseCurveComponent.toggleAnalyzerIsEnabled(enabled);
         }
     };
+    
+    addAndMakeVisible(twoValueSlider);
+    twoValueSlider.setSliderStyle(juce::Slider::TwoValueHorizontal);
+    
+    // get values from the sliders and set here on startup, on parameterchanged set the values from the twoslidervalue
+    twoValueSlider.setMaxValue(*audioProcessor.apvts.getRawParameterValue("HighCutFreq"));
+  //  audioProcessor.apvts.getRawParameterValue("LowCutFreq");
+    
     
     addAndMakeVisible(squeezeLabel);
     squeezeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
@@ -412,12 +433,17 @@ void SqueezeFilterAudioProcessorEditor::resized()
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
     auto highCutArea = filterKnobsArea.removeFromRight(filterKnobsArea.getWidth() * 0.5f);
     
+    //lowCutFreqSlider.setBounds(lowCutArea);
+    lowCutSlopeSlider.setBounds(lowCutArea);
+   // highCutFreqSlider.setBounds(lowCutArea);
+    
     lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()* 0.5f));
     lowCutSlopeSlider.setBounds(lowCutArea);
     highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()* 0.5f));
-    highCutSlopeSlider.setBounds(highCutArea);
-    analyzerEnabledButton.setBounds(bounds);
     
+    highCutSlopeSlider.setBounds(highCutArea);
+   //analyzerEnabledButton.setBounds(bounds);
+    twoValueSlider.setBounds(bounds);
 }
 
 

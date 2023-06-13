@@ -175,7 +175,7 @@ private:
 
 struct CustomRotarySlider : juce::Slider
 {
-    CustomRotarySlider() : juce::Slider(juce::Slider::SliderStyle::LinearVertical, juce::Slider::TextEntryBoxPosition::NoTextBox)
+    CustomRotarySlider() : juce::Slider(juce::Slider::SliderStyle::LinearVertical, juce::Slider::TextEntryBoxPosition::TextBoxRight)
     {
         
     }
@@ -183,7 +183,7 @@ struct CustomRotarySlider : juce::Slider
 
 struct CustomDoubleSlider : juce::Slider, juce::Slider::Listener
 {
-    CustomDoubleSlider() : juce::Slider(juce::Slider::SliderStyle::LinearVertical, juce::Slider::TextEntryBoxPosition::NoTextBox)
+    CustomDoubleSlider() : juce::Slider(juce::Slider::SliderStyle::LinearVertical, juce::Slider::TextEntryBoxPosition::TextBoxBelow)
     {
         
     }
@@ -289,8 +289,10 @@ public:
     {
         if(slider == &twoValueSlider)
         {
-            lowCutFreqSlider.setValue(twoValueSlider.getMinValue());
-            highCutFreqSlider.setValue(twoValueSlider.getMaxValue());
+            
+                     
+            lowCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMinValue()));
+            highCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMaxValue()));
            // DBG(twoValueSlider.getMinValue());
         }
     }
@@ -328,6 +330,7 @@ private:
     offsetSliderAttachment;
     
     AnalyzerButton analyzerEnabledButton;
+   
     using ButtonAttachment = APVTS::ButtonAttachment;
     ButtonAttachment analyzerEnabledButtonAttachment;
     

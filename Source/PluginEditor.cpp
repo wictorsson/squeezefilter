@@ -131,7 +131,10 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
     for(int i = 0; i < w; ++i)
     {
         double mag = 1.f;
+       // auto freq = mapToLog10(double(i) / double(w), 20.0, 20000.0);
         auto freq = mapToLog10(double(i) / double(w), 20.0, 20000.0);
+        
+        
         if(!monoChain.isBypassed<ChainPositions::Peak>())
             mag *= peak.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         
@@ -343,6 +346,7 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
         addAndMakeVisible(comp);
     }
     
+    analyzerEnabledButton.setButtonText("Analyzer");
     auto safePtr = juce::Component::SafePointer<SqueezeFilterAudioProcessorEditor>(this);
     analyzerEnabledButton.onClick = [safePtr]()
     {
@@ -356,8 +360,14 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     addAndMakeVisible(twoValueSlider);
     twoValueSlider.setSliderStyle(juce::Slider::TwoValueHorizontal);
 
-    twoValueSlider.setRange(20.0f, 20000.0f);
-    twoValueSlider.setSkewFactor(0.25f);
+//    twoValueSlider.setRange(20.0f, 20000.0f);
+//    twoValueSlider.setSkewFactorFromMidPoint(1000.0f);
+    
+    twoValueSlider.setRange(std::log10(20.0), std::log10(20000.0)); // Range in logarithmic scale
+
+    // Calculate the logarithmic value from the slider position
+   // double sliderValue = std::pow(10.0, twoValueSlider.getValue());
+    //twoValueSlider.setSkewFactor(0.25f);
     
     twoValueSlider.addListener(this);
     twoValueSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
@@ -442,20 +452,25 @@ void SqueezeFilterAudioProcessorEditor::resized()
       // Set the bounds for the TwoValueSlider
       //twoValueSlider.setBounds(sliderBounds);
     twoValueSlider.setBounds(responseArea);
+   
     auto marginRightMid = bounds.removeFromLeft(bounds.getWidth() * 0.08f);
+    
+    analyzerEnabledButton.setBounds(bounds.removeFromTop(bounds.getHeight()*0.2f));
+ 
     auto filterKnobsArea = bounds.removeFromLeft(bounds.getWidth() * 0.66f);
+    
     
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
     auto highCutArea = filterKnobsArea.removeFromRight(filterKnobsArea.getWidth() * 0.5f);
     
   
-    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()* 0.5f));
-
-    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()* 0.5f));
+//    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()* 0.5f));
+//
+//    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()* 0.5f));
     
     lowCutSlopeSlider.setBounds(lowCutArea);
     highCutSlopeSlider.setBounds(highCutArea);
-    analyzerEnabledButton.setBounds(bounds);
+  //  analyzerEnabledButton.setBounds(bounds);
    
 }
 
@@ -467,7 +482,8 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
     highCutSlopeSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     lowCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     highCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
-   
+    squeezeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    offsetSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     return
     {
         &peakFreqSlider,

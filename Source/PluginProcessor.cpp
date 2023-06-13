@@ -275,25 +275,15 @@ void/*SqueezeFilterAudioProcessor::*/updateCoefficients(Coefficients& old, const
 juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor::createParameterLayout(){
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     
-    layout.add(std::make_unique<juce::AudioParameterFloat>("LowCutFreq",
-                                                           "LowCutFreq",
-                                                           juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 20.f));
-    
-    layout.add(std::make_unique<juce::AudioParameterFloat>("HighCutFreq",
-                                                           "HighCutFreq",
-                                                           juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 20000.f));
-    
-    layout.add(std::make_unique<juce::AudioParameterFloat>("PeakFreq",
-                                                           "PeakFreq",
-                                                           juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 750.f));
-    
-    layout.add(std::make_unique<juce::AudioParameterFloat>("PeakGain",
-                                                           "PeakGain",
-                                                           juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 0.5f), 0.0f));
-    
-    layout.add(std::make_unique<juce::AudioParameterFloat>("PeakQuality",
-                                                           "PeakQuality",
-                                                           juce::NormalisableRange<float>(0.1f, 10.f, 0.05f, 0.5f), 0.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"LowCutFreq", 1}, "LowCutFreq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20.f));
+        
+        layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"HighCutFreq", 1}, "HighCutFreq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20000.f));
+        
+        layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"PeakFreq", 1}, "PeakFreq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 750.f));
+        
+        layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"PeakGain", 1}, "PeakGain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
+        
+        layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"PeakQuality", 1}, "PeakQuality", juce::NormalisableRange<float>(0.1f, 10.f, 0.05f, 1.f), 1.f));
     
     juce::StringArray stringArray;
     for(int i = 0; i < 4; ++i)
@@ -304,21 +294,21 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
         stringArray.add(str);
     }
     
-    layout.add(std::make_unique<juce::AudioParameterChoice>("LowCutSlope", "LowCutSlope", stringArray, 1));
+    layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID{"LowCutSlope", 1}, "LowCutSlope", stringArray, 1));
     
-    layout.add(std::make_unique<juce::AudioParameterChoice>("HighCutSlope", "HighCutSlope", stringArray, 1));
+    layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID{"HighCutSlope", 1}, "HighCutSlope", stringArray, 1));
     
-    layout.add(std::make_unique<juce::AudioParameterFloat>("SqueezeValue",
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"SqueezeValue", 1},
                                                            "SqueezeValue",
                                                            juce::NormalisableRange<float>(0.001f, 1.0f),1.f));
     
-    layout.add(std::make_unique<juce::AudioParameterFloat>("OffsetValue",
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"OffsetValue", 1},
                                                            "OffsetValue",
                                                            juce::NormalisableRange<float>(-19980.f, 19980.f,0.01), 0.f));
     
     
     
-    layout.add(std::make_unique<juce::AudioParameterBool>("AnalyzerEnabled", "AnalyzerEnabled", true));
+    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{"AnalyzerEnabled",1}, "AnalyzerEnabled", true));
     
     return layout;
 }

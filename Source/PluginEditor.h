@@ -181,6 +181,16 @@ struct CustomRotarySlider : juce::Slider
     }
 };
 
+struct CustomDoubleSlider : juce::Slider, juce::Slider::Listener
+{
+    CustomDoubleSlider() : juce::Slider(juce::Slider::SliderStyle::LinearVertical, juce::Slider::TextEntryBoxPosition::NoTextBox)
+    {
+        
+    }
+    
+};
+
+
 struct PathProducer
 {
     PathProducer(SingleChannelSampleFifo<SqueezeFilterAudioProcessor::BlockType>& scff) : leftChannelFifo(&scff)
@@ -258,12 +268,14 @@ private:
     
     bool shouldShowFFTAnalysis = true;
     
+  //  CustomRotarySlider twoValueSlider;
+    
    //AnalyzerButton analyzerEnabledButton;
 };
 //==============================================================================
 /**
 */
-class SqueezeFilterAudioProcessorEditor  : public juce::AudioProcessorEditor
+class SqueezeFilterAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Slider::Listener
 {
 public:
     SqueezeFilterAudioProcessorEditor (SqueezeFilterAudioProcessor&);
@@ -273,7 +285,14 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
     
-    
+    void sliderValueChanged (juce::Slider * slider) override
+    {
+        if(slider == &twoValueSlider)
+        {
+            lowCutFreqSlider.setValue(twoValueSlider.getMinValue());
+            highCutFreqSlider.setValue(twoValueSlider.getMaxValue());
+        }
+    }
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -289,8 +308,10 @@ private:
     lowCutSlopeSlider,
     highCutSlopeSlider,
     squeezeSlider,
-    twoValueSlider,
+    
     offsetSlider;
+    
+    juce::Slider twoValueSlider;
     
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;

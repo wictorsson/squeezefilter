@@ -97,7 +97,12 @@ void ResponseCurveComponent::timerCallback()
         
         auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
         auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
+        
+        // Update here with the values from twovalueslider
+      
         updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+        
+//        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
         updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
        // repaint();
     }
@@ -348,9 +353,19 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     };
     
     addAndMakeVisible(twoValueSlider);
+   
     twoValueSlider.setSliderStyle(juce::Slider::TwoValueHorizontal);
     
+    twoValueSlider.setRange(20.f, 20000.f);
+    
+    float skewFactor = 0.25f; 
+    twoValueSlider.setSkewFactor(skewFactor);
+    
+    
+    twoValueSlider.addListener(this);
+    twoValueSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     // get values from the sliders and set here on startup, on parameterchanged set the values from the twoslidervalue
+    twoValueSlider.setMinValue(*audioProcessor.apvts.getRawParameterValue("LowCutFreq"));
     twoValueSlider.setMaxValue(*audioProcessor.apvts.getRawParameterValue("HighCutFreq"));
   //  audioProcessor.apvts.getRawParameterValue("LowCutFreq");
     
@@ -454,6 +469,7 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
     highCutSlopeSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     lowCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     highCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+   
     return
     {
         &peakFreqSlider,

@@ -455,7 +455,7 @@ void SqueezeFilterAudioProcessorEditor::resized()
     
     lowCutSlopeSlider.setBounds(lowCutArea);
     highCutSlopeSlider.setBounds(highCutArea);
-    //analyzerEnabledButton.setBounds(bounds);
+    analyzerEnabledButton.setBounds(bounds);
    
 }
 

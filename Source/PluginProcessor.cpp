@@ -249,7 +249,7 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
             settings.lowCutFreq = 20.f;
         }
         
-        DBG( settings.lowCutFreq);
+       // DBG( settings.lowCutFreq);
         settings.highCutFreq = 20000.f - (20000.f - apvts.getRawParameterValue("HighCutFreq")->load()) * apvts.getRawParameterValue("SqueezeValue")->load();
        if(settings.highCutFreq > 20000.f)
        {

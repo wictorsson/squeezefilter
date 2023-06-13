@@ -169,6 +169,7 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
             mag *= highcut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
         
+      //  DBG(freq);
         mags[i] = Decibels::gainToDecibels(mag);
         
     }
@@ -353,21 +354,16 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     };
     
     addAndMakeVisible(twoValueSlider);
-   
     twoValueSlider.setSliderStyle(juce::Slider::TwoValueHorizontal);
-    
-    twoValueSlider.setRange(20.f, 20000.f);
-    
-    float skewFactor = 0.25f; 
-    twoValueSlider.setSkewFactor(skewFactor);
-    
+
+    twoValueSlider.setRange(20.0f, 20000.0f);
+    twoValueSlider.setSkewFactor(0.25f);
     
     twoValueSlider.addListener(this);
     twoValueSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    // get values from the sliders and set here on startup, on parameterchanged set the values from the twoslidervalue
+ 
     twoValueSlider.setMinValue(*audioProcessor.apvts.getRawParameterValue("LowCutFreq"));
     twoValueSlider.setMaxValue(*audioProcessor.apvts.getRawParameterValue("HighCutFreq"));
-  //  audioProcessor.apvts.getRawParameterValue("LowCutFreq");
     
     
     addAndMakeVisible(squeezeLabel);
@@ -428,37 +424,39 @@ void SqueezeFilterAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    
     auto bounds = getLocalBounds();
     auto marginTop = bounds.removeFromTop(bounds.getHeight() * 0.08f);
     auto marginLeft = bounds.removeFromLeft(bounds.getWidth() * 0.01f);
     auto marginRight = bounds.removeFromRight(bounds.getWidth() * 0.01f);
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.5f);
-  
+
     auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.25f);
-    
-    offsetSlider.setBounds(modifySliderArea.removeFromRight(modifySliderArea.getWidth()*0.5f));
+
+    offsetSlider.setBounds(modifySliderArea.removeFromRight(modifySliderArea.getWidth() * 0.5f));
     squeezeSlider.setBounds(modifySliderArea);
-    
-    
+
     responseCurveComponent.setBounds(responseArea);
+
+    auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.0025f, 0.0f);
+   
+      // Set the bounds for the TwoValueSlider
+      //twoValueSlider.setBounds(sliderBounds);
+    twoValueSlider.setBounds(responseArea);
     auto marginRightMid = bounds.removeFromLeft(bounds.getWidth() * 0.08f);
     auto filterKnobsArea = bounds.removeFromLeft(bounds.getWidth() * 0.66f);
     
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
     auto highCutArea = filterKnobsArea.removeFromRight(filterKnobsArea.getWidth() * 0.5f);
     
-    //lowCutFreqSlider.setBounds(lowCutArea);
-    lowCutSlopeSlider.setBounds(lowCutArea);
-   // highCutFreqSlider.setBounds(lowCutArea);
-    
+  
     lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()* 0.5f));
-    lowCutSlopeSlider.setBounds(lowCutArea);
+
     highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()* 0.5f));
     
+    lowCutSlopeSlider.setBounds(lowCutArea);
     highCutSlopeSlider.setBounds(highCutArea);
-   //analyzerEnabledButton.setBounds(bounds);
-    twoValueSlider.setBounds(bounds);
+    //analyzerEnabledButton.setBounds(bounds);
+   
 }
 
 

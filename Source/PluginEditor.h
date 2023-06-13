@@ -291,6 +291,7 @@ public:
         {
             lowCutFreqSlider.setValue(twoValueSlider.getMinValue());
             highCutFreqSlider.setValue(twoValueSlider.getMaxValue());
+           // DBG(twoValueSlider.getMinValue());
         }
     }
 

@@ -11,12 +11,6 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-//#include "./Custom/Params.h"
-
-
-
-
-
 
 enum FFTOrder
 {
@@ -289,8 +283,6 @@ public:
     {
         if(slider == &twoValueSlider)
         {
-            
-                     
             lowCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMinValue()));
             highCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMaxValue()));
            // DBG(twoValueSlider.getMinValue());
@@ -333,8 +325,6 @@ private:
    
     using ButtonAttachment = APVTS::ButtonAttachment;
     ButtonAttachment analyzerEnabledButtonAttachment;
-    
-    
     
     ResponseCurveComponent responseCurveComponent;
     std::vector<juce::Component*> getComps();

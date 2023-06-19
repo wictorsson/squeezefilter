@@ -89,20 +89,32 @@ void ResponseCurveComponent::timerCallback()
         rightPathProducer.process(fftBounds, sampleRate);
     }
 
-    if(parametersChanged.compareAndSetBool(false, true))
-    {
-        auto chainSettings = getChainSettings(audioProcessor.apvts);
-        auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
-        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-        
-        auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
-        auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
-      
-        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
-        
-        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
-     
-    }
+//    if(parametersChanged.compareAndSetBool(false, true))
+//    {
+//        auto chainSettings = getChainSettings(audioProcessor.apvts);
+//        auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
+//        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+//
+//        auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
+//        auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
+//
+//        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+//
+//        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+//
+//    }
+    
+    // REFACTOR - do only once then check if parameterchanged like above
+    auto chainSettings = getChainSettings(audioProcessor.apvts);
+    auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
+    updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+    
+    auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
+    auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
+  
+    updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+    
+    updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
     repaint();
 }
 
@@ -344,11 +356,10 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     
     twoValueSlider.addListener(this);
     twoValueSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
- 
-    twoValueSlider.setMinValue(*audioProcessor.apvts.getRawParameterValue("LowCutFreq"));
-    twoValueSlider.setMaxValue(*audioProcessor.apvts.getRawParameterValue("HighCutFreq"));
     
-    
+    twoValueSlider.setMaxValue(std::log10(*audioProcessor.apvts.getRawParameterValue("HighCutFreq")));
+    twoValueSlider.setMinValue(std::log10(*audioProcessor.apvts.getRawParameterValue("LowCutFreq")));
+   
     addAndMakeVisible(squeezeLabel);
     squeezeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
     squeezeLabel.setText("Squeeze", juce::dontSendNotification);
@@ -387,7 +398,6 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     freqLabel.attachToComponent(&lowCutFreqSlider, true);
     freqLabel.setJustificationType(juce::Justification::centred);
     
-    
     setSize (650, 350);
 }
 
@@ -400,6 +410,7 @@ void SqueezeFilterAudioProcessorEditor::paint (juce::Graphics& g)
     using namespace juce;
     // (Our component is opaque, so we must completely fill the background with a solid colour)
         g.fillAll (Colour::fromFloatRGBA (0.08f, 0.08f, 0.08f, 1.0f));
+    
 
 }
 

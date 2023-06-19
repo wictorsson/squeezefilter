@@ -285,7 +285,7 @@ public:
         {
             lowCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMinValue()));
             highCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMaxValue()));
-           // DBG(twoValueSlider.getMinValue());
+            
         }
     }
 

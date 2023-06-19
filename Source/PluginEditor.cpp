@@ -352,6 +352,8 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     addAndMakeVisible(twoValueSlider);
     twoValueSlider.setSliderStyle(juce::Slider::TwoValueHorizontal);
     
+   
+    
     twoValueSlider.setRange(std::log10(20.0), std::log10(20000.0)); // Range in logarithmic scale
     
     twoValueSlider.addListener(this);
@@ -398,11 +400,16 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     freqLabel.attachToComponent(&lowCutFreqSlider, true);
     freqLabel.setJustificationType(juce::Justification::centred);
     
-    setSize (650, 350);
+    twoValueSlider.setLookAndFeel(&twoValLaf);
+    
+    setSize (650, 330);
 }
 
 SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
-{}
+{
+    twoValueSlider.setLookAndFeel(nullptr);
+    
+}
 
 //==============================================================================
 void SqueezeFilterAudioProcessorEditor::paint (juce::Graphics& g)
@@ -424,11 +431,13 @@ void SqueezeFilterAudioProcessorEditor::resized()
     
   
    
-    auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.6f);
-    auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.25f);
+    auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.8f);
+    auto topSliderArea = responseArea.removeFromTop(responseArea.getWidth()* 0.08f);
     
-    auto topSliderArea = responseArea.removeFromTop(responseArea.getWidth()* 0.05f);
-    offsetSlider.setBounds(topSliderArea.reduced(responseArea.getWidth()*0.2, 0));
+    auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.2f);
+    
+    
+    offsetSlider.setBounds(topSliderArea.removeFromLeft(bounds.getWidth() * 0.8f).reduced(responseArea.getWidth()*0.2, 10));
     //offsetSlider.setBounds(modifySliderArea.removeFromRight(modifySliderArea.getWidth() * 0.5f));
     squeezeSlider.setBounds(modifySliderArea);
 
@@ -438,16 +447,16 @@ void SqueezeFilterAudioProcessorEditor::resized()
    
     bounds = bounds.removeFromRight(bounds.getWidth() * 0.92f);
     
-    analyzerEnabledButton.setBounds(bounds.removeFromTop(bounds.getHeight()*0.2f));
-    auto filterKnobsArea = bounds.removeFromLeft(bounds.getWidth() * 0.66f);
+    //analyzerEnabledButton.setBounds(bounds.removeFromTop(bounds.getHeight()*0.2f));
+    auto filterKnobsArea = bounds.removeFromLeft(bounds.getWidth()* 0.8);
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
     auto highCutArea = filterKnobsArea.removeFromRight(filterKnobsArea.getWidth() * 0.5f);
   
 //    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()* 0.5f));
 //    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()* 0.5f));
-    
-    lowCutSlopeSlider.setBounds(lowCutArea);
-    highCutSlopeSlider.setBounds(highCutArea);
+    analyzerEnabledButton.setBounds(filterKnobsArea);
+    lowCutSlopeSlider.setBounds(lowCutArea.reduced(45, 0));
+    highCutSlopeSlider.setBounds(highCutArea.reduced(45, 0));
 }
 
 
@@ -456,6 +465,9 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
 {
     lowCutSlopeSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     highCutSlopeSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    lowCutSlopeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    highCutSlopeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    
     lowCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     highCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     offsetSlider.setSliderStyle(juce::Slider::LinearHorizontal);
@@ -477,3 +489,100 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
         &responseCurveComponent
     };
 }
+
+using namespace juce;
+void CustomTwoValSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
+                                              float sliderPos,
+                                              float minSliderPos,
+                                              float maxSliderPos,
+                                              const Slider::SliderStyle style, Slider& slider)
+       {
+           if (slider.isBar())
+           {
+//               g.setColour (slider.findColour (Slider::trackColourId));
+//               g.fillRect (slider.isHorizontal() ? Rectangle<float> (static_cast<float> (x), (float) y + 0.5f, sliderPos - (float) x, (float) height - 1.0f)
+//                                                 : Rectangle<float> ((float) x + 0.5f, sliderPos, (float) width - 1.0f, (float) y + ((float) height - sliderPos)));
+           }
+           else
+           {
+               auto isTwoVal   = (style == Slider::SliderStyle::TwoValueVertical   || style == Slider::SliderStyle::TwoValueHorizontal);
+               auto isThreeVal = (style == Slider::SliderStyle::ThreeValueVertical || style == Slider::SliderStyle::ThreeValueHorizontal);
+
+               auto trackWidth = jmin (6.0f, slider.isHorizontal() ? (float) height * 0.25f : (float) width * 0.25f);
+
+               Point<float> startPoint (slider.isHorizontal() ? (float) x : (float) x + (float) width * 0.5f,
+                                        slider.isHorizontal() ? (float) y + (float) height * 0.5f : (float) (height + y));
+
+               Point<float> endPoint (slider.isHorizontal() ? (float) (width + x) : startPoint.x,
+                                      slider.isHorizontal() ? startPoint.y : (float) y);
+
+               Path backgroundTrack;
+               backgroundTrack.startNewSubPath (startPoint);
+               backgroundTrack.lineTo (endPoint);
+//               g.setColour (slider.findColour (Slider::backgroundColourId));
+//               g.strokePath (backgroundTrack, { trackWidth, PathStrokeType::curved, PathStrokeType::rounded });
+
+               Path valueTrack;
+               Point<float> minPoint, maxPoint, thumbPoint;
+
+               if (isTwoVal || isThreeVal)
+               {
+                   minPoint = { slider.isHorizontal() ? minSliderPos : (float) width * 0.5f,
+                                slider.isHorizontal() ? (float) height * 0.5f : minSliderPos };
+
+                   if (isThreeVal)
+                       thumbPoint = { slider.isHorizontal() ? sliderPos : (float) width * 0.5f,
+                                      slider.isHorizontal() ? (float) height * 0.5f : sliderPos };
+
+                   maxPoint = { slider.isHorizontal() ? maxSliderPos : (float) width * 0.5f,
+                                slider.isHorizontal() ? (float) height * 0.5f : maxSliderPos };
+               }
+               else
+               {
+                   auto kx = slider.isHorizontal() ? sliderPos : ((float) x + (float) width * 0.5f);
+                   auto ky = slider.isHorizontal() ? ((float) y + (float) height * 0.5f) : sliderPos;
+
+                   minPoint = startPoint;
+                   maxPoint = { kx, ky };
+               }
+
+               auto thumbWidth = getSliderThumbRadius (slider);
+
+               valueTrack.startNewSubPath (minPoint);
+               valueTrack.lineTo (isThreeVal ? thumbPoint : maxPoint);
+//               g.setColour (slider.findColour (Slider::trackColourId));
+//               g.strokePath (valueTrack, { trackWidth, PathStrokeType::curved, PathStrokeType::rounded });
+
+               if (! isTwoVal)
+               {
+//                   g.setColour (slider.findColour (Slider::thumbColourId));
+//                   g.fillEllipse (Rectangle<float> (static_cast<float> (thumbWidth), static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint));
+               }
+
+               if (isTwoVal || isThreeVal)
+               {
+                   auto sr = jmin (trackWidth, (slider.isHorizontal() ? (float) height : (float) width) * 0.4f);
+                   auto pointerColour = juce::Colours::lightblue;
+
+                   if (slider.isHorizontal())
+                   {
+                       drawPointer (g, minSliderPos - sr,
+                                    jmax (0.0f, (float) y + (float) (height + 5) * 0.5f - trackWidth * 2.0f),
+                                    trackWidth * 2.0f, pointerColour, 2);
+
+                       drawPointer (g, maxSliderPos - trackWidth,
+                                    jmin ((float) (y + height -10) - trackWidth * 2.0f, (float) y + (float) height * 0.5f),
+                                    trackWidth * 2.0f, pointerColour, 4);
+                   }
+                   else
+                   {
+                       drawPointer (g, jmax (0.0f, (float) x + (float) width * 0.5f - trackWidth * 2.0f),
+                                    minSliderPos - trackWidth,
+                                    trackWidth * 2.0f, pointerColour, 1);
+
+                       drawPointer (g, jmin ((float) (x + width) - trackWidth * 2.0f, (float) x + (float) width * 0.5f), maxSliderPos - sr,
+                                    trackWidth * 2.0f, pointerColour, 3);
+                   }
+               }
+           }
+       }

@@ -223,7 +223,6 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
         {
             settings.highCutFreq = ( highCutFreq + 20000 * std::pow(settings.highCutFreq / 20000, 4));
         }
-        
 
         if (settings.lowCutFreq > 20000.f)
         {
@@ -236,13 +235,11 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
         }
     }
 
-    else if(offset < 0)
+    else
     {
-        
         settings.lowCutFreq = lowCutFreq * squeezeValue + offset * ( (lowCutFreq/20000));
         settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue + (offset * (highCutFreq - (highCutFreq - lowCutFreq))/20000);
-        
-        
+
                 if (settings.lowCutFreq < 20.f) {
                     settings.lowCutFreq = 20.f;
                 }
@@ -252,8 +249,6 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
                 }
 
     }
-
-    
 
     settings.peakFreq = apvts.getRawParameterValue("PeakFreq")->load();
     settings.peakGainDecibels = apvts.getRawParameterValue("PeakGain")->load();
@@ -287,7 +282,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
     {
         juce::String str;
         str << (12 + i * 12);
-        str << "db/Oct";
+        //str << "db/Oct";
         stringArray.add(str);
     }
     

@@ -209,22 +209,20 @@ void SqueezeFilterAudioProcessor::setStateInformation (const void* data, int siz
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
     ChainSettings settings;
     auto offset = apvts.getRawParameterValue("OffsetValue")->load();
-
+    auto lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load();
+    auto highCutFreq = apvts.getRawParameterValue("HighCutFreq")->load();
+    auto squeezeValue = apvts.getRawParameterValue("SqueezeValue")->load();
     if(offset >= 0)
     {
 
-        settings.lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() + offset * (1 - (apvts.getRawParameterValue("LowCutFreq")->load()/20000));
+        settings.lowCutFreq = lowCutFreq * squeezeValue + offset * (1 - (lowCutFreq/20000));
+        settings.lowCutFreq =  lowCutFreq * squeezeValue + 20000 * std::pow(settings.lowCutFreq / 20000, 4);
         
-        settings.lowCutFreq =  apvts.getRawParameterValue("LowCutFreq")->load()*apvts.getRawParameterValue("SqueezeValue")->load() + 20000 * std::pow(settings.lowCutFreq / 20000, 4);
-        
-//        settings.highCutFreq = settings.lowCutFreq + (apvts.getRawParameterValue("HighCutFreq")->load()* (1-apvts.getRawParameterValue("SqueezeValue")->load()) - apvts.getRawParameterValue("LowCutFreq")->load()* (1 -apvts.getRawParameterValue("SqueezeValue")->load()));
-
-        settings.highCutFreq = 20000 - (20000 - apvts.getRawParameterValue("HighCutFreq")->load()) * apvts.getRawParameterValue("SqueezeValue")->load() + offset * (1 - (apvts.getRawParameterValue("HighCutFreq")->load()/20000)*apvts.getRawParameterValue("SqueezeValue")->load());
-      
-        settings.highCutFreq =  apvts.getRawParameterValue("HighCutFreq")->load() + 20000 * std::pow(settings.highCutFreq / 20000, 4);
-        
-  
-     
+        settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + offset * (1 - (highCutFreq/20000) * squeezeValue);
+        if(squeezeValue == 1)
+        {
+            settings.highCutFreq = ( highCutFreq + 20000 * std::pow(settings.highCutFreq / 20000, 4));
+        }
         
 
         if (settings.lowCutFreq > 20000.f)
@@ -241,47 +239,22 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
     else if(offset < 0)
     {
         
-        settings.lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() + offset * ( (apvts.getRawParameterValue("LowCutFreq")->load()/20000));
+        settings.lowCutFreq = lowCutFreq * squeezeValue + offset * ( (lowCutFreq/20000));
+        settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue + (offset * (highCutFreq - (highCutFreq - lowCutFreq))/20000);
         
-        //settings.lowCutFreq =  apvts.getRawParameterValue("LowCutFreq")->load() + 20000 * std::pow(settings.lowCutFreq / 20000, 4);
-
-//        settings.highCutFreq =  settings.lowCutFreq + (apvts.getRawParameterValue("HighCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load() - apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load());
-        
-//        settings.highCutFreq =  settings.lowCutFreq * (1- apvts.getRawParameterValue("SqueezeValue")->load()) + apvts.getRawParameterValue("HighCutFreq")->load() - apvts.getRawParameterValue("LowCutFreq")->load() ;
-        
-        settings.highCutFreq = 20000 - (20000 - apvts.getRawParameterValue("HighCutFreq")->load()) * apvts.getRawParameterValue("SqueezeValue")->load() + offset * (1 - (apvts.getRawParameterValue("HighCutFreq")->load()/20000)*apvts.getRawParameterValue("SqueezeValue")->load());
-      
-        settings.highCutFreq =  apvts.getRawParameterValue("HighCutFreq")->load() + 20000 * std::pow(settings.highCutFreq / 20000, 4);
-        
-//        settings.highCutFreq = (apvts.getRawParameterValue("HighCutFreq")->load()) * apvts.getRawParameterValue("SqueezeValue")->load() + offset * ( (apvts.getRawParameterValue("HighCutFreq")->load()/20000));
         
                 if (settings.lowCutFreq < 20.f) {
                     settings.lowCutFreq = 20.f;
                 }
-        
+
                 if (settings.highCutFreq < 20.f) {
                     settings.highCutFreq = 20.f;
                 }
 
     }
-    else
-    {
-        settings.lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load() * apvts.getRawParameterValue("SqueezeValue")->load();
-
-        if (settings.lowCutFreq < 20.f) {
-            settings.lowCutFreq = 20.f;
-        }
-
-       // DBG( settings.lowCutFreq);
-        settings.highCutFreq = 20000.f - (20000.f - apvts.getRawParameterValue("HighCutFreq")->load()) * apvts.getRawParameterValue("SqueezeValue")->load();
-       if(settings.highCutFreq > 20000.f)
-       {
-           settings.highCutFreq = 20000.f;
-       }
-    }
 
     
- 
+
     settings.peakFreq = apvts.getRawParameterValue("PeakFreq")->load();
     settings.peakGainDecibels = apvts.getRawParameterValue("PeakGain")->load();
     settings.peakQuality = apvts.getRawParameterValue("PeakQuality")->load();

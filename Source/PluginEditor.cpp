@@ -422,10 +422,14 @@ void SqueezeFilterAudioProcessorEditor::resized()
     bounds = bounds.removeFromBottom(bounds.getHeight() * 0.92f);
     bounds = bounds.removeFromRight(bounds.getWidth() * 0.98f);
     
-    auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.5f);
+  
+   
+    auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.6f);
     auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.25f);
-
-    offsetSlider.setBounds(modifySliderArea.removeFromRight(modifySliderArea.getWidth() * 0.5f));
+    
+    auto topSliderArea = responseArea.removeFromTop(responseArea.getWidth()* 0.05f);
+    offsetSlider.setBounds(topSliderArea.reduced(responseArea.getWidth()*0.2, 0));
+    //offsetSlider.setBounds(modifySliderArea.removeFromRight(modifySliderArea.getWidth() * 0.5f));
     squeezeSlider.setBounds(modifySliderArea);
 
     responseCurveComponent.setBounds(responseArea);
@@ -454,6 +458,7 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
     highCutSlopeSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     lowCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     highCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    offsetSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     squeezeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     offsetSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     analyzerEnabledButton.setButtonText("Analyzer");

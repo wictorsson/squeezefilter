@@ -27,7 +27,8 @@ enum FFTOrder
 {
     order2048 = 11,
     order4096 = 12,
-    order8192 = 13
+    order8192 = 13,
+    order16384 = 14
 };
 
 template<typename BlockType>
@@ -200,7 +201,7 @@ struct PathProducer
 {
     PathProducer(SingleChannelSampleFifo<SqueezeFilterAudioProcessor::BlockType>& scff) : leftChannelFifo(&scff)
     {
-        leftChannelFFTDataGenerator.changeOrder(FFTOrder::order2048);
+        leftChannelFFTDataGenerator.changeOrder(FFTOrder::order16384);
         monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize());
         
     }

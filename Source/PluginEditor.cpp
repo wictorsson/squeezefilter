@@ -204,14 +204,14 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
         auto leftChannelFFTPath = leftPathProducer.getPath();
         leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
         
-        g.setColour(Colours::orange);
-        g.strokePath(leftChannelFFTPath, PathStrokeType(1));
+        g.setColour(Colours::lightblue);
+        g.strokePath(leftChannelFFTPath, PathStrokeType(3));
         
         auto rightChannelFFTPath = rightPathProducer.getPath();
         rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
         
-        g.setColour(Colours::orange);
-        g.strokePath(rightChannelFFTPath, PathStrokeType(1));
+        g.setColour(Colours::lightblue);
+        g.strokePath(rightChannelFFTPath, PathStrokeType(3));
         
     }
     
@@ -266,7 +266,7 @@ void ResponseCurveComponent::resized()
     {
         auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
         
-        g.setColour(gDb == 0.f ? Colours::orange : Colours::darkgrey);
+        g.setColour(gDb == 0.f ? Colours::lightblue : Colours::darkgrey);
         g.drawHorizontalLine(y, left, right);
     }
     
@@ -559,7 +559,7 @@ void CustomTwoValSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, i
                if (isTwoVal || isThreeVal)
                {
                    auto sr = jmin (trackWidth, (slider.isHorizontal() ? (float) height : (float) width) * 0.4f);
-                   auto pointerColour = juce::Colours::lightblue;
+                   auto pointerColour = juce::Colours::orange;
 
                    if (slider.isHorizontal())
                    {

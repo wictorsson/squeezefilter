@@ -96,6 +96,12 @@ void SqueezeFilterAudioProcessor::prepareToPlay (double sampleRate, int samplesP
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     
+    rmsLevelLeft.reset(sampleRate, 2.02);
+    rmsLevelRight.reset(sampleRate, 2.02);
+    
+    rmsLevelLeft.setCurrentAndTargetValue(-48.f);
+    rmsLevelRight.setCurrentAndTargetValue(-48.f);
+    
     juce::dsp::ProcessSpec spec;
     
     spec.maximumBlockSize = samplesPerBlock;
@@ -150,12 +156,12 @@ void SqueezeFilterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
+    
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
+    
     updateFilters();
-   
+    
     juce::dsp::AudioBlock<float> block(buffer);
     auto leftBlock = block.getSingleChannelBlock(0);
     auto rightBlock = block.getSingleChannelBlock(1);

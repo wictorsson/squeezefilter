@@ -253,7 +253,7 @@ void ResponseCurveComponent::resized()
     g.setColour(Colours::darkgrey);
     for(auto x : xs)
     {
-        g.drawVerticalLine(x, top, bottom);
+        g.drawVerticalLine(x, top + 20, bottom);
     }
     
     Array<float> gain
@@ -297,12 +297,9 @@ void ResponseCurveComponent::resized()
         Rectangle<int> r;
         r.setSize(textWidth, fontHeight);
         r.setCentre(x, 0);
-        r.setY(1);
+        r.setY(20);
         
         g.drawFittedText(str, r, juce::Justification::centred, 1);
-        
-      
-        
     }
 }
 
@@ -567,11 +564,11 @@ void CustomTwoValSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, i
                    if (slider.isHorizontal())
                    {
                        drawPointer (g, minSliderPos - sr,
-                                    jmax (0.0f, (float) y + (float) (height + 5) * 0.5f - trackWidth * 2.0f),
+                                    jmax (0.0f, (float) y + (float) (height + 3) * 0.5f - trackWidth * 2.0f),
                                     trackWidth * 2.0f, pointerColour, 2);
 
                        drawPointer (g, maxSliderPos - trackWidth,
-                                    jmin ((float) (y + height -10) - trackWidth * 2.0f, (float) y + (float) height * 0.5f),
+                                    jmin ((float) (y + height) - trackWidth * 2.0f, (float) y + (float) (height + 18) * 0.5f),
                                     trackWidth * 2.0f, pointerColour, 4);
                    }
                    else

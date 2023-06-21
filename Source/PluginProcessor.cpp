@@ -220,42 +220,21 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
     auto squeezeValue = apvts.getRawParameterValue("SqueezeValue")->load();
     if(offset >= 0)
     {
-
         settings.lowCutFreq = lowCutFreq * squeezeValue + offset * (1 - (lowCutFreq/20000));
         settings.lowCutFreq =  lowCutFreq * squeezeValue + 20000 * std::pow(settings.lowCutFreq / 20000, 4);
-        
-        settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + offset * (1 - (highCutFreq/20000) * squeezeValue);
-        if(squeezeValue == 1)
-        {
-            settings.highCutFreq = ( highCutFreq + 20000 * std::pow(settings.highCutFreq / 20000, 4));
-        }
-
-        if (settings.lowCutFreq > 20000.f)
-        {
-               settings.lowCutFreq = 20000.f;
-        }
-
-        if (settings.highCutFreq > 20000.f)
-        {
-            settings.highCutFreq = 20000.f;
-        }
+        settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + offset * (1 - (highCutFreq/20000));
+        settings.highCutFreq = ( settings.highCutFreq + 20000 * std::pow(settings.highCutFreq / 20000, 4));
     }
 
     else
     {
         settings.lowCutFreq = lowCutFreq * squeezeValue + offset * ( (lowCutFreq/20000));
-        settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue + (offset * (highCutFreq - (highCutFreq - lowCutFreq))/20000);
-
-                if (settings.lowCutFreq < 20.f) {
-                    settings.lowCutFreq = 20.f;
-                }
-
-                if (settings.highCutFreq < 20.f) {
-                    settings.highCutFreq = 20.f;
-                }
-
+        settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue + ((offset * (highCutFreq - (highCutFreq - lowCutFreq))/20000));
     }
-
+    
+    settings.lowCutFreq = std::clamp(settings.lowCutFreq, 20.f, 20000.f);
+    settings.highCutFreq = std::clamp(settings.highCutFreq, 20.f, 20000.f);
+    
     settings.peakFreq = apvts.getRawParameterValue("PeakFreq")->load();
     settings.peakGainDecibels = apvts.getRawParameterValue("PeakGain")->load();
     settings.peakQuality = apvts.getRawParameterValue("PeakQuality")->load();
@@ -298,7 +277,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
     
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"SqueezeValue", 1},
                                                            "SqueezeValue",
-                                                           juce::NormalisableRange<float>(0.001f, 1.0f),1.f));
+                                                           juce::NormalisableRange<float>(0.01f, 1.0f),1.f));
     
     
     

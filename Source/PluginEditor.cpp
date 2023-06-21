@@ -404,17 +404,19 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     
     const float ratio = 16.0/ 9.0;
     setSize (p.getEditorWidth(), p.getEditorHeight());
-    setResizeLimits (450,  juce::roundToInt (450.0 / ratio),
+    setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
                          1500, juce::roundToInt (1500.0 / ratio));
     
     getConstrainer()->setFixedAspectRatio (ratio);
     
-    myKeyListener = new MyKeyListener();
+    //myKeyListener = new MyKeyListener();
 
            // Register the key listener to receive key events
-           addKeyListener(myKeyListener);
-           setWantsKeyboardFocus(true); // Ena
-    
+         //  addKeyListener(this);
+    setWantsKeyboardFocus(true);
+    //   grabKeyboardFocus();
+
+     //  addKeyListener(this);
     //setSize (650, 400);
 }
 
@@ -426,8 +428,8 @@ SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
     highCutSlopeSlider.setLookAndFeel(nullptr);
     lowCutSlopeSlider.setLookAndFeel(nullptr);
     
-    removeKeyListener(myKeyListener);
-           delete myKeyListener;
+   // removeKeyListener(this);
+       //    delete myKeyListener;
     
 }
 

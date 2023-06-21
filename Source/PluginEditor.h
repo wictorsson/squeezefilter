@@ -12,32 +12,6 @@
 #include "PluginProcessor.h"
 
 using namespace juce;
-class MyKeyListener : public juce::KeyListener
-{
-public:
-    bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override
-    {
-        if (key == juce::KeyPress::createFromDescription("e"))
-                {
-                    // Debug statement to indicate that the "e" key was pressed
-                    DBG("The 'e' key was pressed!");
-                }
-        if (key == juce::KeyPress::createFromDescription("e"))
-                {
-                    // Debug statement to indicate that the "e" key was pressed
-                    DBG("The '2' key was pressed!");
-                }
-        if (key == juce::KeyPress::createFromDescription("e"))
-                {
-                    // Debug statement to indicate that the "e" key was pressed
-                    DBG("The '3' key was pressed!");
-                }
-        
-        // Handle the key press event here
-        // You can add your custom logic or set a flag to indicate that a key was pressed
-        return true; // Return 'true' to indicate that the event was handled
-    }
-};
 
 
 class CustomSlopSlider : public juce::LookAndFeel_V4
@@ -374,7 +348,45 @@ public:
         }
     }
     
-    
+    bool keyPressed(const juce::KeyPress& key) override
+    {
+        DBG(key.getKeyCode());
+        DBG(juce::KeyPress::numberPad1);
+        if (key.getKeyCode() == 49)
+                 {
+                     const float ratio = 16.0/ 9.0;
+                     setSize (500, juce::roundToInt (1500.0 / ratio));
+                     setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
+                                          1500, juce::roundToInt (1500.0 / ratio));
+                     getConstrainer()->setFixedAspectRatio (ratio);
+                     repaint();
+                     return true;
+                 }
+        if (key.getKeyCode() == 50)
+                 {
+                     const float ratio = 16.0/ 9.0;
+                     setSize (700, juce::roundToInt (1500.0 / ratio));
+                     setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
+                                          1500, juce::roundToInt (1500.0 / ratio));
+                     getConstrainer()->setFixedAspectRatio (ratio);
+                     repaint();
+                     return true;
+                 }
+        if (key.getKeyCode() == 51)
+                 {
+                     const float ratio = 16.0/ 9.0;
+                     setSize (1500, juce::roundToInt (1500.0 / ratio));
+                     setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
+                                          1500, juce::roundToInt (1500.0 / ratio));
+                     getConstrainer()->setFixedAspectRatio (ratio);
+                     repaint();
+                     return true;
+                 }
+        
+        
+
+        return false;
+    }
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -416,7 +428,8 @@ private:
     CustomCrossover crossOverLaf;
     CustomSlopSlider slopSliderLaf;
     
-    MyKeyListener* myKeyListener;
+
+   
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SqueezeFilterAudioProcessorEditor)
 };

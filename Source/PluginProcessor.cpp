@@ -221,7 +221,8 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
     if(offset >= 0)
     {
         settings.lowCutFreq = lowCutFreq * squeezeValue + offset * (1 - (lowCutFreq/20000));
-        settings.lowCutFreq =  lowCutFreq * squeezeValue + 20000 * std::pow(settings.lowCutFreq / 20000, 4);
+        settings.lowCutFreq =  settings.lowCutFreq  + 20000 * std::pow(settings.lowCutFreq / 20000, 4);
+        
         settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + offset * (1 - (highCutFreq/20000));
         settings.highCutFreq = ( settings.highCutFreq + 20000 * std::pow(settings.highCutFreq / 20000, 4));
     }
@@ -234,10 +235,6 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
     
     settings.lowCutFreq = std::clamp(settings.lowCutFreq, 20.f, 20000.f);
     settings.highCutFreq = std::clamp(settings.highCutFreq, 20.f, 20000.f);
-    
-    settings.peakFreq = apvts.getRawParameterValue("PeakFreq")->load();
-    settings.peakGainDecibels = apvts.getRawParameterValue("PeakGain")->load();
-    settings.peakQuality = apvts.getRawParameterValue("PeakQuality")->load();
     
     settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCutSlope")->load());
     settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCutSlope")->load());
@@ -256,11 +253,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
         
         layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"HighCutFreq", 1}, "HighCutFreq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20000.f));
         
-        layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"PeakFreq", 1}, "PeakFreq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 750.f));
-        
-        layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"PeakGain", 1}, "PeakGain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
-        
-        layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"PeakQuality", 1}, "PeakQuality", juce::NormalisableRange<float>(0.1f, 10.f, 0.05f, 1.f), 1.f));
     
     juce::StringArray stringArray;
     for(int i = 0; i < 4; ++i)
@@ -277,7 +269,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
     
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"SqueezeValue", 1},
                                                            "SqueezeValue",
-                                                           juce::NormalisableRange<float>(0.01f, 1.0f),1.f));
+                                                           juce::NormalisableRange<float>(0.0001f, 1.0f),1.f));
     
     
     
@@ -291,19 +283,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
     return layout;
 }
 
-Coefficients makePeakFilter(const ChainSettings& chainSettings, double sampleRate)
-{
-    return juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, chainSettings.peakFreq, chainSettings.peakQuality, juce::Decibels::decibelsToGain(chainSettings.peakGainDecibels));
-}
-
-void SqueezeFilterAudioProcessor::updatePeakFilter(const ChainSettings &chainSettings)
-{
-    
-    auto peakCoefficients = makePeakFilter(chainSettings, getSampleRate());
-    updateCoefficients(leftChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-    updateCoefficients(rightChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-    
-}
 
 
 void SqueezeFilterAudioProcessor::updateLowCutFilters(const ChainSettings& chainSettings)
@@ -330,7 +309,7 @@ void SqueezeFilterAudioProcessor::updateFilters()
 {
     auto chainSettings = getChainSettings(apvts);
     
-    updatePeakFilter(chainSettings);
+//    updatePeakFilter(chainSettings);
     updateLowCutFilters(chainSettings);
     updateHighCutFilters(chainSettings);
 }

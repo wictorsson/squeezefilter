@@ -12,6 +12,51 @@
 #include "PluginProcessor.h"
 
 
+class CustomSlopSlider : public juce::LookAndFeel_V4
+{
+public:
+    CustomSlopSlider();
+   
+    
+    void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
+                           float sliderPos, float minSliderPos, float maxSliderPos,
+                           const juce::Slider::SliderStyle, juce::Slider&) override;
+    
+    juce::Label* createSliderTextBox (juce::Slider& slider) override;
+
+};
+
+
+class CustomCrossover : public juce::LookAndFeel_V4
+{
+public:
+    CustomCrossover();
+   
+    
+    void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
+                           float sliderPos, float minSliderPos, float maxSliderPos,
+                           const juce::Slider::SliderStyle, juce::Slider&) override;
+    
+    juce::Label* createSliderTextBox (juce::Slider& slider) override;
+
+};
+
+class CustomSlider : public juce::LookAndFeel_V4
+{
+public:
+    CustomSlider();
+   
+    
+    void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
+                           float sliderPos, float minSliderPos, float maxSliderPos,
+                           const juce::Slider::SliderStyle, juce::Slider&) override;
+    
+    juce::Label* createSliderTextBox (juce::Slider& slider) override;
+    
+private:
+    std::string type;
+    
+};
 
 class CustomTwoValSliderLaf : public juce::LookAndFeel_V4
 
@@ -28,7 +73,7 @@ enum FFTOrder
     order2048 = 11,
     order4096 = 12,
     order8192 = 13,
-    order16384 = 14
+    order16384 = 14,
 };
 
 template<typename BlockType>
@@ -307,10 +352,7 @@ private:
     SqueezeFilterAudioProcessor& audioProcessor;
 
    
-    CustomRotarySlider peakFreqSlider,
-    peakGainSlider,
-    peakQualitySlider,
-    lowCutFreqSlider,
+    CustomRotarySlider lowCutFreqSlider,
     highCutFreqSlider,
     lowCutSlopeSlider,
     highCutSlopeSlider,
@@ -323,10 +365,7 @@ private:
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
     
-    Attachment peakFreqSliderAttachment,
-    peakGainSliderAttachment,
-    peakQualitySliderAttachment,
-    lowCutFreqSliderAttachment,
+    Attachment lowCutFreqSliderAttachment,
     highCutFreqSliderAttachment,
     lowCutSlopeSliderAttachment,
     highCutSlopeSliderAttachment,
@@ -343,6 +382,9 @@ private:
 
     juce::Label slopeLabel, slopeLabel2,  squeezeLabel, offsetLabel, freqLabel, freqLabel2;
     CustomTwoValSliderLaf twoValLaf;
+    CustomSlider sliderLaf;
+    CustomCrossover crossOverLaf;
+    CustomSlopSlider slopSliderLaf;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SqueezeFilterAudioProcessorEditor)
 };

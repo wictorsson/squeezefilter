@@ -106,8 +106,8 @@ void ResponseCurveComponent::timerCallback()
     
     // REFACTOR - do only once then check if parameterchanged like above
     auto chainSettings = getChainSettings(audioProcessor.apvts);
-    auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
-    updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+//    auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
+//    updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
     
     auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
     auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
@@ -129,7 +129,7 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
     auto responseArea = getAnalysisArea();
     auto w = responseArea.getWidth();
     auto& lowcut = monoChain.get<ChainPositions::LowCut>();
-    auto& peak = monoChain.get<ChainPositions::Peak>();
+//    auto& peak = monoChain.get<ChainPositions::Peak>();
     auto& highcut = monoChain.get<ChainPositions::HighCut>();
 
     auto sampleRate = audioProcessor.getSampleRate();
@@ -142,8 +142,8 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
         double mag = 1.f;
         auto freq = mapToLog10(double(i) / double(w), 20.0, 20000.0);
         
-        if(!monoChain.isBypassed<ChainPositions::Peak>())
-            mag *= peak.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+//        if(!monoChain.isBypassed<ChainPositions::Peak>())
+//            mag *= peak.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         
         if(!lowcut.isBypassed<0>())
         {
@@ -324,7 +324,7 @@ juce::Rectangle<int> ResponseCurveComponent::getAnalysisArea()
 
 //==============================================================================
 SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFilterAudioProcessor& p)
-: AudioProcessorEditor (&p), audioProcessor (p), peakFreqSliderAttachment(audioProcessor.apvts, "PeakFreq", peakFreqSlider),peakGainSliderAttachment(audioProcessor.apvts, "PeakGain", peakGainSlider),peakQualitySliderAttachment(audioProcessor.apvts, "PeakQuality", peakQualitySlider),lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCutFreq", lowCutFreqSlider),highCutFreqSliderAttachment(audioProcessor.apvts, "HighCutFreq", highCutFreqSlider),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider), analyzerEnabledButtonAttachment(audioProcessor.apvts, "AnalyzerEnabled", analyzerEnabledButton) ,responseCurveComponent(audioProcessor)
+: AudioProcessorEditor (&p), audioProcessor (p),lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCutFreq", lowCutFreqSlider),highCutFreqSliderAttachment(audioProcessor.apvts, "HighCutFreq", highCutFreqSlider),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider), analyzerEnabledButtonAttachment(audioProcessor.apvts, "AnalyzerEnabled", analyzerEnabledButton) ,responseCurveComponent(audioProcessor)
 
 {
     // Make sure that before the constructor has finished, you've set the
@@ -348,9 +348,6 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     
     addAndMakeVisible(twoValueSlider);
     twoValueSlider.setSliderStyle(juce::Slider::TwoValueHorizontal);
-    
-   
-    
     twoValueSlider.setRange(std::log10(20.0), std::log10(20000.0)); // Range in logarithmic scale
     
     twoValueSlider.addListener(this);
@@ -361,26 +358,26 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
    
     addAndMakeVisible(squeezeLabel);
     squeezeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
-    squeezeLabel.setText("Squeeze", juce::dontSendNotification);
+    squeezeLabel.setText("|---|", juce::dontSendNotification);
     squeezeLabel.attachToComponent(&squeezeSlider, false);
     squeezeLabel.setJustificationType(juce::Justification::centred);
     
     addAndMakeVisible(offsetLabel);
     offsetLabel.setFont(juce::Font (12.0f, juce::Font::bold));
-    offsetLabel.setText("Offset", juce::dontSendNotification);
+    offsetLabel.setText("<--->", juce::dontSendNotification);
     offsetLabel.attachToComponent(&offsetSlider, false);
     offsetLabel.setJustificationType(juce::Justification::centred);
     
     
     addAndMakeVisible(slopeLabel);
     slopeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
-    slopeLabel.setText("Slope", juce::dontSendNotification);
+    slopeLabel.setText("/ --", juce::dontSendNotification);
     slopeLabel.attachToComponent(&lowCutSlopeSlider, true);
     slopeLabel.setJustificationType(juce::Justification::centred);
     
     addAndMakeVisible(slopeLabel2);
     slopeLabel2.setFont(juce::Font (12.0f, juce::Font::bold));
-    slopeLabel2.setText("Slope", juce::dontSendNotification);
+    slopeLabel2.setText("/ --", juce::dontSendNotification);
     slopeLabel2.attachToComponent(&highCutSlopeSlider, true);
     slopeLabel2.setJustificationType(juce::Justification::centred);
     
@@ -397,14 +394,24 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     freqLabel.attachToComponent(&lowCutFreqSlider, true);
     freqLabel.setJustificationType(juce::Justification::centred);
     
+    squeezeSlider.setLookAndFeel(&sliderLaf);
     twoValueSlider.setLookAndFeel(&twoValLaf);
+    offsetSlider.setLookAndFeel(&crossOverLaf);
+    highCutSlopeSlider.setLookAndFeel(&slopSliderLaf);
+    lowCutSlopeSlider.setLookAndFeel(&slopSliderLaf);
     
-    setSize (650, 330);
+    
+    setSize (650, 400);
 }
 
 SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
 {
     twoValueSlider.setLookAndFeel(nullptr);
+    squeezeSlider.setLookAndFeel(nullptr);
+    offsetSlider.setLookAndFeel(nullptr);
+    highCutSlopeSlider.setLookAndFeel(nullptr);
+    lowCutSlopeSlider.setLookAndFeel(nullptr);
+    
     
 }
 
@@ -426,34 +433,47 @@ void SqueezeFilterAudioProcessorEditor::resized()
     bounds = bounds.removeFromBottom(bounds.getHeight() * 0.92f);
     bounds = bounds.removeFromRight(bounds.getWidth() * 0.98f);
     
-  
-   
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.8f);
     auto topSliderArea = responseArea.removeFromTop(responseArea.getWidth()* 0.08f);
+    auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.15f);
     
-    auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.2f);
-    
-    
-    offsetSlider.setBounds(topSliderArea.removeFromLeft(bounds.getWidth() * 0.8f).reduced(responseArea.getWidth()*0.2, 10));
+    offsetSlider.setBounds(topSliderArea.removeFromLeft(bounds.getWidth() * 0.85f).reduced(responseArea.getWidth()*0.2, 10));
     //offsetSlider.setBounds(modifySliderArea.removeFromRight(modifySliderArea.getWidth() * 0.5f));
     squeezeSlider.setBounds(modifySliderArea);
 
     responseCurveComponent.setBounds(responseArea);
+   
     auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.018f, 0.0f);
     twoValueSlider.setBounds(sliderBounds);
-   
-    bounds = bounds.removeFromRight(bounds.getWidth() * 0.92f);
     
-    //analyzerEnabledButton.setBounds(bounds.removeFromTop(bounds.getHeight()*0.2f));
-    auto filterKnobsArea = bounds.removeFromLeft(bounds.getWidth()* 0.8);
+    
+    
+//    bounds = bounds.removeFromRight(bounds.getWidth() * 0.98f);
+//    analyzerEnabledButton.setBounds(bounds.removeFromTop(bounds.getHeight()* 0.3));
+    bounds = bounds.removeFromRight(bounds.getWidth() * 0.98f);
+    auto analyzerArea = bounds.removeFromLeft(bounds.getWidth() * 0.1f).removeFromTop(bounds.getHeight() * 0.3f);
+    analyzerEnabledButton.setBounds(analyzerArea);
+    
+    
+   
+    auto filterKnobsArea = bounds.removeFromRight(bounds.getWidth()* 0.9);
+    
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
-    auto highCutArea = filterKnobsArea.removeFromRight(filterKnobsArea.getWidth() * 0.5f);
-  
-//    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()* 0.5f));
-//    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()* 0.5f));
-    analyzerEnabledButton.setBounds(filterKnobsArea);
+    auto highCutArea = filterKnobsArea;
+
     lowCutSlopeSlider.setBounds(lowCutArea.reduced(45, 0));
-    highCutSlopeSlider.setBounds(highCutArea.reduced(45, 0));
+    highCutSlopeSlider.setBounds(highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).reduced(45, 0));
+    
+    
+    
+//    auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
+//    auto highCutArea = filterKnobsArea.removeFromRight(filterKnobsArea.getWidth() * 0.5f);
+//
+////    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()* 0.5f));
+////    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()* 0.5f));
+//   // analyzerEnabledButton.setBounds(filterKnobsArea);
+//    lowCutSlopeSlider.setBounds(lowCutArea.reduced(45, 0));
+//    highCutSlopeSlider.setBounds(highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).reduced(45, 0));
 }
 
 
@@ -470,12 +490,10 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
     offsetSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     squeezeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     offsetSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    analyzerEnabledButton.setButtonText("Analyzer");
+    analyzerEnabledButton.setButtonText("~~~");
     return
     {
-        &peakFreqSlider,
-        &peakGainSlider,
-        &peakQualitySlider,
+      
         &lowCutFreqSlider,
         &highCutFreqSlider,
         &lowCutSlopeSlider,
@@ -487,7 +505,408 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
     };
 }
 
+// ******* LAF *************
 using namespace juce;
+
+//CustomSlopSlider
+
+CustomSlopSlider::CustomSlopSlider(){}
+
+void CustomSlopSlider::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
+                                       float sliderPos,
+                                       float minSliderPos,
+                                       float maxSliderPos,
+                                       const juce::Slider::SliderStyle style, juce::Slider& slider)
+{
+    if (slider.isBar())
+    {
+       //g.setColour (slider.findC olour (Slider::trackColourId));
+        g.setColour (juce::Colour::fromFloatRGBA(0.34f, 0.64f, 0.56f, 1.0f).darker(0.4f));
+        g.fillRect (slider.isHorizontal() ? juce::Rectangle<float> (static_cast<float> (x), (float) y + 0.5f, sliderPos - (float) x, (float) height - 1.0f)
+                                          : juce::Rectangle<float> ((float) x + 0.5f, sliderPos, (float) width - 1.0f, (float) y + ((float) height - sliderPos)));
+    }
+    else
+    {
+        auto isTwoVal   = (style == juce::Slider::SliderStyle::TwoValueVertical   || style == juce::Slider::SliderStyle::TwoValueHorizontal);
+        auto isThreeVal = (style == juce::Slider::SliderStyle::ThreeValueVertical || style == juce::Slider::SliderStyle::ThreeValueHorizontal);
+
+        auto trackWidth = juce::jmin (6.0f, slider.isHorizontal() ? (float) height * 0.25f : (float) width * 0.25f);
+        
+        trackWidth = trackWidth * 2;
+
+        juce::Point<float> startPoint (slider.isHorizontal() ? (float) x : (float) x + (float) width * 0.5f,
+                                 slider.isHorizontal() ? (float) y + (float) height * 0.5f : (float) (height + y));
+
+        juce::Point<float> endPoint (slider.isHorizontal() ? (float) (width + x) : startPoint.x,
+                               slider.isHorizontal() ? startPoint.y : (float) y);
+
+        juce::Path backgroundTrack;
+        backgroundTrack.startNewSubPath (startPoint);
+        backgroundTrack.lineTo (endPoint);
+        g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+        g.strokePath (backgroundTrack, { trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
+
+        juce::Path valueTrack;
+        juce::Point<float> minPoint, maxPoint, thumbPoint;
+
+        if (isTwoVal || isThreeVal)
+        {
+            minPoint = { slider.isHorizontal() ? minSliderPos : (float) width * 0.5f,
+                         slider.isHorizontal() ? (float) height * 0.5f : minSliderPos };
+
+            if (isThreeVal)
+                thumbPoint = { slider.isHorizontal() ? sliderPos : (float) width * 0.5f,
+                               slider.isHorizontal() ? (float) height * 0.5f : sliderPos };
+
+            maxPoint = { slider.isHorizontal() ? maxSliderPos : (float) width * 0.5f,
+                         slider.isHorizontal() ? (float) height * 0.5f : maxSliderPos };
+        }
+        else
+        {
+            auto kx = slider.isHorizontal() ? sliderPos : ((float) x + (float) width * 0.5f);
+            auto ky = slider.isHorizontal() ? ((float) y + (float) height * 0.5f) : sliderPos;
+
+            minPoint = startPoint;
+            maxPoint = { kx, ky };
+            
+        }
+
+
+        
+        auto thumbWidth = getSliderThumbRadius (slider);
+        thumbWidth = thumbWidth * 2;
+
+        valueTrack.startNewSubPath (minPoint);
+        valueTrack.lineTo (isThreeVal ? thumbPoint : maxPoint);
+        g.setColour (juce::Colours::lightblue);
+        g.strokePath (valueTrack, { trackWidth, PathStrokeType::curved, PathStrokeType::rounded });
+
+
+        if (! isTwoVal)
+        {
+            g.setColour (juce::Colours::lightblue);
+          //  g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+            g.fillEllipse (Rectangle<float> (static_cast<float> (thumbWidth), static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint));
+            g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+//            g.setColour (juce::Colours::orange);
+            g.fillEllipse (Rectangle<float> (static_cast<float> (thumbWidth) * 0.8,  0.8 * static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint));
+        }
+
+        
+        if (isTwoVal || isThreeVal)
+        {
+            auto sr = juce::jmin (trackWidth, (slider.isHorizontal() ? (float) height : (float) width) * 0.4f);
+            auto pointerColour = slider.findColour (juce::Slider::thumbColourId);
+
+            if (slider.isHorizontal())
+            {
+                drawPointer (g, minSliderPos - sr,
+                             juce::jmax (0.0f, (float) y + (float) height * 0.5f - trackWidth * 2.0f),
+                             trackWidth * 2.0f, pointerColour, 2);
+
+                drawPointer (g, maxSliderPos - trackWidth,
+                             juce::jmin ((float) (y + height) - trackWidth * 2.0f, (float) y + (float) height * 0.5f),
+                             trackWidth * 2.0f, pointerColour, 4);
+            }
+            else
+            {
+                drawPointer (g, juce::jmax (0.0f, (float) x + (float) width * 0.5f - trackWidth * 2.0f),
+                             minSliderPos - trackWidth,
+                             trackWidth * 2.0f, pointerColour, 1);
+
+                drawPointer (g, juce::jmin ((float) (x + width) - trackWidth * 2.0f, (float) x + (float) width * 0.5f), maxSliderPos - sr,
+                             trackWidth * 2.0f, pointerColour, 3);
+            }
+        }
+    }
+}
+
+juce::Label* CustomSlopSlider::createSliderTextBox (juce::Slider& slider)
+{
+    auto* l = new juce::Label();
+
+    l->setJustificationType (juce::Justification::centred);
+    l->setColour (juce::Label::textColourId, slider.findColour (juce::Slider::textBoxTextColourId));
+    l->setColour (juce::Label::textWhenEditingColourId, slider.findColour (juce::Slider::textBoxTextColourId));
+    l->setColour (juce::Label::outlineWhenEditingColourId, juce::Colours::transparentWhite);
+    l->setInterceptsMouseClicks (false, false);
+    l->setFont (14.0f);
+
+    return l;
+}
+
+
+CustomCrossover::CustomCrossover(){}
+
+void CustomCrossover::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
+                                       float sliderPos,
+                                       float minSliderPos,
+                                       float maxSliderPos,
+                                       const juce::Slider::SliderStyle style, juce::Slider& slider)
+{
+    if (slider.isBar())
+    {
+       //g.setColour (slider.findC olour (Slider::trackColourId));
+        g.setColour (juce::Colour::fromFloatRGBA(0.34f, 0.64f, 0.56f, 1.0f).darker(0.4f));
+        g.fillRect (slider.isHorizontal() ? juce::Rectangle<float> (static_cast<float> (x), (float) y + 0.5f, sliderPos - (float) x, (float) height - 1.0f)
+                                          : juce::Rectangle<float> ((float) x + 0.5f, sliderPos, (float) width - 1.0f, (float) y + ((float) height - sliderPos)));
+    }
+    else
+    {
+        auto isTwoVal   = (style == juce::Slider::SliderStyle::TwoValueVertical   || style == juce::Slider::SliderStyle::TwoValueHorizontal);
+        auto isThreeVal = (style == juce::Slider::SliderStyle::ThreeValueVertical || style == juce::Slider::SliderStyle::ThreeValueHorizontal);
+
+        auto trackWidth = juce::jmin (6.0f, slider.isHorizontal() ? (float) height * 0.25f : (float) width * 0.25f);
+        
+        trackWidth = trackWidth * 2;
+
+        juce::Point<float> startPoint (slider.isHorizontal() ? (float) x : (float) x + (float) width * 0.5f,
+                                 slider.isHorizontal() ? (float) y + (float) height * 0.5f : (float) (height + y));
+
+        juce::Point<float> endPoint (slider.isHorizontal() ? (float) (width + x) : startPoint.x,
+                               slider.isHorizontal() ? startPoint.y : (float) y);
+
+        juce::Path backgroundTrack;
+        backgroundTrack.startNewSubPath (startPoint);
+        backgroundTrack.lineTo (endPoint);
+        g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+        g.strokePath (backgroundTrack, { trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
+
+        juce::Path valueTrack;
+        juce::Point<float> minPoint, maxPoint, thumbPoint;
+
+        if (isTwoVal || isThreeVal)
+        {
+            minPoint = { slider.isHorizontal() ? minSliderPos : (float) width * 0.5f,
+                         slider.isHorizontal() ? (float) height * 0.5f : minSliderPos };
+
+            if (isThreeVal)
+                thumbPoint = { slider.isHorizontal() ? sliderPos : (float) width * 0.5f,
+                               slider.isHorizontal() ? (float) height * 0.5f : sliderPos };
+
+            maxPoint = { slider.isHorizontal() ? maxSliderPos : (float) width * 0.5f,
+                         slider.isHorizontal() ? (float) height * 0.5f : maxSliderPos };
+        }
+        else
+        {
+            auto kx = slider.isHorizontal() ? sliderPos : ((float) x + (float) width * 0.5f);
+            auto ky = slider.isHorizontal() ? ((float) y + (float) height * 0.5f) : sliderPos;
+
+            minPoint = startPoint;
+            maxPoint = { kx, ky };
+            
+        }
+
+//        auto thumbWidth = getSliderThumbRadius (slider) * 3 ;
+//
+//
+//        if (! isTwoVal)
+//        {
+//            g.setColour (juce::Colour::fromFloatRGBA(0.2941f, 0.4784f, 0.2784f, 1.0f));
+//            g.fillRoundedRectangle (juce::Rectangle<float> (static_cast<float> (thumbWidth) * 0.2, static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint), 3);
+//        }
+        
+        auto thumbWidth = getSliderThumbRadius (slider);
+        thumbWidth = thumbWidth * 2;
+
+//        valueTrack.startNewSubPath (minPoint);
+//        valueTrack.lineTo (isThreeVal ? thumbPoint : maxPoint);
+//        g.setColour (juce::Colours::lightblue);
+//        g.strokePath (valueTrack, { trackWidth, PathStrokeType::curved, PathStrokeType::rounded });
+        
+        // Changed filled path to go from 0 - value
+        valueTrack.startNewSubPath (width * 0.5f + thumbWidth/2, startPoint.y);
+        valueTrack.lineTo (maxPoint);
+
+        g.setColour (juce::Colours::lightblue);
+
+        g.strokePath (valueTrack, { trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
+
+
+        if (! isTwoVal)
+        {
+            g.setColour (juce::Colours::lightblue);
+          //  g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+            g.fillEllipse (Rectangle<float> (static_cast<float> (thumbWidth), static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint));
+            g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+//            g.setColour (juce::Colours::orange);
+            g.fillEllipse (Rectangle<float> (static_cast<float> (thumbWidth) * 0.8,  0.8 * static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint));
+        }
+
+        
+        
+        
+        if (isTwoVal || isThreeVal)
+        {
+            auto sr = juce::jmin (trackWidth, (slider.isHorizontal() ? (float) height : (float) width) * 0.4f);
+            auto pointerColour = slider.findColour (juce::Slider::thumbColourId);
+
+            if (slider.isHorizontal())
+            {
+                drawPointer (g, minSliderPos - sr,
+                             juce::jmax (0.0f, (float) y + (float) height * 0.5f - trackWidth * 2.0f),
+                             trackWidth * 2.0f, pointerColour, 2);
+
+                drawPointer (g, maxSliderPos - trackWidth,
+                             juce::jmin ((float) (y + height) - trackWidth * 2.0f, (float) y + (float) height * 0.5f),
+                             trackWidth * 2.0f, pointerColour, 4);
+            }
+            else
+            {
+                drawPointer (g, juce::jmax (0.0f, (float) x + (float) width * 0.5f - trackWidth * 2.0f),
+                             minSliderPos - trackWidth,
+                             trackWidth * 2.0f, pointerColour, 1);
+
+                drawPointer (g, juce::jmin ((float) (x + width) - trackWidth * 2.0f, (float) x + (float) width * 0.5f), maxSliderPos - sr,
+                             trackWidth * 2.0f, pointerColour, 3);
+            }
+        }
+    }
+}
+
+juce::Label* CustomCrossover::createSliderTextBox (juce::Slider& slider)
+{
+    auto* l = new juce::Label();
+
+    l->setJustificationType (juce::Justification::centred);
+    l->setColour (juce::Label::textColourId, slider.findColour (juce::Slider::textBoxTextColourId));
+    l->setColour (juce::Label::textWhenEditingColourId, slider.findColour (juce::Slider::textBoxTextColourId));
+    l->setColour (juce::Label::outlineWhenEditingColourId, juce::Colours::transparentWhite);
+    l->setInterceptsMouseClicks (false, false);
+    l->setFont (14.0f);
+
+    return l;
+}
+
+
+CustomSlider::CustomSlider(){}
+void CustomSlider::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
+                                       float sliderPos,
+                                       float minSliderPos,
+                                       float maxSliderPos,
+                                       const juce::Slider::SliderStyle style, juce::Slider& slider)
+{
+    if (slider.isBar())
+    {
+        g.setColour (slider.findColour (Slider::trackColourId));
+        g.fillRect (slider.isHorizontal() ? Rectangle<float> (static_cast<float> (x), (float) y + 0.5f, sliderPos - (float) x, (float) height - 1.0f)
+                                          : Rectangle<float> ((float) x + 0.5f, sliderPos, (float) width - 1.0f, (float) y + ((float) height - sliderPos)));
+
+        drawLinearSliderOutline (g, x, y, width, height, style, slider);
+    }
+    else
+    {
+        auto isTwoVal   = (style == Slider::SliderStyle::TwoValueVertical   || style == Slider::SliderStyle::TwoValueHorizontal);
+        auto isThreeVal = (style == Slider::SliderStyle::ThreeValueVertical || style == Slider::SliderStyle::ThreeValueHorizontal);
+
+        auto trackWidth = jmin (6.0f, slider.isHorizontal() ? (float) height * 0.25f : (float) width * 0.25f);
+        trackWidth = trackWidth * 2;
+        
+
+        Point<float> startPoint (slider.isHorizontal() ? (float) x : (float) x + (float) width * 0.5f,
+                                 slider.isHorizontal() ? (float) y + (float) height * 0.5f : (float) (height + y));
+
+        Point<float> endPoint (slider.isHorizontal() ? (float) (width + x) : startPoint.x,
+                               slider.isHorizontal() ? startPoint.y : (float) y);
+
+        Path backgroundTrack;
+        backgroundTrack.startNewSubPath (startPoint);
+        backgroundTrack.lineTo (endPoint);
+        g.setColour (slider.findColour (Slider::backgroundColourId));
+        g.strokePath (backgroundTrack, { trackWidth, PathStrokeType::curved, PathStrokeType::rounded });
+
+        Path valueTrack;
+        Point<float> minPoint, maxPoint, thumbPoint;
+
+        if (isTwoVal || isThreeVal)
+        {
+            minPoint = { slider.isHorizontal() ? minSliderPos : (float) width * 0.5f,
+                         slider.isHorizontal() ? (float) height * 0.5f : minSliderPos };
+
+            if (isThreeVal)
+                thumbPoint = { slider.isHorizontal() ? sliderPos : (float) width * 0.5f,
+                               slider.isHorizontal() ? (float) height * 0.5f : sliderPos };
+
+            maxPoint = { slider.isHorizontal() ? maxSliderPos : (float) width * 0.5f,
+                         slider.isHorizontal() ? (float) height * 0.5f : maxSliderPos };
+        }
+        else
+        {
+            auto kx = slider.isHorizontal() ? sliderPos : ((float) x + (float) width * 0.5f);
+            auto ky = slider.isHorizontal() ? ((float) y + (float) height * 0.5f) : sliderPos;
+
+            minPoint = startPoint;
+            maxPoint = { kx, ky };
+        }
+
+        auto thumbWidth = getSliderThumbRadius (slider);
+        thumbWidth = thumbWidth * 2;
+
+        valueTrack.startNewSubPath (minPoint);
+        valueTrack.lineTo (isThreeVal ? thumbPoint : maxPoint);
+        g.setColour (juce::Colours::lightblue);
+        g.strokePath (valueTrack, { trackWidth, PathStrokeType::curved, PathStrokeType::rounded });
+
+        if (! isTwoVal)
+        {
+            g.setColour (juce::Colours::lightblue);
+           // g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+            g.fillEllipse (Rectangle<float> (static_cast<float> (thumbWidth), static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint));
+            
+            g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+            g.fillEllipse (Rectangle<float> (static_cast<float> (thumbWidth) * 0.8,  0.8 * static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint));
+        }
+
+        if (isTwoVal || isThreeVal)
+        {
+            auto sr = jmin (trackWidth, (slider.isHorizontal() ? (float) height : (float) width) * 0.4f);
+            auto pointerColour = slider.findColour (Slider::thumbColourId);
+
+            if (slider.isHorizontal())
+            {
+                drawPointer (g, minSliderPos - sr,
+                             jmax (0.0f, (float) y + (float) height * 0.5f - trackWidth * 2.0f),
+                             trackWidth * 2.0f, pointerColour, 2);
+
+                drawPointer (g, maxSliderPos - trackWidth,
+                             jmin ((float) (y + height) - trackWidth * 2.0f, (float) y + (float) height * 0.5f),
+                             trackWidth * 2.0f, pointerColour, 4);
+            }
+            else
+            {
+                drawPointer (g, jmax (0.0f, (float) x + (float) width * 0.5f - trackWidth * 2.0f),
+                             minSliderPos - trackWidth,
+                             trackWidth * 2.0f, pointerColour, 1);
+
+                drawPointer (g, jmin ((float) (x + width) - trackWidth * 2.0f, (float) x + (float) width * 0.5f), maxSliderPos - sr,
+                             trackWidth * 2.0f, pointerColour, 3);
+            }
+        }
+
+        if (slider.isBar())
+            drawLinearSliderOutline (g, x, y, width, height, style, slider);
+    }
+}
+
+
+juce::Label* CustomSlider::createSliderTextBox (juce::Slider& slider)
+{
+    auto* l = new juce::Label();
+
+    l->setJustificationType (juce::Justification::centred);
+    l->setColour (juce::Label::textColourId, slider.findColour (juce::Slider::textBoxTextColourId));
+    l->setColour (juce::Label::textWhenEditingColourId, slider.findColour (juce::Slider::textBoxTextColourId));
+    l->setColour (juce::Label::outlineWhenEditingColourId, juce::Colours::transparentWhite);
+    l->setInterceptsMouseClicks (false, false);
+    l->setFont (14.0f);
+
+    return l;
+}
+
+
+
+
+
 void CustomTwoValSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
                                               float sliderPos,
                                               float minSliderPos,

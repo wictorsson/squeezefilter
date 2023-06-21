@@ -157,7 +157,7 @@ enum Slope
 
 struct ChainSettings
 {
-    float peakFreq {0}, peakGainDecibels{0}, peakQuality {1.0f};
+//    float peakFreq {0}, peakGainDecibels{0}, peakQuality {1.0f};
     float lowCutFreq {0}, highCutFreq{0};
     Slope lowCutSlope{Slope::Slope_12}, highCutSlope{Slope::Slope_12};
 
@@ -169,20 +169,20 @@ using Filter = juce::dsp::IIR::Filter<float>;
 //CREATE 4 filters for the different slopes
 using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
 //LowCut, Peak, HighCut
-using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+using MonoChain = juce::dsp::ProcessorChain<CutFilter, CutFilter>;
 
 
 enum ChainPositions
 {
     LowCut,
-    Peak,
+ 
     HighCut,
 };
 
 using Coefficients = Filter::CoefficientsPtr;
 void updateCoefficients(Coefficients& old, const Coefficients& replacements);
 
-Coefficients makePeakFilter(const ChainSettings& chainSettings, double sampleRate);
+//Coefficients makePeakFilter(const ChainSettings& chainSettings, double sampleRate);
 
 template<int Index, typename ChainType, typename CoefficientType>
 void update(ChainType& chain, const CoefficientType& coefficients)
@@ -294,7 +294,7 @@ private:
     juce::LinearSmoothedValue<float> rmsLevelLeft, rmsLevelRight;
     MonoChain leftChain, rightChain;
     
-    void updatePeakFilter(const ChainSettings& chainSettings);
+//    void updatePeakFilter(const ChainSettings& chainSettings);
     void updateLowCutFilters(const ChainSettings& chainSettings);
     void updateHighCutFilters(const ChainSettings& chainSettings);
     

@@ -288,6 +288,27 @@ public:
     using BlockType = juce::AudioBuffer<float>;
     SingleChannelSampleFifo<BlockType> leftChannelFifo {Channel::Left};
     SingleChannelSampleFifo<BlockType> rightChannelFifo {Channel::Right};
+    
+    // Save and set GUI resize
+    int getEditorWidth()
+    {
+        auto size = apvts.state.getOrCreateChildWithName ("lastSize", nullptr);
+        return size.getProperty ("width", 550);
+    }
+    int getEditorHeight()
+    {
+        const float ratio = 16.0/ 9.0;
+        auto size = apvts.state.getOrCreateChildWithName ("lastSize", nullptr);
+        return size.getProperty ("height", 550.0 / ratio);
+    }
+
+    void setEditorSize (int width, int height)
+    {
+        auto size = apvts.state.getOrCreateChildWithName ("lastSize", nullptr);
+        size.setProperty ("width", width, nullptr);
+        size.setProperty ("height", height, nullptr);
+    }
+    
 private:
    
     //STEREO

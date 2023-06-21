@@ -400,8 +400,22 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     highCutSlopeSlider.setLookAndFeel(&slopSliderLaf);
     lowCutSlopeSlider.setLookAndFeel(&slopSliderLaf);
     
+    setResizable (true, true);
     
-    setSize (650, 400);
+    const float ratio = 16.0/ 9.0;
+    setSize (p.getEditorWidth(), p.getEditorHeight());
+    setResizeLimits (450,  juce::roundToInt (450.0 / ratio),
+                         1500, juce::roundToInt (1500.0 / ratio));
+    
+    getConstrainer()->setFixedAspectRatio (ratio);
+    
+    myKeyListener = new MyKeyListener();
+
+           // Register the key listener to receive key events
+           addKeyListener(myKeyListener);
+           setWantsKeyboardFocus(true); // Ena
+    
+    //setSize (650, 400);
 }
 
 SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
@@ -412,6 +426,8 @@ SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
     highCutSlopeSlider.setLookAndFeel(nullptr);
     lowCutSlopeSlider.setLookAndFeel(nullptr);
     
+    removeKeyListener(myKeyListener);
+           delete myKeyListener;
     
 }
 
@@ -429,6 +445,9 @@ void SqueezeFilterAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+    
+   
+    
     auto bounds = getLocalBounds().reduced(0.025f,0.025f);
     bounds = bounds.removeFromBottom(bounds.getHeight() * 0.92f);
     bounds = bounds.removeFromRight(bounds.getWidth() * 0.98f);
@@ -438,7 +457,6 @@ void SqueezeFilterAudioProcessorEditor::resized()
     auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.15f);
     
     offsetSlider.setBounds(topSliderArea.removeFromLeft(bounds.getWidth() * 0.85f).reduced(responseArea.getWidth()*0.2, 10));
-    //offsetSlider.setBounds(modifySliderArea.removeFromRight(modifySliderArea.getWidth() * 0.5f));
     squeezeSlider.setBounds(modifySliderArea);
 
     responseCurveComponent.setBounds(responseArea);
@@ -446,10 +464,6 @@ void SqueezeFilterAudioProcessorEditor::resized()
     auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.018f, 0.0f);
     twoValueSlider.setBounds(sliderBounds);
     
-    
-    
-//    bounds = bounds.removeFromRight(bounds.getWidth() * 0.98f);
-//    analyzerEnabledButton.setBounds(bounds.removeFromTop(bounds.getHeight()* 0.3));
     bounds = bounds.removeFromRight(bounds.getWidth() * 0.98f);
     auto analyzerArea = bounds.removeFromLeft(bounds.getWidth() * 0.1f).removeFromTop(bounds.getHeight() * 0.3f);
     analyzerEnabledButton.setBounds(analyzerArea);
@@ -464,16 +478,8 @@ void SqueezeFilterAudioProcessorEditor::resized()
     lowCutSlopeSlider.setBounds(lowCutArea.reduced(45, 0));
     highCutSlopeSlider.setBounds(highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).reduced(45, 0));
     
+    audioProcessor.setEditorSize (getWidth(), getHeight());
     
-    
-//    auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
-//    auto highCutArea = filterKnobsArea.removeFromRight(filterKnobsArea.getWidth() * 0.5f);
-//
-////    lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight()* 0.5f));
-////    highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight()* 0.5f));
-//   // analyzerEnabledButton.setBounds(filterKnobsArea);
-//    lowCutSlopeSlider.setBounds(lowCutArea.reduced(45, 0));
-//    highCutSlopeSlider.setBounds(highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).reduced(45, 0));
 }
 
 

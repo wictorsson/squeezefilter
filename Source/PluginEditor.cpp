@@ -859,11 +859,11 @@ void CustomSlider::drawLinearSlider (juce::Graphics& g, int x, int y, int width,
 {
     if (slider.isBar())
     {
-        g.setColour (slider.findColour (Slider::trackColourId));
-        g.fillRect (slider.isHorizontal() ? Rectangle<float> (static_cast<float> (x), (float) y + 0.5f, sliderPos - (float) x, (float) height - 1.0f)
-                                          : Rectangle<float> ((float) x + 0.5f, sliderPos, (float) width - 1.0f, (float) y + ((float) height - sliderPos)));
-
-        drawLinearSliderOutline (g, x, y, width, height, style, slider);
+//        g.setColour (slider.findColour (Slider::trackColourId));
+//        g.fillRect (slider.isHorizontal() ? Rectangle<float> (static_cast<float> (x), (float) y + 0.5f, sliderPos - (float) x, (float) height - 1.0f)
+//                                          : Rectangle<float> ((float) x + 0.5f, sliderPos, (float) width - 1.0f, (float) y + ((float) height - sliderPos)));
+//
+//        drawLinearSliderOutline (g, x, y, width, height, style, slider);
     }
     else
     {
@@ -954,8 +954,8 @@ void CustomSlider::drawLinearSlider (juce::Graphics& g, int x, int y, int width,
             }
         }
 
-        if (slider.isBar())
-            drawLinearSliderOutline (g, x, y, width, height, style, slider);
+//        if (slider.isBar())
+//            drawLinearSliderOutline (g, x, y, width, height, style, slider);
     }
 }
 

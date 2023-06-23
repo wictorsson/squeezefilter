@@ -336,15 +336,37 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     }
     
     
-    auto safePtr = juce::Component::SafePointer<SqueezeFilterAudioProcessorEditor>(this);
-    analyzerEnabledButton.onClick = [safePtr]()
+    
+    analyzerEnabledButton.setButtonText("~");
+
+
+    
+//    auto safePtr = juce::Component::SafePointer<SqueezeFilterAudioProcessorEditor>(this);
+//    analyzerEnabledButton.onClick = [safePtr]()
+//    {
+//        if(auto* comp = safePtr.getComponent())
+//        {
+//
+//            auto enabled = comp->analyzerEnabledButton.getToggleState();
+//            comp->responseCurveComponent.toggleAnalyzerIsEnabled(enabled);
+//        }
+//    };
+   
+    analyzerEnabledButton.setToggleable(true);
+    bool isAnalyzerEnabled = *audioProcessor.apvts.getRawParameterValue("AnalyzerEnabled");
+    responseCurveComponent.toggleAnalyzerIsEnabled(isAnalyzerEnabled);
+    
+   
+    analyzerEnabledButton.onClick = [this]()
     {
-        if(auto* comp = safePtr.getComponent())
-        {
-            auto enabled = comp->analyzerEnabledButton.getToggleState();
-            comp->responseCurveComponent.toggleAnalyzerIsEnabled(enabled);
-        }
+        bool newAnalyzerEnabledState = !analyzerEnabledButton.getToggleState();
+           analyzerEnabledButton.setToggleState(newAnalyzerEnabledState, juce::NotificationType::dontSendNotification);
+           *audioProcessor.apvts.getRawParameterValue("AnalyzerEnabled") = newAnalyzerEnabledState;
+           responseCurveComponent.toggleAnalyzerIsEnabled(newAnalyzerEnabledState);
+    
     };
+    analyzerEnabledButton.setToggleState(isAnalyzerEnabled, juce::NotificationType::dontSendNotification);
+    
     
     zoomOneButton.setButtonText("[ ]");
 
@@ -476,35 +498,44 @@ void SqueezeFilterAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     
-   
+    auto bounds = getLocalBounds().reduced(5,5);
+    auto menuButtons = bounds.removeFromLeft(30).removeFromTop(60);
+    auto buttonArea = menuButtons.removeFromTop(25);
     
-    auto bounds = getLocalBounds().reduced(0,0);
-    auto buttonArea = bounds.removeFromTop(35).removeFromLeft(55).reduced(8, 8);
-
     zoomOneButton.setBounds(buttonArea);
+//    auto buttonAnalyzerArea = menuButtons.removeFromTop(35).reduced(2, 6);
+//    analyzerEnabledButton.setBounds(buttonAnalyzerArea);
     
-    
-    bounds = bounds.removeFromBottom(bounds.getHeight() * 0.92f);
-    bounds = bounds.removeFromRight(bounds.getWidth() * 0.98f);
+    bounds = bounds.removeFromBottom(bounds.getHeight() * 0.95f);
 
+    
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.8f);
+    
     auto topSliderArea = responseArea.removeFromTop(responseArea.getWidth()* 0.08f);
     auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.15f);
     
     offsetSlider.setBounds(topSliderArea.removeFromLeft(bounds.getWidth() * 0.85f).reduced(responseArea.getWidth()*0.2, 10));
     squeezeSlider.setBounds(modifySliderArea);
-
     responseCurveComponent.setBounds(responseArea);
-   
+    
+    // Calculate the position for the button under responseCurveComponent
+    int buttonLeft = responseCurveComponent.getX();
+    int buttonTop = responseCurveComponent.getBottom(); // Add a spacing of 10 pixels
+
+    analyzerEnabledButton.setBounds(buttonLeft + 20, buttonTop, 30, 30);
+    
+    
+    //auto analyserRec = bounds.removeFromLeft(bounds.getWidth()* 0.1);
+  
+   // analyzerEnabledButton.setBounds(analyserRec.removeFromTop(bounds.getHeight()*0.33));
+    
     auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.018f, 0.0f);
     twoValueSlider.setBounds(sliderBounds);
     
-    bounds = bounds.removeFromRight(bounds.getWidth() * 0.98f);
-    auto analyzerArea = bounds.removeFromLeft(bounds.getWidth() * 0.1f).removeFromTop(bounds.getHeight() * 0.4f);
-    analyzerEnabledButton.setBounds(analyzerArea);
+   // analyzerEnabledButton.setBounds(responseArea);
     
     
-    auto filterKnobsArea = bounds.removeFromRight(bounds.getWidth()* 0.9);
+    auto filterKnobsArea = bounds.removeFromRight(bounds.getWidth()* 0.8);
     
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
     auto highCutArea = filterKnobsArea;

@@ -463,7 +463,7 @@ private:
     squeezeSliderAttachment,
     offsetSliderAttachment;
     
-    AnalyzerButton analyzerEnabledButton;
+    juce::TextButton analyzerEnabledButton;
    
     using ButtonAttachment = APVTS::ButtonAttachment;
     ButtonAttachment analyzerEnabledButtonAttachment;
@@ -479,6 +479,7 @@ private:
     
     juce::TextButton zoomOneButton;
     int currentZoomState;
+ 
 //    juce::TextButton zoomTwoButton;
 //    juce::TextButton zoomThreeButton;
    

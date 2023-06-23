@@ -236,6 +236,7 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
     else
     {
         float remappedValue = jmap(inputValue, -20000.0f, 0.0f, -maxMin, 0.0f);
+
         settings.lowCutFreq = lowCutFreq * squeezeValue + remappedValue;
         settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue + remappedValue;
 

@@ -14,6 +14,46 @@
 using namespace juce;
 
 
+
+//class MyToggleButton : public juce::Button
+//{
+//public:
+//    MyToggleButton()
+//        : juce::Button("MyToggleButton"), currentState(0)
+//    {
+//        setClickingTogglesState(true);
+//        setButtonText("State 1");
+//    }
+//
+//    void buttonClicked()
+//    {
+//        currentState = (currentState + 1) % 3; // Toggle between 0, 1, 2
+//
+//        switch (currentState)
+//        {
+//            case 0:
+//                setButtonText("State 1");
+//                break;
+//            case 1:
+//                setButtonText("State 2");
+//                break;
+//            case 2:
+//                setButtonText("State 3");
+//                break;
+//            default:
+//                break;
+//        }
+//
+//        // Notify listeners or perform any other necessary actions based on the current state
+//    }
+//
+//private:
+//    int currentState;
+//};
+
+
+
+
 class CustomSlopSlider : public juce::LookAndFeel_V4
 {
 public:
@@ -347,45 +387,45 @@ public:
     
     
     
-    bool keyPressed(const juce::KeyPress& key) override
-    {
-        DBG(key.getKeyCode());
-        DBG(juce::KeyPress::numberPad1);
-        if (key.getKeyCode() == 49)
-                 {
-                     const float ratio = 16.0/ 9.0;
-                     setSize (500, juce::roundToInt (1500.0 / ratio));
-                     setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
-                                          1500, juce::roundToInt (1500.0 / ratio));
-                     getConstrainer()->setFixedAspectRatio (ratio);
-                     repaint();
-                     return true;
-                 }
-        if (key.getKeyCode() == 50)
-                 {
-                     const float ratio = 16.0/ 9.0;
-                     setSize (700, juce::roundToInt (1500.0 / ratio));
-                     setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
-                                          1500, juce::roundToInt (1500.0 / ratio));
-                     getConstrainer()->setFixedAspectRatio (ratio);
-                     repaint();
-                     return true;
-                 }
-        if (key.getKeyCode() == 51)
-                 {
-                     const float ratio = 16.0/ 9.0;
-                     setSize (1500, juce::roundToInt (1500.0 / ratio));
-                     setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
-                                          1500, juce::roundToInt (1500.0 / ratio));
-                     getConstrainer()->setFixedAspectRatio (ratio);
-                     repaint();
-                     return true;
-                 }
-        
-        
-
-        return false;
-    }
+//    bool keyPressed(const juce::KeyPress& key) override
+//    {
+//        DBG(key.getKeyCode());
+//        DBG(juce::KeyPress::numberPad1);
+//        if (key.getKeyCode() == 49)
+//                 {
+//                     const float ratio = 16.0/ 9.0;
+//                     setSize (500, juce::roundToInt (1500.0 / ratio));
+//                     setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
+//                                          1500, juce::roundToInt (1500.0 / ratio));
+//                     getConstrainer()->setFixedAspectRatio (ratio);
+//                     repaint();
+//                     return true;
+//                 }
+//        if (key.getKeyCode() == 50)
+//                 {
+//                     const float ratio = 16.0/ 9.0;
+//                     setSize (700, juce::roundToInt (1500.0 / ratio));
+//                     setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
+//                                          1500, juce::roundToInt (1500.0 / ratio));
+//                     getConstrainer()->setFixedAspectRatio (ratio);
+//                     repaint();
+//                     return true;
+//                 }
+//        if (key.getKeyCode() == 51)
+//                 {
+//                     const float ratio = 16.0/ 9.0;
+//                     setSize (1500, juce::roundToInt (1500.0 / ratio));
+//                     setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
+//                                          1500, juce::roundToInt (1500.0 / ratio));
+//                     getConstrainer()->setFixedAspectRatio (ratio);
+//                     repaint();
+//                     return true;
+//                 }
+//
+//
+//
+//        return false;
+//    }
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -437,7 +477,10 @@ private:
     CustomCrossover crossOverLaf;
     CustomSlopSlider slopSliderLaf;
     
-
+    juce::TextButton zoomOneButton;
+    int currentZoomState;
+//    juce::TextButton zoomTwoButton;
+//    juce::TextButton zoomThreeButton;
    
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SqueezeFilterAudioProcessorEditor)

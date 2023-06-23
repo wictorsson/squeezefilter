@@ -346,6 +346,41 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
         }
     };
     
+    zoomOneButton.setButtonText("[ ]");
+
+    zoomOneButton.onClick = [this] {
+        currentZoomState = (currentZoomState + 1) % 3; // Toggle between 0, 1, 2
+        
+        const float ratio = 16.0 / 9.0;
+        
+        if (currentZoomState == 0) {
+            setSize(500, juce::roundToInt(1500.0 / ratio));
+            setResizeLimits(500, juce::roundToInt(500.0 / ratio), 1500, juce::roundToInt(1500.0 / ratio));
+            getConstrainer()->setFixedAspectRatio(ratio);
+        }
+        else if (currentZoomState == 1) {
+             const float ratio = 16.0/ 9.0;
+                    setSize (800, juce::roundToInt (1500.0 / ratio));
+                        setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
+                                                                  1500, juce::roundToInt (1500.0 / ratio));
+                          getConstrainer()->setFixedAspectRatio (ratio);
+                      repaint();
+        }
+        else if (currentZoomState == 2) {
+            const float ratio = 16.0/ 9.0;
+                       setSize (1500, juce::roundToInt (1500.0 / ratio));
+                       setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
+                                                   1500, juce::roundToInt (1500.0 / ratio));
+                   getConstrainer()->setFixedAspectRatio (ratio);
+                       repaint();
+        }
+        
+        repaint();
+    };
+
+
+    addAndMakeVisible(zoomOneButton);
+
     addAndMakeVisible(twoValueSlider);
     twoValueSlider.setSliderStyle(juce::Slider::TwoValueHorizontal);
     twoValueSlider.setRange(std::log10(20.0), std::log10(20000.0)); // Range in logarithmic scale
@@ -408,16 +443,9 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
                          1500, juce::roundToInt (1500.0 / ratio));
     
     getConstrainer()->setFixedAspectRatio (ratio);
-    
-    //myKeyListener = new MyKeyListener();
+  
+   // setWantsKeyboardFocus(true);
 
-           // Register the key listener to receive key events
-         //  addKeyListener(this);
-    setWantsKeyboardFocus(true);
-   
-
-     //  addKeyListener(this);
-    //setSize (650, 400);
 }
 
 SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
@@ -450,10 +478,15 @@ void SqueezeFilterAudioProcessorEditor::resized()
     
    
     
-    auto bounds = getLocalBounds().reduced(0.025f,0.025f);
+    auto bounds = getLocalBounds().reduced(0,0);
+    auto buttonArea = bounds.removeFromTop(35).removeFromLeft(55).reduced(8, 8);
+
+    zoomOneButton.setBounds(buttonArea);
+    
+    
     bounds = bounds.removeFromBottom(bounds.getHeight() * 0.92f);
     bounds = bounds.removeFromRight(bounds.getWidth() * 0.98f);
-    
+
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.8f);
     auto topSliderArea = responseArea.removeFromTop(responseArea.getWidth()* 0.08f);
     auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.15f);
@@ -467,11 +500,10 @@ void SqueezeFilterAudioProcessorEditor::resized()
     twoValueSlider.setBounds(sliderBounds);
     
     bounds = bounds.removeFromRight(bounds.getWidth() * 0.98f);
-    auto analyzerArea = bounds.removeFromLeft(bounds.getWidth() * 0.1f).removeFromTop(bounds.getHeight() * 0.3f);
+    auto analyzerArea = bounds.removeFromLeft(bounds.getWidth() * 0.1f).removeFromTop(bounds.getHeight() * 0.4f);
     analyzerEnabledButton.setBounds(analyzerArea);
     
     
-   
     auto filterKnobsArea = bounds.removeFromRight(bounds.getWidth()* 0.9);
     
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);

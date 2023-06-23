@@ -414,7 +414,7 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
            // Register the key listener to receive key events
          //  addKeyListener(this);
     setWantsKeyboardFocus(true);
-    //   grabKeyboardFocus();
+   
 
      //  addKeyListener(this);
     //setSize (650, 400);
@@ -513,7 +513,7 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
     };
 }
 
-// ******* LAF *************
+// ******* LAF *****************************************************************************************
 using namespace juce;
 
 //CustomSlopSlider
@@ -913,6 +913,49 @@ juce::Label* CustomSlider::createSliderTextBox (juce::Slider& slider)
 
 
 
+void CustomTwoValSliderLaf::drawPointer (Graphics& g, const float x, const float y, const float diameter,
+                                  const Colour& colour, const int direction, float height)
+{
+    Path p;
+    float lengthFactor = height * 0.035;  // Adjust the length factor as desired
+  //  diameter = diameter * height * 0.025;
+    
+    p.startNewSubPath (x + diameter * 0.5f, y);
+    p.lineTo (x + diameter, y + diameter * 0.2f * lengthFactor);
+    p.lineTo (x + diameter, y + diameter * lengthFactor);
+    p.lineTo (x, y + diameter * lengthFactor);
+    p.lineTo (x, y + diameter * 0.2f * lengthFactor);
+    p.closeSubPath();
+
+    p.applyTransform (AffineTransform::rotation ((float) direction * MathConstants<float>::halfPi,
+                                                 x + diameter * 0.5f, y + diameter * 0.5f));
+
+    // Create a gradient from orange to transparent
+    ColourGradient gradient;
+    
+    if(direction == 4)
+    {
+        gradient = ColourGradient(Colours::orange, 0.0f, y, Colour(0x00FF7F00), 0.0f, y + diameter * lengthFactor, false);
+        gradient.addColour(1.0f, Colour(0x00FF7F00));
+    }
+    else if(direction == 2)
+    {
+//        gradient = ColourGradient(Colour(0x00FF7F00), 0.0f, y, Colours::orange, 0.0f, y - diameter * lengthFactor, false);
+//               gradient.addColour(1.0f, Colours::orange);
+        
+        gradient = ColourGradient(Colours::orange, 0.0f, y, Colour(0x00FF7F00), 0.0f, y - diameter * lengthFactor, false);
+        gradient.addColour(1.0f, Colour(0x00FF7F00));
+    }
+    
+    
+
+    g.setGradientFill(gradient);
+    
+  //  g.setColour (colour);
+    g.fillPath (p);
+    
+
+}
 
 
 void CustomTwoValSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
@@ -992,20 +1035,20 @@ void CustomTwoValSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, i
                    {
                        drawPointer (g, minSliderPos - sr,
                                     jmax (0.0f, (float) y + (float) (height + 3) * 0.5f - trackWidth * 2.0f),
-                                    trackWidth * 2.0f, pointerColour, 2);
+                                    trackWidth * 2.0f, pointerColour, 2, height);
 
                        drawPointer (g, maxSliderPos - trackWidth,
                                     jmin ((float) (y + height) - trackWidth * 2.0f, (float) y + (float) (height + 18) * 0.5f),
-                                    trackWidth * 2.0f, pointerColour, 4);
+                                    trackWidth * 2.0f, pointerColour, 4,height);
                    }
                    else
                    {
                        drawPointer (g, jmax (0.0f, (float) x + (float) width * 0.5f - trackWidth * 2.0f),
                                     minSliderPos - trackWidth,
-                                    trackWidth * 2.0f, pointerColour, 1);
+                                    trackWidth * 2.0f, pointerColour, 1,height);
 
                        drawPointer (g, jmin ((float) (x + width) - trackWidth * 2.0f, (float) x + (float) width * 0.5f), maxSliderPos - sr,
-                                    trackWidth * 2.0f, pointerColour, 3);
+                                    trackWidth * 2.0f, pointerColour, 3, height);
                    }
                }
            }

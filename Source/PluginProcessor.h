@@ -309,6 +309,8 @@ public:
         size.setProperty ("height", height, nullptr);
     }
     
+
+    
 private:
    
     //STEREO

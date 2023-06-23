@@ -64,6 +64,13 @@ class CustomTwoValSliderLaf : public juce::LookAndFeel_V4
 
 {
 public:
+    
+    
+    void drawPointer (Graphics&, float x, float y, float diameter,
+                      const Colour&, int direction,float height) ;
+    
+    
+    
     void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
                            float sliderPos, float minSliderPos, float maxSliderPos,
                            const juce::Slider::SliderStyle, juce::Slider&) override;
@@ -338,15 +345,7 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
     
-    void sliderValueChanged (juce::Slider * slider) override
-    {
-        if(slider == &twoValueSlider)
-        {
-            lowCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMinValue()));
-            highCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMaxValue()));
-            
-        }
-    }
+    
     
     bool keyPressed(const juce::KeyPress& key) override
     {
@@ -393,7 +392,17 @@ private:
     // access the processor object that created it.
     SqueezeFilterAudioProcessor& audioProcessor;
 
-   
+    void sliderValueChanged (juce::Slider * slider) override
+    {
+        if(slider == &twoValueSlider)
+        {
+          
+            lowCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMinValue()));
+            highCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMaxValue()));
+            
+        }
+    }
+    
     CustomRotarySlider lowCutFreqSlider,
     highCutFreqSlider,
     lowCutSlopeSlider,

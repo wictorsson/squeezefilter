@@ -122,7 +122,7 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
 {
     using namespace juce;
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (Colour::fromFloatRGBA (0.08f, 0.08f, 0.08f, 1.0f));
+    g.fillAll (Colour::fromFloatRGBA (0.10f, 0.11f, 0.13f, 1.0f));
 
     g.drawImage(background, getLocalBounds().toFloat());
    // auto bounds = getLocalBounds();
@@ -218,7 +218,7 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
     g.setColour(Colours::darkgrey);
     g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f);
     
-    g.setColour(Colours::white);
+    g.setColour(Colours::orange);
     g.strokePath(responseCurve, PathStrokeType(2.f));
     
 }
@@ -253,7 +253,7 @@ void ResponseCurveComponent::resized()
     g.setColour(Colours::darkgrey);
     for(auto x : xs)
     {
-        g.drawVerticalLine(x, top + 20, bottom);
+        g.drawVerticalLine(x, top + 20 * getLocalBounds().getWidth()* 0.0025, bottom);
     }
     
     Array<float> gain
@@ -264,14 +264,15 @@ void ResponseCurveComponent::resized()
 
     for(auto gDb : gain)
     {
-        auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
+        auto y = jmap(gDb, -20.f, 20.f, float(bottom), float(top));
+      //  auto y = jmap(gDb, -1.f, 1.f, float(bottom), float(top));
         
         g.setColour(gDb == 0.f ? Colours::lightblue : Colours::darkgrey);
         g.drawHorizontalLine(y, left, right);
     }
     
     g.setColour(Colours::lightblue);
-    const int fontHeight = 10;
+    const int fontHeight = 10 * getLocalBounds().getWidth()* 0.0025;
     g.setFont(fontHeight);
     
     for(int i = 0; i < freqs.size(); ++i)
@@ -297,7 +298,7 @@ void ResponseCurveComponent::resized()
         Rectangle<int> r;
         r.setSize(textWidth, fontHeight);
         r.setCentre(x, 0);
-        r.setY(20);
+        r.setY(12);
         
         g.drawFittedText(str, r, juce::Justification::centred, 1);
     }
@@ -307,10 +308,10 @@ juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
 {
     auto bounds = getLocalBounds();
     
-    bounds.removeFromTop(12);
-    bounds.removeFromBottom(2);
-    bounds.removeFromLeft(20);
-    bounds.removeFromRight(20);
+//    bounds.removeFromTop(12);
+//    bounds.removeFromBottom(2);
+//    bounds.removeFromLeft(20);
+//    bounds.removeFromRight(20);
     return bounds;
 }
 
@@ -376,14 +377,14 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
         const float ratio = 16.0 / 9.0;
         
         if (currentZoomState == 0) {
-            setSize(500, juce::roundToInt(1500.0 / ratio));
-            setResizeLimits(500, juce::roundToInt(500.0 / ratio), 1500, juce::roundToInt(1500.0 / ratio));
+            setSize(550, juce::roundToInt(1500.0 / ratio));
+            setResizeLimits(550, juce::roundToInt(550.0 / ratio), 1500, juce::roundToInt(1500.0 / ratio));
             getConstrainer()->setFixedAspectRatio(ratio);
         }
         else if (currentZoomState == 1) {
              const float ratio = 16.0/ 9.0;
                     setSize (800, juce::roundToInt (1500.0 / ratio));
-                        setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
+                        setResizeLimits (550,  juce::roundToInt (550.0 / ratio),
                                                                   1500, juce::roundToInt (1500.0 / ratio));
                           getConstrainer()->setFixedAspectRatio (ratio);
                       repaint();
@@ -391,7 +392,7 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
         else if (currentZoomState == 2) {
             const float ratio = 16.0/ 9.0;
                        setSize (1500, juce::roundToInt (1500.0 / ratio));
-                       setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
+                       setResizeLimits (550,  juce::roundToInt (550.0 / ratio),
                                                    1500, juce::roundToInt (1500.0 / ratio));
                    getConstrainer()->setFixedAspectRatio (ratio);
                        repaint();
@@ -461,7 +462,7 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     
     const float ratio = 16.0/ 9.0;
     setSize (p.getEditorWidth(), p.getEditorHeight());
-    setResizeLimits (500,  juce::roundToInt (500.0 / ratio),
+    setResizeLimits (550,  juce::roundToInt (550.0 / ratio),
                          1500, juce::roundToInt (1500.0 / ratio));
     
     getConstrainer()->setFixedAspectRatio (ratio);
@@ -488,9 +489,20 @@ void SqueezeFilterAudioProcessorEditor::paint (juce::Graphics& g)
 {
     using namespace juce;
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-        g.fillAll (Colour::fromFloatRGBA (0.08f, 0.08f, 0.08f, 1.0f));
+       // g.fillAll (Colour::fromFloatRGBA (0.11f, 0.13f, 0.15f, 1.0f));
     
+    float centerX = getWidth() / 2.0f;
+    float centerY = getHeight() / 2.0f;
+    float radius = jmin(centerX * 8, centerY * 2.5f);
 
+    Colour colour2 = Colour::fromFloatRGBA(0.15f, 0.15f, 0.18f, 1.0f);
+    Colour colour1 = Colour::fromFloatRGBA(0.18f, 0.22f, 0.26f, 1.0f);
+
+    ColourGradient gradient(colour1, centerX, centerY, colour2, centerX, centerY + radius, true);
+   // gradient.addColour(0.5f, Colour::fromFloatRGBA(0.14f, 0.15f, 0.16f, 0.5f)); // Additional color stop
+
+    g.setGradientFill(gradient);
+    g.fillAll();
 }
 
 void SqueezeFilterAudioProcessorEditor::resized()
@@ -498,14 +510,11 @@ void SqueezeFilterAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     
-    auto bounds = getLocalBounds().reduced(5,5);
+    auto bounds = getLocalBounds().reduced(15,15);
     auto menuButtons = bounds.removeFromLeft(30).removeFromTop(60);
     auto buttonArea = menuButtons.removeFromTop(25);
     
     zoomOneButton.setBounds(buttonArea);
-//    auto buttonAnalyzerArea = menuButtons.removeFromTop(35).reduced(2, 6);
-//    analyzerEnabledButton.setBounds(buttonAnalyzerArea);
-    
     bounds = bounds.removeFromBottom(bounds.getHeight() * 0.95f);
 
     
@@ -514,34 +523,29 @@ void SqueezeFilterAudioProcessorEditor::resized()
     auto topSliderArea = responseArea.removeFromTop(responseArea.getWidth()* 0.08f);
     auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.15f);
     
-    offsetSlider.setBounds(topSliderArea.removeFromLeft(bounds.getWidth() * 0.85f).reduced(responseArea.getWidth()*0.2, 10));
+    offsetSlider.setBounds(topSliderArea.removeFromLeft(bounds.getWidth() * 0.85f).reduced(responseArea.getWidth()*0.2, 5));
     squeezeSlider.setBounds(modifySliderArea);
     responseCurveComponent.setBounds(responseArea);
     
-    // Calculate the position for the button under responseCurveComponent
     int buttonLeft = responseCurveComponent.getX();
     int buttonTop = responseCurveComponent.getBottom(); // Add a spacing of 10 pixels
 
-    analyzerEnabledButton.setBounds(buttonLeft + 20, buttonTop, 30, 30);
-    
-    
-    //auto analyserRec = bounds.removeFromLeft(bounds.getWidth()* 0.1);
-  
-   // analyzerEnabledButton.setBounds(analyserRec.removeFromTop(bounds.getHeight()*0.33));
+    analyzerEnabledButton.setBounds(buttonLeft, buttonTop + 5, 30, 30);
     
     auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.018f, 0.0f);
     twoValueSlider.setBounds(sliderBounds);
     
-   // analyzerEnabledButton.setBounds(responseArea);
-    
-    
-    auto filterKnobsArea = bounds.removeFromRight(bounds.getWidth()* 0.8);
-    
+    auto filterKnobsArea = bounds.removeFromRight(bounds.getWidth() * 0.8f);
+
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
     auto highCutArea = filterKnobsArea;
 
-    lowCutSlopeSlider.setBounds(lowCutArea.reduced(45, 0));
-    highCutSlopeSlider.setBounds(highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).reduced(45, 0));
+    // Adjust the position of the lowCutSlopeSlider
+    lowCutSlopeSlider.setBounds(lowCutArea.reduced(30, 0).translated(-filterKnobsArea.getWidth()*0.12, 0));
+
+    // Adjust the position of the highCutSlopeSlider
+    auto adjustedHighCutArea = highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).reduced(30, 0).translated(filterKnobsArea.getWidth()*0.12, 0);
+    highCutSlopeSlider.setBounds(adjustedHighCutArea);
     
     audioProcessor.setEditorSize (getWidth(), getHeight());
     
@@ -614,7 +618,9 @@ void CustomSlopSlider::drawLinearSlider (juce::Graphics& g, int x, int y, int wi
         juce::Path backgroundTrack;
         backgroundTrack.startNewSubPath (startPoint);
         backgroundTrack.lineTo (endPoint);
-        g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+       // g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+        g.setColour (Colour::fromFloatRGBA (0.1f, 0.12f, 0.15f, 1.0f));
+        
         g.strokePath (backgroundTrack, { trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
 
         juce::Path valueTrack;
@@ -740,7 +746,8 @@ void CustomCrossover::drawLinearSlider (juce::Graphics& g, int x, int y, int wid
         juce::Path backgroundTrack;
         backgroundTrack.startNewSubPath (startPoint);
         backgroundTrack.lineTo (endPoint);
-        g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+       // g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+        g.setColour (Colour::fromFloatRGBA (0.1f, 0.12f, 0.15f, 1.0f));
         g.strokePath (backgroundTrack, { trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
 
         juce::Path valueTrack;
@@ -1097,7 +1104,7 @@ void CustomTwoValSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, i
                    if (slider.isHorizontal())
                    {
                        drawPointer (g, minSliderPos - sr,
-                                    jmax (0.0f, (float) y + (float) (height + 3) * 0.5f - trackWidth * 2.0f),
+                                    jmax (0.0f, (float) y + (float) (height - 18) * 0.5f - trackWidth * 2.0f),
                                     trackWidth * 2.0f, pointerColour, 2, height);
 
                        drawPointer (g, maxSliderPos - trackWidth,

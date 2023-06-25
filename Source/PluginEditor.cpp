@@ -401,7 +401,10 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
         repaint();
     };
 
-
+    squeezeImageComp.setImage(squeezeImage, juce::RectanglePlacement::stretchToFit);
+    addAndMakeVisible(squeezeImageComp);
+    
+    
     addAndMakeVisible(zoomOneButton);
 
     addAndMakeVisible(twoValueSlider);
@@ -414,11 +417,11 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     twoValueSlider.setMaxValue(std::log10(*audioProcessor.apvts.getRawParameterValue("HighCutFreq")));
     twoValueSlider.setMinValue(std::log10(*audioProcessor.apvts.getRawParameterValue("LowCutFreq")));
    
-    addAndMakeVisible(squeezeLabel);
-    squeezeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
-    squeezeLabel.setText("|---|", juce::dontSendNotification);
-    squeezeLabel.attachToComponent(&squeezeSlider, false);
-    squeezeLabel.setJustificationType(juce::Justification::centred);
+//    addAndMakeVisible(squeezeLabel);
+//    squeezeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
+//    squeezeLabel.setText("|---|", juce::dontSendNotification);
+//    squeezeLabel.attachToComponent(&squeezeSlider, false);
+//    squeezeLabel.setJustificationType(juce::Justification::centred);
     
     addAndMakeVisible(offsetLabel);
     offsetLabel.setFont(juce::Font (12.0f, juce::Font::bold));
@@ -520,11 +523,22 @@ void SqueezeFilterAudioProcessorEditor::resized()
     
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.8f);
     
-    auto topSliderArea = responseArea.removeFromTop(responseArea.getWidth()* 0.08f);
+    auto topSliderArea = responseArea.removeFromTop(responseArea.getWidth()* 0.1f);
+    auto labelarea = topSliderArea.removeFromRight(bounds.getWidth() * 0.15f);
+    squeezeImageComp.setBounds(labelarea.removeFromBottom(topSliderArea.getHeight()*0.8).reduced(10, 5));
     auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.15f);
     
     offsetSlider.setBounds(topSliderArea.removeFromLeft(bounds.getWidth() * 0.85f).reduced(responseArea.getWidth()*0.2, 5));
+    
+  
+    
     squeezeSlider.setBounds(modifySliderArea);
+
+    // Calculate the bounds for the squeezeImageComp relative to the squeezeSlider
+ 
+  //  squeezeImageComp.setBounds();
+    
+    
     responseCurveComponent.setBounds(responseArea);
     
     int buttonLeft = responseCurveComponent.getX();
@@ -542,11 +556,12 @@ void SqueezeFilterAudioProcessorEditor::resized()
 
     // Adjust the position of the lowCutSlopeSlider
     lowCutSlopeSlider.setBounds(lowCutArea.reduced(30, 0).translated(-filterKnobsArea.getWidth()*0.12, 0));
-
+   
     // Adjust the position of the highCutSlopeSlider
     auto adjustedHighCutArea = highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).reduced(30, 0).translated(filterKnobsArea.getWidth()*0.12, 0);
     highCutSlopeSlider.setBounds(adjustedHighCutArea);
     
+   
     audioProcessor.setEditorSize (getWidth(), getHeight());
     
 }

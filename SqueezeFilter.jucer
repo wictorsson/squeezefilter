@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="UKaksO" name="SqueezeFilter" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17">
   <MAINGROUP id="YSthdU" name="SqueezeFilter">
+    <GROUP id="{EC1CE7D1-88B8-29E0-786B-D1F57D59B27D}" name="Assets">
+      <FILE id="ylQKfc" name="slopeImage.png" compile="0" resource="1" file="Source/Assets/slopeImage.png"/>
+      <FILE id="MxwoCn" name="squeezeImage.png" compile="0" resource="1"
+            file="Source/Assets/squeezeImage.png"/>
+    </GROUP>
     <GROUP id="{AD38FE8F-FB13-E7FF-1673-5A8C6A882DC4}" name="Source">
       <FILE id="FzTCT3" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

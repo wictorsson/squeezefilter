@@ -480,7 +480,11 @@ private:
     juce::TextButton zoomOneButton;
     int currentZoomState;
  
-//    juce::TextButton zoomTwoButton;
+  
+    juce::Image squeezeImage = juce::ImageCache::getFromMemory(BinaryData::squeezeImage_png, BinaryData::squeezeImage_pngSize);
+    juce::ImageComponent squeezeImageComp;
+  
+
 //    juce::TextButton zoomThreeButton;
    
     

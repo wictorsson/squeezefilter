@@ -404,6 +404,12 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     squeezeImageComp.setImage(squeezeImage, juce::RectanglePlacement::stretchToFit);
     addAndMakeVisible(squeezeImageComp);
     
+    slopeImageComp.setImage(slopeImage, juce::RectanglePlacement::stretchToFit);
+    addAndMakeVisible(slopeImageComp);
+    
+    slopeImageComp2.setImage(slopeImage, juce::RectanglePlacement::stretchToFit);
+    addAndMakeVisible(slopeImageComp2);
+    
     
     addAndMakeVisible(zoomOneButton);
 
@@ -430,17 +436,17 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     offsetLabel.setJustificationType(juce::Justification::centred);
     
     
-    addAndMakeVisible(slopeLabel);
-    slopeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
-    slopeLabel.setText("/ --", juce::dontSendNotification);
-    slopeLabel.attachToComponent(&lowCutSlopeSlider, true);
-    slopeLabel.setJustificationType(juce::Justification::centred);
-    
-    addAndMakeVisible(slopeLabel2);
-    slopeLabel2.setFont(juce::Font (12.0f, juce::Font::bold));
-    slopeLabel2.setText("/ --", juce::dontSendNotification);
-    slopeLabel2.attachToComponent(&highCutSlopeSlider, true);
-    slopeLabel2.setJustificationType(juce::Justification::centred);
+//    addAndMakeVisible(slopeLabel);
+//    slopeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
+//    slopeLabel.setText("/ --", juce::dontSendNotification);
+//    slopeLabel.attachToComponent(&lowCutSlopeSlider, true);
+//    slopeLabel.setJustificationType(juce::Justification::centred);
+//
+//    addAndMakeVisible(slopeLabel2);
+//    slopeLabel2.setFont(juce::Font (12.0f, juce::Font::bold));
+//    slopeLabel2.setText("/ --", juce::dontSendNotification);
+//    slopeLabel2.attachToComponent(&highCutSlopeSlider, true);
+//    slopeLabel2.setJustificationType(juce::Justification::centred);
     
     addAndMakeVisible(freqLabel2);
     freqLabel2.setFont(juce::Font (12.0f, juce::Font::bold));
@@ -498,8 +504,8 @@ void SqueezeFilterAudioProcessorEditor::paint (juce::Graphics& g)
     float centerY = getHeight() / 2.0f;
     float radius = jmin(centerX * 8, centerY * 2.5f);
 
-    Colour colour2 = Colour::fromFloatRGBA(0.15f, 0.15f, 0.18f, 1.0f);
-    Colour colour1 = Colour::fromFloatRGBA(0.18f, 0.22f, 0.26f, 1.0f);
+    Colour colour2 = Colour::fromFloatRGBA(0.12f, 0.12f, 0.15f, 1.0f);
+    Colour colour1 = Colour::fromFloatRGBA(0.18f, 0.22f, 0.25f, 1.0f);
 
     ColourGradient gradient(colour1, centerX, centerY, colour2, centerX, centerY + radius, true);
    // gradient.addColour(0.5f, Colour::fromFloatRGBA(0.14f, 0.15f, 0.16f, 0.5f)); // Additional color stop
@@ -549,17 +555,23 @@ void SqueezeFilterAudioProcessorEditor::resized()
     auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.018f, 0.0f);
     twoValueSlider.setBounds(sliderBounds);
     
-    auto filterKnobsArea = bounds.removeFromRight(bounds.getWidth() * 0.8f);
+    auto filterKnobsArea = bounds.removeFromRight(bounds.getWidth() * 0.9f);
 
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
+    slopeImageComp.setBounds(lowCutArea.removeFromLeft(lowCutArea.getWidth()* 0.2).reduced(0, 10));
     auto highCutArea = filterKnobsArea;
 
     // Adjust the position of the lowCutSlopeSlider
-    lowCutSlopeSlider.setBounds(lowCutArea.reduced(30, 0).translated(-filterKnobsArea.getWidth()*0.12, 0));
+    //lowCutSlopeSlider.setBounds(lowCutArea.reduced(10, 0).translated(-filterKnobsArea.getWidth()*0.10, 0));
+    lowCutSlopeSlider.setBounds(lowCutArea.reduced(5, 0));
    
     // Adjust the position of the highCutSlopeSlider
-    auto adjustedHighCutArea = highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).reduced(30, 0).translated(filterKnobsArea.getWidth()*0.12, 0);
-    highCutSlopeSlider.setBounds(adjustedHighCutArea);
+   // auto adjustedHighCutArea = highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).reduced(10, 0).translated(filterKnobsArea.getWidth()*0.10, 0);
+    auto adjustedHighCutArea = highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).translated(filterKnobsArea.getWidth()*0.13, 0);
+    slopeImageComp2.setBounds(adjustedHighCutArea.removeFromLeft(adjustedHighCutArea.getWidth()* 0.2).reduced(0, 10));
+   
+    
+    highCutSlopeSlider.setBounds(adjustedHighCutArea.reduced(5, 0));
     
    
     audioProcessor.setEditorSize (getWidth(), getHeight());

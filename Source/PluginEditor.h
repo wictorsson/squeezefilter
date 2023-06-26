@@ -483,6 +483,10 @@ private:
   
     juce::Image squeezeImage = juce::ImageCache::getFromMemory(BinaryData::squeezeImage_png, BinaryData::squeezeImage_pngSize);
     juce::ImageComponent squeezeImageComp;
+    
+    juce::Image slopeImage = juce::ImageCache::getFromMemory(BinaryData::slopeImage_png, BinaryData::slopeImage_pngSize);
+    juce::ImageComponent slopeImageComp;
+    juce::ImageComponent slopeImageComp2;
   
 
 //    juce::TextButton zoomThreeButton;

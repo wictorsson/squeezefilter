@@ -404,11 +404,27 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     squeezeImageComp.setImage(squeezeImage, juce::RectanglePlacement::stretchToFit);
     addAndMakeVisible(squeezeImageComp);
     
-    slopeImageComp.setImage(slopeImage, juce::RectanglePlacement::stretchToFit);
-    addAndMakeVisible(slopeImageComp);
+   
+    addAndMakeVisible(slopIcon);
+  
+   // comp.setBoundingBox ({ -100.0f, -100.0f, 200.0f, 200.0f });
     
-    slopeImageComp2.setImage(slopeImage, juce::RectanglePlacement::stretchToFit);
-    addAndMakeVisible(slopeImageComp2);
+//    const auto svg = Drawable::createFromImageData (BinaryData::slopeicon_svg, BinaryData::slopeicon_svgSize);
+//    svg->draw(g, 1.0);
+    
+   // linkButtonGain.setImage(slopeImage.get());
+   // addAndMakeVisible(comp);
+
+
+
+   
+    
+   // addAndMakeVisible(slopeImage);
+ //  ((slopeImageComp.setImage(slopeImage.get(), slopeImage.get(), slopeImage.get(), slopeImage.get());
+  //  addAndMakeVisible(slopeImageComp);
+    
+   // slopeImageComp2.setImage(slopeImage, juce::RectanglePlacement::stretchToFit);
+   // addAndMakeVisible(slopeImageComp2);
     
     
     addAndMakeVisible(zoomOneButton);
@@ -558,22 +574,19 @@ void SqueezeFilterAudioProcessorEditor::resized()
     auto filterKnobsArea = bounds.removeFromRight(bounds.getWidth() * 0.9f);
 
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
-    slopeImageComp.setBounds(lowCutArea.removeFromLeft(lowCutArea.getWidth()* 0.2).reduced(0, 10));
+    
+    slopIcon.setBounds(lowCutArea.removeFromLeft(lowCutArea.getWidth()* 0.2).reduced(0, 10));
+    //linkButtonGain.setBounds(lowCutArea);
     auto highCutArea = filterKnobsArea;
 
-    // Adjust the position of the lowCutSlopeSlider
-    //lowCutSlopeSlider.setBounds(lowCutArea.reduced(10, 0).translated(-filterKnobsArea.getWidth()*0.10, 0));
+
     lowCutSlopeSlider.setBounds(lowCutArea.reduced(5, 0));
-   
-    // Adjust the position of the highCutSlopeSlider
-   // auto adjustedHighCutArea = highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).reduced(10, 0).translated(filterKnobsArea.getWidth()*0.10, 0);
+
     auto adjustedHighCutArea = highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).translated(filterKnobsArea.getWidth()*0.13, 0);
     slopeImageComp2.setBounds(adjustedHighCutArea.removeFromLeft(adjustedHighCutArea.getWidth()* 0.2).reduced(0, 10));
    
-    
     highCutSlopeSlider.setBounds(adjustedHighCutArea.reduced(5, 0));
     
-   
     audioProcessor.setEditorSize (getWidth(), getHeight());
     
 }
@@ -917,7 +930,8 @@ void CustomSlider::drawLinearSlider (juce::Graphics& g, int x, int y, int width,
         Path backgroundTrack;
         backgroundTrack.startNewSubPath (startPoint);
         backgroundTrack.lineTo (endPoint);
-        g.setColour (slider.findColour (Slider::backgroundColourId));
+        //g.setColour (slider.findColour (Slider::backgroundColourId));
+        g.setColour (Colour::fromFloatRGBA (0.1f, 0.12f, 0.15f, 1.0f));
         g.strokePath (backgroundTrack, { trackWidth, PathStrokeType::curved, PathStrokeType::rounded });
 
         Path valueTrack;
@@ -1110,7 +1124,7 @@ void CustomTwoValSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, i
                    maxPoint = { kx, ky };
                }
 
-               auto thumbWidth = getSliderThumbRadius (slider);
+            //   auto thumbWidth = getSliderThumbRadius (slider);
 
                valueTrack.startNewSubPath (minPoint);
                valueTrack.lineTo (isThreeVal ? thumbPoint : maxPoint);

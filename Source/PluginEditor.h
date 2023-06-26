@@ -14,6 +14,32 @@
 using namespace juce;
 
 
+class MyComponent : public juce::Component
+{
+public:
+    MyComponent()
+    {
+        // Constructor code if needed
+         slopeImage = juce::Drawable::createFromImageData(BinaryData::slopeicon_svg, BinaryData::slopeicon_svgSize);
+    }
+
+    void paint(juce::Graphics& g) override
+    {
+        // Clear the background or draw other content if needed
+       // g.fillAll(juce::Colours::white);
+
+        // Draw the image
+        if (slopeImage != nullptr)
+            slopeImage->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 1.0f);
+    }
+
+private:
+    std::unique_ptr<juce::Drawable> slopeImage;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MyComponent)
+};
+
+
 
 //class MyToggleButton : public juce::Button
 //{
@@ -484,11 +510,19 @@ private:
     juce::Image squeezeImage = juce::ImageCache::getFromMemory(BinaryData::squeezeImage_png, BinaryData::squeezeImage_pngSize);
     juce::ImageComponent squeezeImageComp;
     
-    juce::Image slopeImage = juce::ImageCache::getFromMemory(BinaryData::slopeImage_png, BinaryData::slopeImage_pngSize);
+ 
+    
     juce::ImageComponent slopeImageComp;
     juce::ImageComponent slopeImageComp2;
   
-
+//    juce::DrawableButton linkButtonGain{"linkButtonGain",juce::DrawableButton::ButtonStyle::ImageOnButtonBackground };
+    
+    juce::DrawablePath linkButtonGain;
+    
+    juce::DrawableComposite comp;
+    
+    
+    MyComponent slopIcon;
 //    juce::TextButton zoomThreeButton;
    
     

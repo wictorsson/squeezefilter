@@ -14,31 +14,47 @@
 using namespace juce;
 
 
-class MyComponent : public juce::Component
+class svgComp : public juce::Component
 {
 public:
-    MyComponent()
+    svgComp()
     {
-        // Constructor code if needed
          slopeImage = juce::Drawable::createFromImageData(BinaryData::slopeicon_svg, BinaryData::slopeicon_svgSize);
     }
 
     void paint(juce::Graphics& g) override
     {
-        // Clear the background or draw other content if needed
-       // g.fillAll(juce::Colours::white);
-
         // Draw the image
         if (slopeImage != nullptr)
             slopeImage->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 1.0f);
     }
-
+    
 private:
     std::unique_ptr<juce::Drawable> slopeImage;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MyComponent)
+    int image;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(svgComp)
 };
 
+class svgSqueezeComp : public juce::Component
+{
+public:
+    svgSqueezeComp()
+    {
+        svgImage = juce::Drawable::createFromImageData(BinaryData::squeezeicon_svg, BinaryData::squeezeicon_svgSize);
+    }
+
+    void paint(juce::Graphics& g) override
+    {
+        // Draw the image
+        if (svgImage != nullptr)
+            svgImage->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 1.0f);
+    }
+    
+private:
+    std::unique_ptr<juce::Drawable> svgImage;
+    int image;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(svgSqueezeComp)
+};
 
 
 //class MyToggleButton : public juce::Button
@@ -514,15 +530,12 @@ private:
     
     juce::ImageComponent slopeImageComp;
     juce::ImageComponent slopeImageComp2;
-  
-//    juce::DrawableButton linkButtonGain{"linkButtonGain",juce::DrawableButton::ButtonStyle::ImageOnButtonBackground };
+
+
+    svgComp slopIcon;
+    svgComp slopIcon2;
     
-    juce::DrawablePath linkButtonGain;
-    
-    juce::DrawableComposite comp;
-    
-    
-    MyComponent slopIcon;
+    svgSqueezeComp squeezeIcon;
 //    juce::TextButton zoomThreeButton;
    
     

@@ -4,9 +4,8 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17">
   <MAINGROUP id="YSthdU" name="SqueezeFilter">
     <GROUP id="{EC1CE7D1-88B8-29E0-786B-D1F57D59B27D}" name="Assets">
-      <FILE id="ylQKfc" name="slopeImage.png" compile="0" resource="1" file="Source/Assets/slopeImage.png"/>
       <FILE id="Jzvw7T" name="slopeicon.svg" compile="0" resource="1" file="Source/Assets/slopeicon.svg"/>
-      <FILE id="LS8suZ" name="link.svg" compile="0" resource="1" file="Source/Assets/link.svg"/>
+      <FILE id="gFmmPB" name="squeezeicon.svg" compile="0" resource="1" file="Source/Assets/squeezeicon.svg"/>
       <FILE id="MxwoCn" name="squeezeImage.png" compile="0" resource="1"
             file="Source/Assets/squeezeImage.png"/>
     </GROUP>

@@ -376,10 +376,13 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
 
 
 
-    analyzerEnabledButton.setImages(analyzerEnabledImage.get(),analyzerEnabledImage.get(),analyzerEnabledImage.get(), analyzerEnabledImage.get(), analyzerDisabledImage.get(), analyzerDisabledImage.get(), analyzerDisabledImage.get(), analyzerDisabledImage.get());
+    analyzerEnabledButton.setImages(analyzerDisabledImage.get(),analyzerDisabledImage.get(),analyzerDisabledImage.get(), analyzerDisabledImage.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get());
 
+    analyzerEnabledButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::transparentBlack);
+    
+    zoomOneButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::transparentBlack);
 
-
+  
     analyzerEnabledButton.onClick = [this]()
     {
         bool newAnalyzerEnabledState = !analyzerEnabledButton.getToggleState();
@@ -389,9 +392,6 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
 
     };
     analyzerEnabledButton.setToggleState(isAnalyzerEnabled, juce::NotificationType::dontSendNotification);
-
-
-
 
     auto scaleImageButton2 = juce::Drawable::createFromImageData(BinaryData::scaleicon_svg, BinaryData::scaleicon_svgSize);
     zoomOneButton.setImages(scaleImageButton2.get());
@@ -567,6 +567,8 @@ void SqueezeFilterAudioProcessorEditor::paint (juce::Graphics& g)
     Colour colour2 = Colour::fromFloatRGBA(0.12f, 0.12f, 0.15f, 1.0f);
     Colour colour1 = Colour::fromFloatRGBA(0.18f, 0.22f, 0.25f, 1.0f);
 
+
+    
     ColourGradient gradient(colour1, centerX, centerY, colour2, centerX, centerY + radius, true);
    // gradient.addColour(0.5f, Colour::fromFloatRGBA(0.14f, 0.15f, 0.16f, 0.5f)); // Additional color stop
 

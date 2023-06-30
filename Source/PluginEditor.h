@@ -497,7 +497,7 @@ private:
     {
         if(slider == &twoValueSlider)
         {
-            DBG("SLIDER VALUE CHANGED");
+           // DBG("SLIDER VALUE CHANGED");
             lowCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMinValue()));
             highCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMaxValue()));
             
@@ -511,8 +511,8 @@ private:
     highCutSlopeSlider,
     squeezeSlider,offsetSlider;
     
-    juce::DrawableButton analyzerEnabledButton{ "analyzerEnabledButton", juce::DrawableButton::ButtonStyle::ImageFitted };
-    juce::DrawableButton zoomOneButton{ "zoomOneButton", juce::DrawableButton::ButtonStyle::ImageFitted };
+    juce::DrawableButton analyzerEnabledButton{ "analyzerEnabledButton", juce::DrawableButton::ButtonStyle::ImageStretched };
+    juce::DrawableButton zoomOneButton{ "zoomOneButton", juce::DrawableButton::ButtonStyle::ImageStretched };
     
 
     CustomTwoValSlider twoValueSlider;

@@ -15,8 +15,6 @@
             file="Source/Assets/screenscaleikon.svg"/>
       <FILE id="n54of3" name="slopeicon.svg" compile="0" resource="1" file="Source/Assets/slopeicon.svg"/>
       <FILE id="WK7AD9" name="squeezeicon.svg" compile="0" resource="1" file="Source/Assets/squeezeicon.svg"/>
-      <FILE id="MxwoCn" name="squeezeImage.png" compile="0" resource="1"
-            file="Source/Assets/squeezeImage.png"/>
     </GROUP>
     <GROUP id="{AD38FE8F-FB13-E7FF-1673-5A8C6A882DC4}" name="Source">
       <FILE id="FzTCT3" name="PluginProcessor.cpp" compile="1" resource="0"

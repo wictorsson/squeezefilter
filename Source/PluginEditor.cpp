@@ -335,8 +335,8 @@ juce::Rectangle<int> ResponseCurveComponent::getAnalysisArea()
 }
 
 //==============================================================================
-SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFilterAudioProcessor& p)
-: AudioProcessorEditor (&p), audioProcessor (p),lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCutFreq", lowCutFreqSlider),highCutFreqSliderAttachment(audioProcessor.apvts, "HighCutFreq", highCutFreqSlider),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider), analyzerEnabledButtonAttachment(audioProcessor.apvts, "AnalyzerEnabled", analyzerEnabledButton) ,responseCurveComponent(audioProcessor)
+SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFilterAudioProcessor& p) : AudioProcessorEditor (&p), audioProcessor
+    (p) ,lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCutFreq", lowCutFreqSlider),highCutFreqSliderAttachment(audioProcessor.apvts, "HighCutFreq", highCutFreqSlider),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider), analyzerEnabledButtonAttachment(audioProcessor.apvts, "AnalyzerEnabled", analyzerEnabledButton) ,responseCurveComponent(audioProcessor)
 
 {
     // Make sure that before the constructor has finished, you've set the
@@ -346,10 +346,10 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     {
         addAndMakeVisible(comp);
     }
+
     
     
-    
-    analyzerEnabledButton.setButtonText("~");
+  //  analyzerEnabledButton.setButtonText("~");
 
 
     
@@ -363,25 +363,47 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
 //            comp->responseCurveComponent.toggleAnalyzerIsEnabled(enabled);
 //        }
 //    };
+    
+    
+    //_______________________________
    
     analyzerEnabledButton.setToggleable(true);
     bool isAnalyzerEnabled = *audioProcessor.apvts.getRawParameterValue("AnalyzerEnabled");
     responseCurveComponent.toggleAnalyzerIsEnabled(isAnalyzerEnabled);
-    
-   
+
+    auto analyzerEnabledImage = juce::Drawable::createFromImageData(BinaryData::buttonactiveikon_svg, BinaryData::buttonactiveikon_svgSize);
+    auto analyzerDisabledImage = juce::Drawable::createFromImageData (BinaryData::buttonemptyikon_svg, BinaryData::buttonemptyikon_svgSize);
+
+
+
+    analyzerEnabledButton.setImages(analyzerEnabledImage.get(),analyzerEnabledImage.get(),analyzerEnabledImage.get(), analyzerEnabledImage.get(), analyzerDisabledImage.get(), analyzerDisabledImage.get(), analyzerDisabledImage.get(), analyzerDisabledImage.get());
+
+
+
     analyzerEnabledButton.onClick = [this]()
     {
         bool newAnalyzerEnabledState = !analyzerEnabledButton.getToggleState();
            analyzerEnabledButton.setToggleState(newAnalyzerEnabledState, juce::NotificationType::dontSendNotification);
            *audioProcessor.apvts.getRawParameterValue("AnalyzerEnabled") = newAnalyzerEnabledState;
            responseCurveComponent.toggleAnalyzerIsEnabled(newAnalyzerEnabledState);
-    
+
     };
     analyzerEnabledButton.setToggleState(isAnalyzerEnabled, juce::NotificationType::dontSendNotification);
-    
-    
-    zoomOneButton.setButtonText("[ ]");
 
+
+
+
+    auto scaleImageButton2 = juce::Drawable::createFromImageData(BinaryData::scaleicon_svg, BinaryData::scaleicon_svgSize);
+    zoomOneButton.setImages(scaleImageButton2.get());
+
+
+    
+    
+    zoomOneButton.setToggleState(true, juce::NotificationType::dontSendNotification);
+    
+    
+    addAndMakeVisible(zoomOneButton);
+    
     zoomOneButton.onClick = [this] {
         currentZoomState = (currentZoomState + 1) % 3; // Toggle between 0, 1, 2
         
@@ -411,15 +433,16 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
         
         repaint();
     };
+    
 
-//    squeezeImageComp.setImage(squeezeImage, juce::RectanglePlacement::stretchToFit);
-//    addAndMakeVisible(squeezeImageComp);
+ 
     
    
     addAndMakeVisible(slopIcon);
     addAndMakeVisible(slopIcon2);
     addAndMakeVisible(squeezeIcon);
-  
+    addAndMakeVisible(offsetIkon);
+
    // comp.setBoundingBox ({ -100.0f, -100.0f, 200.0f, 200.0f });
     
 //    const auto svg = Drawable::createFromImageData (BinaryData::slopeicon_svg, BinaryData::slopeicon_svgSize);
@@ -440,29 +463,36 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
    // addAndMakeVisible(slopeImageComp2);
     
     
-    addAndMakeVisible(zoomOneButton);
+   // twoValueSlider.setScrollWheelEnabled(true);
+   
 
+    
+    
+    
     addAndMakeVisible(twoValueSlider);
     twoValueSlider.setSliderStyle(juce::Slider::TwoValueHorizontal);
     twoValueSlider.setRange(std::log10(20.0), std::log10(20000.0)); // Range in logarithmic scale
-    
+
+  
+   
+
     twoValueSlider.addListener(this);
     twoValueSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    
+//
     twoValueSlider.setMaxValue(std::log10(*audioProcessor.apvts.getRawParameterValue("HighCutFreq")));
     twoValueSlider.setMinValue(std::log10(*audioProcessor.apvts.getRawParameterValue("LowCutFreq")));
-   
+//
 //    addAndMakeVisible(squeezeLabel);
 //    squeezeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
 //    squeezeLabel.setText("|---|", juce::dontSendNotification);
 //    squeezeLabel.attachToComponent(&squeezeSlider, false);
 //    squeezeLabel.setJustificationType(juce::Justification::centred);
     
-    addAndMakeVisible(offsetLabel);
-    offsetLabel.setFont(juce::Font (12.0f, juce::Font::bold));
-    offsetLabel.setText("<--->", juce::dontSendNotification);
-    offsetLabel.attachToComponent(&offsetSlider, false);
-    offsetLabel.setJustificationType(juce::Justification::centred);
+//    addAndMakeVisible(offsetLabel);
+//    offsetLabel.setFont(juce::Font (12.0f, juce::Font::bold));
+//    offsetLabel.setText("<--->", juce::dontSendNotification);
+//    offsetLabel.attachToComponent(&offsetSlider, false);
+//    offsetLabel.setJustificationType(juce::Justification::centred);
     
     
 //    addAndMakeVisible(slopeLabel);
@@ -477,19 +507,19 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
 //    slopeLabel2.attachToComponent(&highCutSlopeSlider, true);
 //    slopeLabel2.setJustificationType(juce::Justification::centred);
     
-    addAndMakeVisible(freqLabel2);
-    freqLabel2.setFont(juce::Font (12.0f, juce::Font::bold));
-    freqLabel2.setText("Freq", juce::dontSendNotification);
-    freqLabel2.attachToComponent(&highCutFreqSlider, true);
-    freqLabel2.setJustificationType(juce::Justification::centred);
- 
-    
-    addAndMakeVisible(freqLabel);
-    freqLabel.setFont(juce::Font (12.0f, juce::Font::bold));
-    freqLabel.setText("Freq", juce::dontSendNotification);
-    freqLabel.attachToComponent(&lowCutFreqSlider, true);
-    freqLabel.setJustificationType(juce::Justification::centred);
-    
+//    addAndMakeVisible(freqLabel2);
+//    freqLabel2.setFont(juce::Font (12.0f, juce::Font::bold));
+//    freqLabel2.setText("Freq", juce::dontSendNotification);
+//    freqLabel2.attachToComponent(&highCutFreqSlider, true);
+//    freqLabel2.setJustificationType(juce::Justification::centred);
+//
+//
+//    addAndMakeVisible(freqLabel);
+//    freqLabel.setFont(juce::Font (12.0f, juce::Font::bold));
+//    freqLabel.setText("Freq", juce::dontSendNotification);
+//    freqLabel.attachToComponent(&lowCutFreqSlider, true);
+//    freqLabel.setJustificationType(juce::Justification::centred);
+//
     squeezeSlider.setLookAndFeel(&sliderLaf);
     twoValueSlider.setLookAndFeel(&twoValLaf);
     offsetSlider.setLookAndFeel(&crossOverLaf);
@@ -497,26 +527,27 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     lowCutSlopeSlider.setLookAndFeel(&slopSliderLaf);
     
     setResizable (true, true);
-    
+
     const float ratio = 16.0/ 9.0;
     setSize (p.getEditorWidth(), p.getEditorHeight());
     setResizeLimits (550,  juce::roundToInt (550.0 / ratio),
                          1500, juce::roundToInt (1500.0 / ratio));
-    
+
     getConstrainer()->setFixedAspectRatio (ratio);
-  
+   
    // setWantsKeyboardFocus(true);
 
 }
 
 SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
 {
-    twoValueSlider.setLookAndFeel(nullptr);
+   
     squeezeSlider.setLookAndFeel(nullptr);
     offsetSlider.setLookAndFeel(nullptr);
     highCutSlopeSlider.setLookAndFeel(nullptr);
     lowCutSlopeSlider.setLookAndFeel(nullptr);
-    
+    twoValueSlider.setLookAndFeel(nullptr);
+//
    // removeKeyListener(this);
        //    delete myKeyListener;
     
@@ -548,58 +579,63 @@ void SqueezeFilterAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     
-    auto bounds = getLocalBounds().reduced(15,15);
-    auto menuButtons = bounds.removeFromLeft(30).removeFromTop(60);
-    auto buttonArea = menuButtons.removeFromTop(25);
-    
+    auto bounds = getLocalBounds().reduced(10,10);
+    auto menuButtons = bounds.removeFromLeft(35).removeFromTop(60);
+    auto buttonArea = menuButtons.removeFromTop(35);
+
+    //buttonArea
     zoomOneButton.setBounds(buttonArea);
     bounds = bounds.removeFromBottom(bounds.getHeight() * 0.95f);
 
-    
+
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.8f);
-    
-    auto topSliderArea = responseArea.removeFromTop(responseArea.getWidth()* 0.1f);
+
+    auto topSliderArea = responseArea.removeFromTop(responseArea.getHeight()* 0.3f);
     auto labelarea = topSliderArea.removeFromRight(bounds.getWidth() * 0.15f);
-    squeezeIcon.setBounds(labelarea.removeFromBottom(topSliderArea.getHeight()*0.8).reduced(20, 10));
+    squeezeIcon.setBounds(labelarea.removeFromBottom(topSliderArea.getHeight()*0.5).removeFromTop(labelarea.getHeight()*0.8));
     auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.15f);
-    
-    offsetSlider.setBounds(topSliderArea.removeFromLeft(bounds.getWidth() * 0.85f).reduced(responseArea.getWidth()*0.2, 5));
-    
     squeezeSlider.setBounds(modifySliderArea);
 
-    // Calculate the bounds for the squeezeImageComp relative to the squeezeSlider
- 
-  //  squeezeImageComp.setBounds();
-    
-    
+    auto offsetRec = topSliderArea.removeFromLeft(bounds.getWidth() * 0.85f).reduced(responseArea.getWidth()*0.2, 0);
+
+   // offsetIkon.setBounds(offsetRec.removeFromTop(offsetRec.getHeight()*0.3));
+    offsetSlider.setBounds(offsetRec.removeFromBottom(offsetRec.getHeight()*0.65f).translated(0, - bounds.getHeight()*0.1));
+    offsetIkon.setBounds(offsetRec.removeFromBottom(offsetRec.getHeight()*0.8));
+
     responseCurveComponent.setBounds(responseArea);
-    
+
     int buttonLeft = responseCurveComponent.getX();
     int buttonTop = responseCurveComponent.getBottom(); // Add a spacing of 10 pixels
 
     analyzerEnabledButton.setBounds(buttonLeft, buttonTop + 5, 30, 30);
-    
+
     auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.018f, 0.0f);
     twoValueSlider.setBounds(sliderBounds);
-    
-    auto filterKnobsArea = bounds.removeFromRight(bounds.getWidth() * 0.9f);
+
+    auto filterKnobsArea = bounds.removeFromLeft(responseArea.getWidth());
 
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
-    lowCutArea = lowCutArea.removeFromRight(lowCutArea.getWidth()*0.85);
-    
-    slopIcon.setBounds(lowCutArea.removeFromLeft(lowCutArea.getWidth()* 0.3).reduced(0, 5));
+    lowCutArea = lowCutArea.removeFromRight(lowCutArea.getWidth()*0.8).translated(responseArea.getWidth()*0.1, 0);
+
+    //**********
+    lowCutSlopeSlider.setBounds(lowCutArea.removeFromRight(lowCutArea.getWidth()* 0.6));
+    slopIcon.setBounds(lowCutArea.removeFromRight(lowCutArea.getWidth()* 0.8).translated(5,  - lowCutArea.getHeight()*0.1));
     //linkButtonGain.setBounds(lowCutArea);
-    auto highCutArea = filterKnobsArea;
+    auto highCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.5f);
 
-
-    lowCutSlopeSlider.setBounds(lowCutArea.reduced(5, 0));
-
-    auto adjustedHighCutArea = highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).translated(filterKnobsArea.getWidth()*0.13, 0);
-    adjustedHighCutArea = adjustedHighCutArea.removeFromRight(adjustedHighCutArea.getWidth()*0.85);
-    slopIcon2.setBounds(adjustedHighCutArea.removeFromLeft(adjustedHighCutArea.getWidth()* 0.3).reduced(0, 5));
+    highCutSlopeSlider.setBounds(lowCutSlopeSlider.getBounds().translated(responseArea.getWidth()*0.4, 0));
+    slopIcon2.setBounds(slopIcon.getBounds().translated(responseArea.getWidth()*0.4, 0));
    
-    highCutSlopeSlider.setBounds(adjustedHighCutArea.reduced(5, 0));
+
+//    auto adjustedHighCutArea = highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).translated(filterKnobsArea.getWidth()*0.05, 0);
+//    adjustedHighCutArea = adjustedHighCutArea.removeFromRight(adjustedHighCutArea.getWidth()*0.85);
     
+//    highCutSlopeSlider.setBounds(adjustedHighCutArea.removeFromRight(adjustedHighCutArea.getWidth()* 0.6));
+//    slopIcon2.setBounds(adjustedHighCutArea.removeFromRight(adjustedHighCutArea.getWidth()* 0.8).translated(0,  - lowCutArea.getHeight()*0.1));
+  //  slopIcon2.setBounds();
+
+    
+
     audioProcessor.setEditorSize (getWidth(), getHeight());
     
 }
@@ -612,16 +648,16 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
     highCutSlopeSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     lowCutSlopeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     highCutSlopeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    
+
     lowCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     highCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     offsetSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     squeezeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     offsetSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    analyzerEnabledButton.setButtonText("~~~");
+
     return
     {
-      
+
         &lowCutFreqSlider,
         &highCutFreqSlider,
         &lowCutSlopeSlider,
@@ -1059,26 +1095,26 @@ void CustomTwoValSliderLaf::drawPointer (Graphics& g, const float x, const float
     
     if(direction == 4)
     {
-        gradient = ColourGradient(Colours::orange, 0.0f, y, Colour(0x00FF7F00), 0.0f, y + diameter * lengthFactor, false);
-        gradient.addColour(1.0f, Colour(0x00FF7F00));
+//        gradient = ColourGradient(Colours::orange, 0.0f, y, Colour(0x00FF7F00), 0.0f, y + diameter * lengthFactor * 0.8, false);
+//        gradient.addColour(1.0f, Colour(0x00FF7F00));
+        
+        gradient = ColourGradient::vertical(Colours::orange, y,
+                                            Colours::orange.withAlpha(0.0f), y + diameter * lengthFactor );
     }
     else if(direction == 2)
     {
-//        gradient = ColourGradient(Colour(0x00FF7F00), 0.0f, y, Colours::orange, 0.0f, y - diameter * lengthFactor, false);
-//               gradient.addColour(1.0f, Colours::orange);
+//        gradient = ColourGradient(Colours::orange, 0.0f, y, Colour(0x00FF7F00), 0.0f, y - diameter * lengthFactor * 0.5, false);
+     
         
-        gradient = ColourGradient(Colours::orange, 0.0f, y, Colour(0x00FF7F00), 0.0f, y - diameter * lengthFactor, false);
-        gradient.addColour(1.0f, Colour(0x00FF7F00));
+        gradient = ColourGradient::vertical(Colours::orange, y,
+                                            Colours::orange.withAlpha(0.0f), y - diameter * lengthFactor * 0.8);
+        //gradient.addColour(1.0f, Colours::orange);
     }
     
-    
-
     g.setGradientFill(gradient);
     
   //  g.setColour (colour);
     g.fillPath (p);
-    
-
 }
 
 

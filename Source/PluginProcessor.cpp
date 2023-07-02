@@ -218,33 +218,23 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
       float lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load();
       float highCutFreq = apvts.getRawParameterValue("HighCutFreq")->load();
       auto squeezeValue = apvts.getRawParameterValue("SqueezeValue")->load();
-      if(offset>=0)
-      {
-          offset =  offset * std::pow(offset / 20000, 2);
-      }
-      
-      float inputValue = offset;  // The value you want to remap
-      float maxMin = lowCutFreq;              // The value of 'x' in the new range
+
       
       if(offset >= 0)
       {
-          float remappedValue = jmap(inputValue, 0.0f, 20000.0f, 0.0f, 20000.0f - maxMin);
-          settings.lowCutFreq = lowCutFreq * squeezeValue + remappedValue;
-          settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + remappedValue ;
+          float maxMin = lowCutFreq;
+          offset =  offset * std::pow(offset / 20000, 2);
+          offset = jmap(offset, 0.0f, 20000.0f, 0.0f, 20000.0f - maxMin);
+          settings.lowCutFreq = lowCutFreq * squeezeValue + offset;
+          settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + offset ;
       }
 
       else
       {
-          //offset = offset * std::pow(1 - offset / 20000, 2);
-//          offset = offset * std::pow(offset / 20000, 2);
-//          offset = -offset;
-          inputValue = offset;
-          maxMin = highCutFreq;
-      
-          float remappedValue = jmap(inputValue, -20000.0f, 0.0f, -maxMin, 0.0f);
-          settings.lowCutFreq = lowCutFreq * squeezeValue + remappedValue;
-          settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue + remappedValue;
-          DBG(offset);
+          float maxMin = highCutFreq;
+          offset = jmap(offset, -20000.0f, 0.0f, -maxMin, 0.0f);
+          settings.lowCutFreq = lowCutFreq * squeezeValue + offset;
+          settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue + offset;
 
       }
       

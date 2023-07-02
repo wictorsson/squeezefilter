@@ -11,7 +11,6 @@
 
 
 ResponseCurveComponent::ResponseCurveComponent(SqueezeFilterAudioProcessor& p) : audioProcessor(p),
-//leftChannelFifo(&audioProcessor.leftChannelFifo)
 leftPathProducer(audioProcessor.leftChannelFifo), rightPathProducer(audioProcessor.rightChannelFifo)
 {
     const auto& params = audioProcessor.getParameters();
@@ -19,9 +18,6 @@ leftPathProducer(audioProcessor.leftChannelFifo), rightPathProducer(audioProcess
     {
         param->addListener(this);
     }
-    
-   // addAndMakeVisible(analyzerEnabledButton);
-    
     startTimerHz(60); 
 }
 
@@ -56,8 +52,6 @@ void PathProducer::process(juce::Rectangle<float>fftbounds, double sampleRate)
             leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, -48.f);
         }
     }
-    
- 
     const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();
     const auto binWidth = sampleRate / (double)fftSize;
     
@@ -74,8 +68,6 @@ void PathProducer::process(juce::Rectangle<float>fftbounds, double sampleRate)
     {
         pathProducer.getPath(leftChannelFFTPath);
     }
-    
-    
 }
 
 void ResponseCurveComponent::timerCallback()
@@ -214,24 +206,12 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
         g.strokePath(rightChannelFFTPath, PathStrokeType(3));
         
     }
-    
     g.setColour(Colours::darkgrey);
     g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f);
     
     g.setColour(Colours::orange);
     g.strokePath(responseCurve, PathStrokeType(4.f));
-    
-//    g.setColour(Colours::orange.withAlpha(0.08f));
-//    g.strokePath(responseCurve, juce::PathStrokeType(15.f));
-//    
-//    g.setColour(Colours::orange.withAlpha(0.06f));
-//    g.strokePath(responseCurve, juce::PathStrokeType(20.f));
-//    
-//    g.setColour(Colours::orange.withAlpha(0.05f));
-//    g.strokePath(responseCurve, juce::PathStrokeType(30.f));
-//    
-    
-   
+
 }
 
 void ResponseCurveComponent::resized()
@@ -272,7 +252,6 @@ void ResponseCurveComponent::resized()
         -24, -12,0,12,24
     };
     
-
     for(auto gDb : gain)
     {
         auto y = jmap(gDb, -20.f, 20.f, float(bottom), float(top));
@@ -318,11 +297,6 @@ void ResponseCurveComponent::resized()
 juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
 {
     auto bounds = getLocalBounds();
-    
-//    bounds.removeFromTop(12);
-//    bounds.removeFromBottom(2);
-//    bounds.removeFromLeft(20);
-//    bounds.removeFromRight(20);
     return bounds;
 }
 
@@ -346,13 +320,6 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     {
         addAndMakeVisible(comp);
     }
-
-    
-    
-  //  analyzerEnabledButton.setButtonText("~");
-
-
-    
 //    auto safePtr = juce::Component::SafePointer<SqueezeFilterAudioProcessorEditor>(this);
 //    analyzerEnabledButton.onClick = [safePtr]()
 //    {
@@ -363,10 +330,7 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
 //            comp->responseCurveComponent.toggleAnalyzerIsEnabled(enabled);
 //        }
 //    };
-    
-    
-    //_______________________________
-   
+
     analyzerEnabledButton.setToggleable(true);
     bool isAnalyzerEnabled = *audioProcessor.apvts.getRawParameterValue("AnalyzerEnabled");
     responseCurveComponent.toggleAnalyzerIsEnabled(isAnalyzerEnabled);
@@ -374,15 +338,9 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     auto analyzerEnabledImage = juce::Drawable::createFromImageData(BinaryData::buttonactiveikon_svg, BinaryData::buttonactiveikon_svgSize);
     auto analyzerDisabledImage = juce::Drawable::createFromImageData (BinaryData::buttonemptyikon_svg, BinaryData::buttonemptyikon_svgSize);
 
-
-
     analyzerEnabledButton.setImages(analyzerDisabledImage.get(),analyzerDisabledImage.get(),analyzerDisabledImage.get(), analyzerDisabledImage.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get());
 
     analyzerEnabledButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::transparentBlack);
-    
-    zoomOneButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::transparentBlack);
-
-  
     analyzerEnabledButton.onClick = [this]()
     {
         bool newAnalyzerEnabledState = !analyzerEnabledButton.getToggleState();
@@ -395,15 +353,9 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
 
     auto scaleImageButton2 = juce::Drawable::createFromImageData(BinaryData::scaleicon_svg, BinaryData::scaleicon_svgSize);
     zoomOneButton.setImages(scaleImageButton2.get());
-
-
-    
-    
+    zoomOneButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::transparentBlack);
     zoomOneButton.setToggleState(true, juce::NotificationType::dontSendNotification);
-    
-    
     addAndMakeVisible(zoomOneButton);
-    
     zoomOneButton.onClick = [this] {
         currentZoomState = (currentZoomState + 1) % 3; // Toggle between 0, 1, 2
         
@@ -434,92 +386,19 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
         repaint();
     };
     
-
- 
-    
-   
     addAndMakeVisible(slopIcon);
     addAndMakeVisible(slopIcon2);
     addAndMakeVisible(squeezeIcon);
     addAndMakeVisible(offsetIkon);
-
-   // comp.setBoundingBox ({ -100.0f, -100.0f, 200.0f, 200.0f });
-    
-//    const auto svg = Drawable::createFromImageData (BinaryData::slopeicon_svg, BinaryData::slopeicon_svgSize);
-//    svg->draw(g, 1.0);
-    
-   // linkButtonGain.setImage(slopeImage.get());
-   // addAndMakeVisible(comp);
-
-
-
-   
-    
-   // addAndMakeVisible(slopeImage);
- //  ((slopeImageComp.setImage(slopeImage.get(), slopeImage.get(), slopeImage.get(), slopeImage.get());
-  //  addAndMakeVisible(slopeImageComp);
-    
-   // slopeImageComp2.setImage(slopeImage, juce::RectanglePlacement::stretchToFit);
-   // addAndMakeVisible(slopeImageComp2);
-    
-    
-   // twoValueSlider.setScrollWheelEnabled(true);
-   
-
-    
-    
     
     addAndMakeVisible(twoValueSlider);
     twoValueSlider.setSliderStyle(juce::Slider::TwoValueHorizontal);
     twoValueSlider.setRange(std::log10(20.0), std::log10(20000.0)); // Range in logarithmic scale
-
-  
-   
-
     twoValueSlider.addListener(this);
     twoValueSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-//
     twoValueSlider.setMaxValue(std::log10(*audioProcessor.apvts.getRawParameterValue("HighCutFreq")));
     twoValueSlider.setMinValue(std::log10(*audioProcessor.apvts.getRawParameterValue("LowCutFreq")));
-//
-//    addAndMakeVisible(squeezeLabel);
-//    squeezeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
-//    squeezeLabel.setText("|---|", juce::dontSendNotification);
-//    squeezeLabel.attachToComponent(&squeezeSlider, false);
-//    squeezeLabel.setJustificationType(juce::Justification::centred);
-    
-//    addAndMakeVisible(offsetLabel);
-//    offsetLabel.setFont(juce::Font (12.0f, juce::Font::bold));
-//    offsetLabel.setText("<--->", juce::dontSendNotification);
-//    offsetLabel.attachToComponent(&offsetSlider, false);
-//    offsetLabel.setJustificationType(juce::Justification::centred);
-    
-    
-//    addAndMakeVisible(slopeLabel);
-//    slopeLabel.setFont(juce::Font (12.0f, juce::Font::bold));
-//    slopeLabel.setText("/ --", juce::dontSendNotification);
-//    slopeLabel.attachToComponent(&lowCutSlopeSlider, true);
-//    slopeLabel.setJustificationType(juce::Justification::centred);
-//
-//    addAndMakeVisible(slopeLabel2);
-//    slopeLabel2.setFont(juce::Font (12.0f, juce::Font::bold));
-//    slopeLabel2.setText("/ --", juce::dontSendNotification);
-//    slopeLabel2.attachToComponent(&highCutSlopeSlider, true);
-//    slopeLabel2.setJustificationType(juce::Justification::centred);
-    
-//    addAndMakeVisible(freqLabel2);
-//    freqLabel2.setFont(juce::Font (12.0f, juce::Font::bold));
-//    freqLabel2.setText("Freq", juce::dontSendNotification);
-//    freqLabel2.attachToComponent(&highCutFreqSlider, true);
-//    freqLabel2.setJustificationType(juce::Justification::centred);
-//
-//
-//    addAndMakeVisible(freqLabel);
-//    freqLabel.setFont(juce::Font (12.0f, juce::Font::bold));
-//    freqLabel.setText("Freq", juce::dontSendNotification);
-//    freqLabel.attachToComponent(&lowCutFreqSlider, true);
-//    freqLabel.setJustificationType(juce::Justification::centred);
-//
+
     squeezeSlider.setLookAndFeel(&sliderLaf);
     twoValueSlider.setLookAndFeel(&twoValLaf);
     offsetSlider.setLookAndFeel(&crossOverLaf);
@@ -532,46 +411,31 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     setSize (p.getEditorWidth(), p.getEditorHeight());
     setResizeLimits (550,  juce::roundToInt (550.0 / ratio),
                          1500, juce::roundToInt (1500.0 / ratio));
-
     getConstrainer()->setFixedAspectRatio (ratio);
-   
    // setWantsKeyboardFocus(true);
-
 }
 
 SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
 {
-   
     squeezeSlider.setLookAndFeel(nullptr);
     offsetSlider.setLookAndFeel(nullptr);
     highCutSlopeSlider.setLookAndFeel(nullptr);
     lowCutSlopeSlider.setLookAndFeel(nullptr);
     twoValueSlider.setLookAndFeel(nullptr);
-//
    // removeKeyListener(this);
        //    delete myKeyListener;
-    
 }
 
 //==============================================================================
 void SqueezeFilterAudioProcessorEditor::paint (juce::Graphics& g)
 {
     using namespace juce;
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-       // g.fillAll (Colour::fromFloatRGBA (0.11f, 0.13f, 0.15f, 1.0f));
-    
     float centerX = getWidth() / 2.0f;
     float centerY = getHeight() / 2.0f;
     float radius = jmin(centerX * 8, centerY * 2.5f);
-
     Colour colour2 = Colour::fromFloatRGBA(0.12f, 0.12f, 0.15f, 1.0f);
     Colour colour1 = Colour::fromFloatRGBA(0.18f, 0.22f, 0.25f, 1.0f);
-
-
-    
     ColourGradient gradient(colour1, centerX, centerY, colour2, centerX, centerY + radius, true);
-   // gradient.addColour(0.5f, Colour::fromFloatRGBA(0.14f, 0.15f, 0.16f, 0.5f)); // Additional color stop
-
     g.setGradientFill(gradient);
     g.fillAll();
 }
@@ -580,69 +444,39 @@ void SqueezeFilterAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    
     auto bounds = getLocalBounds().reduced(10,10);
     auto menuButtons = bounds.removeFromLeft(35).removeFromTop(60);
     auto buttonArea = menuButtons.removeFromTop(35);
-
     //buttonArea
     zoomOneButton.setBounds(buttonArea);
     bounds = bounds.removeFromBottom(bounds.getHeight() * 0.95f);
-
-
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.8f);
-
     auto topSliderArea = responseArea.removeFromTop(responseArea.getHeight()* 0.3f);
     auto labelarea = topSliderArea.removeFromRight(bounds.getWidth() * 0.15f);
     squeezeIcon.setBounds(labelarea.removeFromBottom(topSliderArea.getHeight()*0.5).removeFromTop(labelarea.getHeight()*0.8));
     auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.15f);
     squeezeSlider.setBounds(modifySliderArea);
-
     auto offsetRec = topSliderArea.removeFromLeft(bounds.getWidth() * 0.85f).reduced(responseArea.getWidth()*0.2, 0);
-
-   // offsetIkon.setBounds(offsetRec.removeFromTop(offsetRec.getHeight()*0.3));
     offsetSlider.setBounds(offsetRec.removeFromBottom(offsetRec.getHeight()*0.65f).translated(0, - bounds.getHeight()*0.1));
     offsetIkon.setBounds(offsetRec.removeFromBottom(offsetRec.getHeight()*0.8));
-
     responseCurveComponent.setBounds(responseArea);
-
     int buttonLeft = responseCurveComponent.getX();
     int buttonTop = responseCurveComponent.getBottom(); // Add a spacing of 10 pixels
-
     analyzerEnabledButton.setBounds(buttonLeft, buttonTop + 5, 30, 30);
-
     auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.018f, 0.0f);
     twoValueSlider.setBounds(sliderBounds);
-
     auto filterKnobsArea = bounds.removeFromLeft(responseArea.getWidth());
-
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
     lowCutArea = lowCutArea.removeFromRight(lowCutArea.getWidth()*0.8).translated(responseArea.getWidth()*0.1, 0);
-
-    //**********
     lowCutSlopeSlider.setBounds(lowCutArea.removeFromRight(lowCutArea.getWidth()* 0.6));
     slopIcon.setBounds(lowCutArea.removeFromRight(lowCutArea.getWidth()* 0.8).translated(5,  - lowCutArea.getHeight()*0.1));
-    //linkButtonGain.setBounds(lowCutArea);
     auto highCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.5f);
-
     highCutSlopeSlider.setBounds(lowCutSlopeSlider.getBounds().translated(responseArea.getWidth()*0.4, 0));
     slopIcon2.setBounds(slopIcon.getBounds().translated(responseArea.getWidth()*0.4, 0));
    
-
-//    auto adjustedHighCutArea = highCutArea.removeFromLeft(highCutArea.getWidth() * 0.5f).translated(filterKnobsArea.getWidth()*0.05, 0);
-//    adjustedHighCutArea = adjustedHighCutArea.removeFromRight(adjustedHighCutArea.getWidth()*0.85);
-    
-//    highCutSlopeSlider.setBounds(adjustedHighCutArea.removeFromRight(adjustedHighCutArea.getWidth()* 0.6));
-//    slopIcon2.setBounds(adjustedHighCutArea.removeFromRight(adjustedHighCutArea.getWidth()* 0.8).translated(0,  - lowCutArea.getHeight()*0.1));
-  //  slopIcon2.setBounds();
-
-    
-
     audioProcessor.setEditorSize (getWidth(), getHeight());
     
 }
-
-
 
 std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
 {
@@ -650,7 +484,6 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
     highCutSlopeSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     lowCutSlopeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     highCutSlopeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-
     lowCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     highCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     offsetSlider.setSliderStyle(juce::Slider::LinearHorizontal);
@@ -659,7 +492,6 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
 
     return
     {
-
         &lowCutFreqSlider,
         &highCutFreqSlider,
         &lowCutSlopeSlider,

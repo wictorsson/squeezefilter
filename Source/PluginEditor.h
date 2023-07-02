@@ -21,7 +21,6 @@ public:
     {
          slopeImage = juce::Drawable::createFromImageData(BinaryData::slopeicon_svg, BinaryData::slopeicon_svgSize);
     }
-
     void paint(juce::Graphics& g) override
     {
         // Draw the image
@@ -42,7 +41,6 @@ public:
     {
         svgImage = juce::Drawable::createFromImageData(BinaryData::squeezeicon_svg, BinaryData::squeezeicon_svgSize);
     }
-
     void paint(juce::Graphics& g) override
     {
         // Draw the image
@@ -82,16 +80,10 @@ class CustomSlopSlider : public juce::LookAndFeel_V4
 {
 public:
     CustomSlopSlider();
-   
-    
-    void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
+   void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
                            float sliderPos, float minSliderPos, float maxSliderPos,
                            const juce::Slider::SliderStyle, juce::Slider&) override;
-    
     juce::Label* createSliderTextBox (juce::Slider& slider) override;
-    
-    
-
 };
 
 
@@ -99,28 +91,20 @@ class CustomCrossover : public juce::LookAndFeel_V4
 {
 public:
     CustomCrossover();
-   
-    
     void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
                            float sliderPos, float minSliderPos, float maxSliderPos,
                            const juce::Slider::SliderStyle, juce::Slider&) override;
-    
     juce::Label* createSliderTextBox (juce::Slider& slider) override;
-
 };
 
 class CustomSlider : public juce::LookAndFeel_V4
 {
 public:
     CustomSlider();
-   
-    
     void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
                            float sliderPos, float minSliderPos, float maxSliderPos,
                            const juce::Slider::SliderStyle, juce::Slider&) override;
-    
     juce::Label* createSliderTextBox (juce::Slider& slider) override;
-    
 private:
     std::string type;
     
@@ -134,34 +118,15 @@ public:
     void drawPointer (Graphics&, float x, float y, float diameter,
                       const Colour&, int direction,float height) ;
     
-    
-    
     void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
                            float sliderPos, float minSliderPos, float maxSliderPos,
                            const juce::Slider::SliderStyle, juce::Slider&) override;
     
-  
-    //    void sliderValueChanged (juce::Slider * slider) override
-    //    {
-    //        if(slider == &twoValueSlider)
-    //        {
-    //
-    //            lowCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMinValue()));
-    //            highCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMaxValue()));
-    //
-    //        }
-    //    }
-    
-    
-    
 };
 
-class CustomTwoValSlider : public juce::Slider /*, public juce::Slider::Listener*/
+class CustomTwoValSlider : public juce::Slider
 {
 public:
-   
-      
-   
     void mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) override
        {
           // DBG("Mouse wheel has moved");
@@ -341,15 +306,6 @@ struct CustomRotarySlider : juce::Slider
     }
 };
 
-//struct CustomDoubleSlider : juce::Slider, juce::Slider::Listener
-//{
-//    CustomDoubleSlider() : juce::Slider(juce::Slider::SliderStyle::LinearVertical, juce::Slider::TextEntryBoxPosition::TextBoxBelow)
-//    {
-//
-//    }
-//
-//};
-
 
 struct PathProducer
 {
@@ -446,7 +402,6 @@ public:
     void resized() override;
     
     
-    
 //    bool keyPressed(const juce::KeyPress& key) override
 //    {
 //        DBG(key.getKeyCode());
@@ -492,7 +447,6 @@ private:
     // access the processor object that created it.
     
     SqueezeFilterAudioProcessor& audioProcessor;
-//
     void sliderValueChanged (juce::Slider * slider) override
     {
         if(slider == &twoValueSlider)
@@ -503,7 +457,6 @@ private:
             
         }
     }
-//
     
     CustomRotarySlider lowCutFreqSlider,
     highCutFreqSlider,
@@ -513,7 +466,6 @@ private:
     
     juce::DrawableButton analyzerEnabledButton{ "analyzerEnabledButton", juce::DrawableButton::ButtonStyle::ImageStretched };
     juce::DrawableButton zoomOneButton{ "zoomOneButton", juce::DrawableButton::ButtonStyle::ImageStretched };
-    
 
     CustomTwoValSlider twoValueSlider;
 
@@ -526,31 +478,24 @@ private:
     highCutSlopeSliderAttachment,
     squeezeSliderAttachment,
     offsetSliderAttachment;
-////
-////
-////
+
     using ButtonAttachment = APVTS::ButtonAttachment;
     ButtonAttachment analyzerEnabledButtonAttachment;
-//
+
     ResponseCurveComponent responseCurveComponent;
     std::vector<juce::Component*> getComps();
-//
-    juce::Label slopeLabel, slopeLabel2,  squeezeLabel, offsetLabel, freqLabel, freqLabel2;
+
     CustomTwoValSliderLaf twoValLaf;
     CustomSlider sliderLaf;
     CustomCrossover crossOverLaf;
     CustomSlopSlider slopSliderLaf;
     
-
     int currentZoomState;
 
     svgOffsetComp offsetIkon;
     svgComp slopIcon;
     svgComp slopIcon2;
     svgSqueezeComp squeezeIcon;
-    
-    
-   
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SqueezeFilterAudioProcessorEditor)
 };

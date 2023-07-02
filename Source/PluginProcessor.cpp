@@ -214,40 +214,46 @@ void SqueezeFilterAudioProcessor::setStateInformation (const void* data, int siz
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
     ChainSettings settings;
-    float offset = apvts.getRawParameterValue("OffsetValue")->load();
-    float lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load();
-    float highCutFreq = apvts.getRawParameterValue("HighCutFreq")->load();
-    auto squeezeValue = apvts.getRawParameterValue("SqueezeValue")->load();
-    if(offset>=0)
-    {
-        offset =  offset * std::pow(offset / 20000, 2);
-    }
-    
-    float inputValue = offset;  // The value you want to remap
-    float maxMin = lowCutFreq;              // The value of 'x' in the new range
-    
-    if(offset >= 0)
-    {
-        float remappedValue = jmap(inputValue, 0.0f, 20000.0f, 0.0f, 20000.0f - maxMin);
-        settings.lowCutFreq = lowCutFreq * squeezeValue + remappedValue;
-        settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + remappedValue ;
-    }
+      float offset = apvts.getRawParameterValue("OffsetValue")->load();
+      float lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load();
+      float highCutFreq = apvts.getRawParameterValue("HighCutFreq")->load();
+      auto squeezeValue = apvts.getRawParameterValue("SqueezeValue")->load();
+      if(offset>=0)
+      {
+          offset =  offset * std::pow(offset / 20000, 2);
+      }
+      
+      float inputValue = offset;  // The value you want to remap
+      float maxMin = lowCutFreq;              // The value of 'x' in the new range
+      
+      if(offset >= 0)
+      {
+          float remappedValue = jmap(inputValue, 0.0f, 20000.0f, 0.0f, 20000.0f - maxMin);
+          settings.lowCutFreq = lowCutFreq * squeezeValue + remappedValue;
+          settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + remappedValue ;
+      }
 
-    else
-    {
-        float remappedValue = jmap(inputValue, -20000.0f, 0.0f, -maxMin, 0.0f);
+      else
+      {
+          //offset = offset * std::pow(1 - offset / 20000, 2);
+//          offset = offset * std::pow(offset / 20000, 2);
+//          offset = -offset;
+          inputValue = offset;
+          maxMin = highCutFreq;
+      
+          float remappedValue = jmap(inputValue, -20000.0f, 0.0f, -maxMin, 0.0f);
+          settings.lowCutFreq = lowCutFreq * squeezeValue + remappedValue;
+          settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue + remappedValue;
+          DBG(offset);
 
-        settings.lowCutFreq = lowCutFreq * squeezeValue + remappedValue;
-        settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue + remappedValue;
-
-    }
-    
-    settings.lowCutFreq = std::clamp(settings.lowCutFreq, 20.f, 20000.f);
-    settings.highCutFreq = std::clamp(settings.highCutFreq, 20.f, 20000.f);
-    
-    settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCutSlope")->load());
-    settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCutSlope")->load());
-    return settings;
+      }
+      
+      settings.lowCutFreq = std::clamp(settings.lowCutFreq, 20.f, 20000.f);
+      settings.highCutFreq = std::clamp(settings.highCutFreq, 20.f, 20000.f);
+      
+      settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCutSlope")->load());
+      settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCutSlope")->load());
+      return settings;
 }
 
 void/*SqueezeFilterAudioProcessor::*/updateCoefficients(Coefficients& old, const Coefficients& replacements)
@@ -283,8 +289,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
     
     
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"OffsetValue", 1},
-                                                           "OffsetValue",
-                                                           juce::NormalisableRange<float>(-19980.f, 19980.f,0.01), 0.f));
+                                                              "OffsetValue",
+                                                              juce::NormalisableRange<float>(-19980.f, 19980.f,0.01), 0.f));
     
     
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{"AnalyzerEnabled",1}, "AnalyzerEnabled", true));

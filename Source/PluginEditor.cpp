@@ -336,9 +336,14 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     responseCurveComponent.toggleAnalyzerIsEnabled(isAnalyzerEnabled);
 
     auto analyzerEnabledImage = juce::Drawable::createFromImageData(BinaryData::buttonactiveikon_svg, BinaryData::buttonactiveikon_svgSize);
+    
+    auto buttonactiveikonHover = juce::Drawable::createFromImageData(BinaryData::buttonactiveikonHover1_svg, BinaryData::buttonactiveikonHover1_svgSize);
+    
     auto analyzerDisabledImage = juce::Drawable::createFromImageData (BinaryData::buttonemptyikon_svg, BinaryData::buttonemptyikon_svgSize);
+    
+    auto buttonemptyiconHover = juce::Drawable::createFromImageData(BinaryData::buttonemptyiconHover_svg, BinaryData::buttonemptyiconHover_svgSize);
 
-    analyzerEnabledButton.setImages(analyzerDisabledImage.get(),analyzerDisabledImage.get(),analyzerDisabledImage.get(), analyzerDisabledImage.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get());
+    analyzerEnabledButton.setImages(analyzerDisabledImage.get(),buttonemptyiconHover.get(),analyzerDisabledImage.get(), analyzerDisabledImage.get(), analyzerEnabledImage.get(), buttonactiveikonHover.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get());
 
     analyzerEnabledButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::transparentBlack);
     analyzerEnabledButton.onClick = [this]()
@@ -352,7 +357,12 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     analyzerEnabledButton.setToggleState(isAnalyzerEnabled, juce::NotificationType::dontSendNotification);
 
     auto scaleImageButton2 = juce::Drawable::createFromImageData(BinaryData::scaleicon_svg, BinaryData::scaleicon_svgSize);
-    zoomOneButton.setImages(scaleImageButton2.get());
+    auto scaleImageButtonHover = juce::Drawable::createFromImageData(BinaryData::screenscaleikonHover_svg, BinaryData::screenscaleikonHover_svgSize);
+//    zoomOneButton.setImages(scaleImageButton2.get(),scaleImageButtonHover.get(),scaleImageButton2.get(),scaleImageButton2.get(),scaleImageButtonHover.get(),scaleImageButton2.get(),scaleImageButton2.get(),scaleImageButton2.get());
+    
+    zoomOneButton.setImages(scaleImageButtonHover.get(),scaleImageButton2.get(),scaleImageButton2.get(),scaleImageButtonHover.get(),scaleImageButton2.get(),scaleImageButtonHover.get(),scaleImageButton2.get(),scaleImageButtonHover.get());
+    
+    
     zoomOneButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::transparentBlack);
     zoomOneButton.setToggleState(true, juce::NotificationType::dontSendNotification);
     addAndMakeVisible(zoomOneButton);

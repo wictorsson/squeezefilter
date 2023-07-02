@@ -7,8 +7,14 @@
       <FILE id="Nx3XP6" name="brokenlink.svg" compile="0" resource="1" file="Source/Assets/brokenlink.svg"/>
       <FILE id="njbMea" name="buttonactiveikon.svg" compile="0" resource="1"
             file="Source/Assets/buttonactiveikon.svg"/>
+      <FILE id="szIcnm" name="screenscaleikonHover.svg" compile="0" resource="1"
+            file="Source/Assets/screenscaleikonHover.svg"/>
       <FILE id="MsofUN" name="buttonemptyikon.svg" compile="0" resource="1"
             file="Source/Assets/buttonemptyikon.svg"/>
+      <FILE id="WzKpF3" name="buttonactiveikonHover1.svg" compile="0" resource="1"
+            file="Source/Assets/buttonactiveikonHover1.svg"/>
+      <FILE id="WwcTqz" name="buttonemptyiconHover.svg" compile="0" resource="1"
+            file="Source/Assets/buttonemptyiconHover.svg"/>
       <FILE id="FT2SrO" name="offsetIkon.svg" compile="0" resource="1" file="Source/Assets/offsetIkon.svg"/>
       <FILE id="eKBhMG" name="scaleicon.svg" compile="0" resource="1" file="Source/Assets/scaleicon.svg"/>
       <FILE id="cIAff6" name="screenscaleikon.svg" compile="0" resource="1"

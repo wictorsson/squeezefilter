@@ -369,6 +369,8 @@ struct ResponseCurveComponent: juce::Component, juce::AudioProcessorParameter::L
         shouldShowFFTAnalysis = enabled;
     };
     
+    bool donePainting = false;
+    
 private:
     SqueezeFilterAudioProcessor& audioProcessor;
     juce::Atomic<bool>parametersChanged {false};

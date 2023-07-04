@@ -159,21 +159,23 @@ void SqueezeFilterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-    
-    updateFilters();
-    
-    juce::dsp::AudioBlock<float> block(buffer);
-    auto leftBlock = block.getSingleChannelBlock(0);
-    auto rightBlock = block.getSingleChannelBlock(1);
-    
-    juce::dsp::ProcessContextReplacing<float>leftContext(leftBlock);
-    juce::dsp::ProcessContextReplacing<float>rightContext(rightBlock);
-    
-    leftChain.process(leftContext);
-    rightChain.process(rightContext);
-    
-    leftChannelFifo.update(buffer);
-    rightChannelFifo.update(buffer);
+    if(totalNumInputChannels > 1)
+    {
+        updateFilters();
+        
+        juce::dsp::AudioBlock<float> block(buffer);
+        auto leftBlock = block.getSingleChannelBlock(0);
+        auto rightBlock = block.getSingleChannelBlock(1);
+        
+        juce::dsp::ProcessContextReplacing<float>leftContext(leftBlock);
+        juce::dsp::ProcessContextReplacing<float>rightContext(rightBlock);
+        
+        leftChain.process(leftContext);
+        rightChain.process(rightContext);
+        
+        leftChannelFifo.update(buffer);
+        rightChannelFifo.update(buffer);
+    }
     
 }
 
@@ -313,7 +315,7 @@ void SqueezeFilterAudioProcessor::updateHighCutFilters(const ChainSettings& chai
 void SqueezeFilterAudioProcessor::updateFilters()
 {
     auto chainSettings = getChainSettings(apvts);
-    
+
 //    updatePeakFilter(chainSettings);
     updateLowCutFilters(chainSettings);
     updateHighCutFilters(chainSettings);

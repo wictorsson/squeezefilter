@@ -72,6 +72,7 @@ void PathProducer::process(juce::Rectangle<float>fftbounds, double sampleRate)
 
 void ResponseCurveComponent::timerCallback()
 {
+   
     
     if(shouldShowFFTAnalysis){
         auto fftBounds = getAnalysisArea().toFloat();
@@ -189,7 +190,7 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
     {
         responseCurve.lineTo(responseArea.getX() + i, map(mags[i]));
     }
-    
+   
     if(shouldShowFFTAnalysis)
     {
         
@@ -212,6 +213,8 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
     g.setColour(Colours::orange);
     g.strokePath(responseCurve, PathStrokeType(4.f));
 
+//    donePainting = true;
+//    DBG("REPAINTED");
 }
 
 void ResponseCurveComponent::resized()
@@ -315,6 +318,13 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
+    setResizable (true, true);
+
+    const float ratio = 16.0/ 9.0;
+    setSize (p.getEditorWidth(), p.getEditorHeight());
+    setResizeLimits (550,  juce::roundToInt (550.0 / ratio),
+                         1500, juce::roundToInt (1500.0 / ratio));
+    getConstrainer()->setFixedAspectRatio (ratio);
     
     for(auto* comp : getComps())
     {
@@ -415,13 +425,7 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     highCutSlopeSlider.setLookAndFeel(&slopSliderLaf);
     lowCutSlopeSlider.setLookAndFeel(&slopSliderLaf);
     
-    setResizable (true, true);
-
-    const float ratio = 16.0/ 9.0;
-    setSize (p.getEditorWidth(), p.getEditorHeight());
-    setResizeLimits (550,  juce::roundToInt (550.0 / ratio),
-                         1500, juce::roundToInt (1500.0 / ratio));
-    getConstrainer()->setFixedAspectRatio (ratio);
+   
    // setWantsKeyboardFocus(true);
 }
 
@@ -439,19 +443,22 @@ SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
 //==============================================================================
 void SqueezeFilterAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    using namespace juce;
-    float centerX = getWidth() / 2.0f;
-    float centerY = getHeight() / 2.0f;
-    float radius = jmin(centerX * 8, centerY * 2.5f);
-    Colour colour2 = Colour::fromFloatRGBA(0.12f, 0.12f, 0.15f, 1.0f);
-    Colour colour1 = Colour::fromFloatRGBA(0.18f, 0.22f, 0.25f, 1.0f);
-    ColourGradient gradient(colour1, centerX, centerY, colour2, centerX, centerY + radius, true);
-    g.setGradientFill(gradient);
-    g.fillAll();
+   
+        using namespace juce;
+        float centerX = getWidth() / 2.0f;
+        float centerY = getHeight() / 2.0f;
+        float radius = jmin(centerX * 8, centerY * 2.5f);
+        Colour colour2 = Colour::fromFloatRGBA(0.12f, 0.12f, 0.15f, 1.0f);
+        Colour colour1 = Colour::fromFloatRGBA(0.18f, 0.22f, 0.25f, 1.0f);
+        ColourGradient gradient(colour1, centerX, centerY, colour2, centerX, centerY + radius, true);
+        g.setGradientFill(gradient);
+        g.fillAll();
+  
 }
 
 void SqueezeFilterAudioProcessorEditor::resized()
 {
+    audioProcessor.setEditorSize (getWidth(), getHeight());
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     auto bounds = getLocalBounds().reduced(10,10);
@@ -484,7 +491,7 @@ void SqueezeFilterAudioProcessorEditor::resized()
     highCutSlopeSlider.setBounds(lowCutSlopeSlider.getBounds().translated(responseArea.getWidth()*0.4, 0));
     slopIcon2.setBounds(slopIcon.getBounds().translated(responseArea.getWidth()*0.4, 0));
    
-    audioProcessor.setEditorSize (getWidth(), getHeight());
+    
     
 }
 
@@ -496,6 +503,7 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
     highCutSlopeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     lowCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     highCutFreqSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    
     offsetSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     squeezeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     offsetSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);

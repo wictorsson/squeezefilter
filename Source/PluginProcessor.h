@@ -161,9 +161,12 @@ struct ChainSettings
     float lowCutFreq {0}, highCutFreq{0};
     Slope lowCutSlope{Slope::Slope_12}, highCutSlope{Slope::Slope_12};
 
+
+   
 };
 
-ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts, double& lastLowCut, double& lastHighCut );
+
 
 using Filter = juce::dsp::IIR::Filter<float>;
 //CREATE 4 filters for the different slopes
@@ -239,7 +242,7 @@ inline auto makeHighCutFilter(const ChainSettings chainSettings, double sampleRa
 //==============================================================================
 /**
 */
-class SqueezeFilterAudioProcessor  : public juce::AudioProcessor
+class SqueezeFilterAudioProcessor  : public juce::AudioProcessor, juce::AudioProcessorValueTreeState::Listener
                             #if JucePlugin_Enable_ARA
                              , public juce::AudioProcessorARAExtension
                             #endif
@@ -282,7 +285,9 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
+    //juce::AudioProcessorValueTreeState apvts;
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+   // juce::AudioProcessorValueTreeState::ParameterLayout initializeGUI();
     juce::AudioProcessorValueTreeState apvts{*this, nullptr, "Parameters", createParameterLayout()};
     
     using BlockType = juce::AudioBuffer<float>;
@@ -309,19 +314,22 @@ public:
         size.setProperty ("height", height, nullptr);
     }
     
-
+    double lastLowCutParam;
+    double lastHighCutParam;
     
 private:
    
     //STEREO
     juce::LinearSmoothedValue<float> rmsLevelLeft, rmsLevelRight;
     MonoChain leftChain, rightChain;
-    
+    void parameterChanged(const juce::String& parameterID, float newValue) override;
 //    void updatePeakFilter(const ChainSettings& chainSettings);
     void updateLowCutFilters(const ChainSettings& chainSettings);
     void updateHighCutFilters(const ChainSettings& chainSettings);
-    
+
     void updateFilters();
+  
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SqueezeFilterAudioProcessor)
 };

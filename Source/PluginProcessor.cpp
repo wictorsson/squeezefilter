@@ -22,10 +22,14 @@ SqueezeFilterAudioProcessor::SqueezeFilterAudioProcessor()
                        )
 #endif
 {
+    apvts.addParameterListener("lp", this);
+    apvts.addParameterListener("hp", this);
 }
 
 SqueezeFilterAudioProcessor::~SqueezeFilterAudioProcessor()
 {
+    apvts.removeParameterListener("lp", this);
+    apvts.removeParameterListener("hp", this);
 }
 
 //==============================================================================
@@ -188,7 +192,7 @@ bool SqueezeFilterAudioProcessor::hasEditor() const
 juce::AudioProcessorEditor* SqueezeFilterAudioProcessor::createEditor()
 {
     return new SqueezeFilterAudioProcessorEditor (*this);
-   // return new juce::GenericAudioProcessorEditor(*this);
+    //return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -214,38 +218,61 @@ void SqueezeFilterAudioProcessor::setStateInformation (const void* data, int siz
     }
 }
 
-ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts){
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts, double& lastLowCut, double& lastHighCut){
+  
     ChainSettings settings;
-      float offset = apvts.getRawParameterValue("OffsetValue")->load();
-      float lowCutFreq = apvts.getRawParameterValue("LowCutFreq")->load();
-      float highCutFreq = apvts.getRawParameterValue("HighCutFreq")->load();
-      auto squeezeValue = apvts.getRawParameterValue("SqueezeValue")->load();
+    float offset = apvts.getRawParameterValue("OffsetValue")->load();
+    double lowCutFreq = apvts.getRawParameterValue("hp")->load();
+    double highCutFreq = apvts.getRawParameterValue("lp")->load();
 
-      
-      if(offset >= 0)
-      {
-          float maxMin = lowCutFreq;
-          offset =  offset * std::pow(offset / 20000, 2);
-          offset = jmap(offset, 0.0f, 20000.0f, 0.0f, 20000.0f - maxMin);
-          settings.lowCutFreq = lowCutFreq * squeezeValue + offset;
-          settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + offset ;
-      }
+    double minValue = 20.0;
+    double maxValue = 20000.0;
+       // Map the value to the range 0-1
+    double normalizedLowCutValue = (lowCutFreq - minValue) / (maxValue - minValue);
+       // Apply exponential mapping
+    double convertedLowCutValue = minValue * std::pow(maxValue / minValue, normalizedLowCutValue);
+    lowCutFreq = convertedLowCutValue;
+    double normalizedHighCutValue = (highCutFreq - minValue) / (maxValue - minValue);
+       // Apply exponential mapping
+    double convertedHighCutValue = minValue * std::pow(maxValue / minValue, normalizedHighCutValue);
+    highCutFreq = convertedHighCutValue;
+    
+    auto squeezeValue = apvts.getRawParameterValue("SqueezeValue")->load();
 
-      else
-      {
-          float maxMin = highCutFreq;
-          offset = jmap(offset, -20000.0f, 0.0f, -maxMin, 0.0f);
-          settings.lowCutFreq = lowCutFreq * squeezeValue + offset;
-          settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue + offset;
-
-      }
-      
-      settings.lowCutFreq = std::clamp(settings.lowCutFreq, 20.f, 20000.f);
-      settings.highCutFreq = std::clamp(settings.highCutFreq, 20.f, 20000.f);
-      
-      settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCutSlope")->load());
-      settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCutSlope")->load());
-      return settings;
+    if(lowCutFreq > highCutFreq)
+    {
+        highCutFreq = lastHighCut;
+        lowCutFreq = lastLowCut;
+    }
+        lastHighCut = highCutFreq;
+        lastLowCut = lowCutFreq;
+        
+        if(offset >= 0)
+        {
+            float maxMin = lowCutFreq;
+            offset =  offset * std::pow(offset / 20000, 2);
+            offset = jmap(offset, 0.0f, 20000.0f, 0.0f, 20000.0f - maxMin);
+            settings.lowCutFreq = lowCutFreq * squeezeValue + offset;
+            settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + offset ;
+        }
+        
+        else
+        {
+            float maxMin = highCutFreq;
+            offset = jmap(offset, -20000.0f, 0.0f, -maxMin, 0.0f);
+            settings.lowCutFreq = lowCutFreq * squeezeValue + offset;
+            settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue + offset;
+            
+        }
+    
+    // Clamp the values to the valid range
+   
+    settings.lowCutFreq = std::clamp(settings.lowCutFreq, 20.f, 20000.0f);
+    settings.highCutFreq = std::clamp(settings.highCutFreq, 20.0f, 20000.f);
+    settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCutSlope")->load());
+    settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCutSlope")->load());
+        
+    return settings;
 }
 
 void/*SqueezeFilterAudioProcessor::*/updateCoefficients(Coefficients& old, const Coefficients& replacements)
@@ -253,13 +280,16 @@ void/*SqueezeFilterAudioProcessor::*/updateCoefficients(Coefficients& old, const
     *old = *replacements;
 }
 
+
+
 juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor::createParameterLayout(){
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"LowCutFreq", 1}, "LowCutFreq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20.f));
         
-        layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"HighCutFreq", 1}, "HighCutFreq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20000.f));
-        
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"lp",1}, "High Cut", juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.f), 20000.0f));
+    
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"hp",1}, "Low Cut", juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.f), 20.0f));
+    
     
     juce::StringArray stringArray;
     for(int i = 0; i < 4; ++i)
@@ -286,6 +316,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout SqueezeFilterAudioProcessor:
     
     
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{"AnalyzerEnabled",1}, "AnalyzerEnabled", true));
+    
+    
+   
     
     return layout;
 }
@@ -314,11 +347,16 @@ void SqueezeFilterAudioProcessor::updateHighCutFilters(const ChainSettings& chai
 
 void SqueezeFilterAudioProcessor::updateFilters()
 {
-    auto chainSettings = getChainSettings(apvts);
-
+    auto chainSettings = getChainSettings(apvts,lastLowCutParam,lastHighCutParam);
+ 
 //    updatePeakFilter(chainSettings);
     updateLowCutFilters(chainSettings);
     updateHighCutFilters(chainSettings);
+}
+
+void SqueezeFilterAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue)
+{
+  
 }
 
 //==============================================================================

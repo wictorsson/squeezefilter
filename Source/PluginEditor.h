@@ -127,6 +127,7 @@ public:
 class CustomTwoValSlider : public juce::Slider
 {
 public:
+        
     void mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) override
        {
           // DBG("Mouse wheel has moved");
@@ -139,6 +140,9 @@ public:
            
            Slider::mouseWheelMove(e, wheelNew);
        }
+    
+private:
+
 };
 
 
@@ -307,6 +311,66 @@ struct CustomRotarySlider : juce::Slider
 };
 
 
+class MyTwoValueSlider : public juce::Slider
+    {
+    public:
+        MyTwoValueSlider(juce::Slider::SliderStyle style_, juce::RangedAudioParameter* minpar, juce::RangedAudioParameter* maxpar) :
+            minAttach(*minpar, [this](float x) { setMinValue(x, juce::dontSendNotification); }),
+            maxAttach(*maxpar, [this](float x) { setMaxValue(x, juce::dontSendNotification); })
+        {
+            setTextBoxStyle(NoTextBox, true, 0, 0);
+            setSliderStyle(style_);
+            setRange(minpar->getNormalisableRange().start, maxpar->getNormalisableRange().end);
+
+            maxAttach.sendInitialUpdate();
+            minAttach.sendInitialUpdate();
+            
+            onDragStart = [this]()
+            {
+                thumbThatWasDragged = getThumbBeingDragged();
+                minAttach.beginGesture();
+                maxAttach.beginGesture();
+                    
+            };
+            onValueChange = [this]()
+            {
+                
+                minAttach.setValueAsPartOfGesture(getMinValue());
+                maxAttach.setValueAsPartOfGesture(getMaxValue());
+//                if (thumbThatWasDragged == 1)
+//                else if (thumbThatWasDragged == 2)
+                    
+            };
+            onDragEnd = [this]()
+            {
+                minAttach.endGesture();
+                maxAttach.endGesture();
+            };
+        }
+        
+        
+        void mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) override
+           {
+               MouseWheelDetails wheelNew = wheel;
+               wheelNew.deltaY /= 2.f;
+               
+               if(getMinValue()- wheelNew.deltaY*2000 <= getMaxValue()+ wheelNew.deltaY*2000){
+                   minAttach.setValueAsCompleteGesture(getMinValue()- wheelNew.deltaY*2000);
+                   maxAttach.setValueAsCompleteGesture(getMaxValue()+ wheelNew.deltaY*2000);
+                   setMinValue(getMinValue() - wheelNew.deltaY*2000);
+                   setMaxValue(getMaxValue() + wheelNew.deltaY*2000);
+
+               }
+               Slider::mouseWheelMove(e, wheelNew);
+           }
+        
+    private:
+        juce::ParameterAttachment minAttach;
+        juce::ParameterAttachment maxAttach;
+        int thumbThatWasDragged = 0;
+        CustomTwoValSliderLaf twoValLaf;
+};
+    
 struct PathProducer
 {
     PathProducer(SingleChannelSampleFifo<SqueezeFilterAudioProcessor::BlockType>& scff) : leftChannelFifo(&scff)
@@ -451,13 +515,13 @@ private:
     SqueezeFilterAudioProcessor& audioProcessor;
     void sliderValueChanged (juce::Slider * slider) override
     {
-        if(slider == &twoValueSlider)
-        {
-           // DBG("SLIDER VALUE CHANGED");
-            lowCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMinValue()));
-            highCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMaxValue()));
-            
-        }
+//        if(slider == &twoValueSlider)
+//        {
+//           // DBG("SLIDER VALUE CHANGED");
+//            lowCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMinValue()));
+//            highCutFreqSlider.setValue(std::pow(10.0, twoValueSlider.getMaxValue()));
+//
+//        }
     }
     
     CustomRotarySlider lowCutFreqSlider,
@@ -470,12 +534,11 @@ private:
     juce::DrawableButton zoomOneButton{ "zoomOneButton", juce::DrawableButton::ButtonStyle::ImageStretched };
 
     CustomTwoValSlider twoValueSlider;
-
+    MyTwoValueSlider twoValueSlider2;
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
     
-    Attachment lowCutFreqSliderAttachment,
-    highCutFreqSliderAttachment,
+    Attachment 
     lowCutSlopeSliderAttachment,
     highCutSlopeSliderAttachment,
     squeezeSliderAttachment,

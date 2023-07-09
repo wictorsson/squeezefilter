@@ -98,7 +98,7 @@ void ResponseCurveComponent::timerCallback()
 //    }
     
     // REFACTOR - do only once then check if parameterchanged like above
-    auto chainSettings = getChainSettings(audioProcessor.apvts);
+    auto chainSettings = getChainSettings(audioProcessor.apvts,audioProcessor.lastLowCutParam,audioProcessor.lastHighCutParam);
 //    auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
 //    updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
     
@@ -134,7 +134,7 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
     {
         double mag = 1.f;
         auto freq = mapToLog10(double(i) / double(w), 20.0, 20000.0);
-        
+      
 //        if(!monoChain.isBypassed<ChainPositions::Peak>())
 //            mag *= peak.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         
@@ -241,6 +241,7 @@ void ResponseCurveComponent::resized()
     for(auto f : freqs)
     {
         auto normX = mapFromLog10(f, 20.f, 20000.f);
+    
         xs.add(left + width * normX);
     }
     
@@ -313,9 +314,11 @@ juce::Rectangle<int> ResponseCurveComponent::getAnalysisArea()
 
 //==============================================================================
 SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFilterAudioProcessor& p) : AudioProcessorEditor (&p), audioProcessor
-    (p) ,lowCutFreqSliderAttachment(audioProcessor.apvts, "LowCutFreq", lowCutFreqSlider),highCutFreqSliderAttachment(audioProcessor.apvts, "HighCutFreq", highCutFreqSlider),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider), analyzerEnabledButtonAttachment(audioProcessor.apvts, "AnalyzerEnabled", analyzerEnabledButton) ,responseCurveComponent(audioProcessor)
+    (p) ,twoValueSlider2(juce::Slider::SliderStyle::TwoValueHorizontal, p.apvts.getParameter("hp"), p.apvts.getParameter("lp")),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider), analyzerEnabledButtonAttachment(audioProcessor.apvts, "AnalyzerEnabled", analyzerEnabledButton) ,responseCurveComponent(audioProcessor)
 
 {
+    
+    
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setResizable (true, true);
@@ -341,6 +344,7 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
 //        }
 //    };
 
+   
     analyzerEnabledButton.setToggleable(true);
     bool isAnalyzerEnabled = *audioProcessor.apvts.getRawParameterValue("AnalyzerEnabled");
     responseCurveComponent.toggleAnalyzerIsEnabled(isAnalyzerEnabled);
@@ -368,7 +372,7 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
 
     auto scaleImageButton2 = juce::Drawable::createFromImageData(BinaryData::scaleicon_svg, BinaryData::scaleicon_svgSize);
     auto scaleImageButtonHover = juce::Drawable::createFromImageData(BinaryData::screenscaleikonHover_svg, BinaryData::screenscaleikonHover_svgSize);
-//    zoomOneButton.setImages(scaleImageButton2.get(),scaleImageButtonHover.get(),scaleImageButton2.get(),scaleImageButton2.get(),scaleImageButtonHover.get(),scaleImageButton2.get(),scaleImageButton2.get(),scaleImageButton2.get());
+
     
     zoomOneButton.setImages(scaleImageButtonHover.get(),scaleImageButton2.get(),scaleImageButton2.get(),scaleImageButtonHover.get(),scaleImageButton2.get(),scaleImageButtonHover.get(),scaleImageButton2.get(),scaleImageButtonHover.get());
     
@@ -411,16 +415,9 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     addAndMakeVisible(squeezeIcon);
     addAndMakeVisible(offsetIkon);
     
-    addAndMakeVisible(twoValueSlider);
-    twoValueSlider.setSliderStyle(juce::Slider::TwoValueHorizontal);
-    twoValueSlider.setRange(std::log10(20.0), std::log10(20000.0)); // Range in logarithmic scale
-    twoValueSlider.addListener(this);
-    twoValueSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    twoValueSlider.setMaxValue(std::log10(*audioProcessor.apvts.getRawParameterValue("HighCutFreq")));
-    twoValueSlider.setMinValue(std::log10(*audioProcessor.apvts.getRawParameterValue("LowCutFreq")));
-
+    addAndMakeVisible(twoValueSlider2);
+    twoValueSlider2.setLookAndFeel(&twoValLaf);
     squeezeSlider.setLookAndFeel(&sliderLaf);
-    twoValueSlider.setLookAndFeel(&twoValLaf);
     offsetSlider.setLookAndFeel(&crossOverLaf);
     highCutSlopeSlider.setLookAndFeel(&slopSliderLaf);
     lowCutSlopeSlider.setLookAndFeel(&slopSliderLaf);
@@ -436,6 +433,7 @@ SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
     highCutSlopeSlider.setLookAndFeel(nullptr);
     lowCutSlopeSlider.setLookAndFeel(nullptr);
     twoValueSlider.setLookAndFeel(nullptr);
+    twoValueSlider2.setLookAndFeel(nullptr);
    // removeKeyListener(this);
        //    delete myKeyListener;
 }
@@ -480,8 +478,8 @@ void SqueezeFilterAudioProcessorEditor::resized()
     int buttonLeft = responseCurveComponent.getX();
     int buttonTop = responseCurveComponent.getBottom(); // Add a spacing of 10 pixels
     analyzerEnabledButton.setBounds(buttonLeft, buttonTop + 5, 30, 30);
-    auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.018f, 0.0f);
-    twoValueSlider.setBounds(sliderBounds);
+    auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.001f, 0.0f);
+    twoValueSlider2.setBounds(sliderBounds);
     auto filterKnobsArea = bounds.removeFromLeft(responseArea.getWidth());
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
     lowCutArea = lowCutArea.removeFromRight(lowCutArea.getWidth()*0.8).translated(responseArea.getWidth()*0.1, 0);
@@ -510,8 +508,8 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
 
     return
     {
-        &lowCutFreqSlider,
-        &highCutFreqSlider,
+        //&lowCutFreqSlider,
+       // &highCutFreqSlider,
         &lowCutSlopeSlider,
         &highCutSlopeSlider,
         &squeezeSlider,

@@ -3,6 +3,15 @@
 <JUCERPROJECT id="UKaksO" name="SqueezeFilter" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17">
   <MAINGROUP id="YSthdU" name="SqueezeFilter">
+    <GROUP id="{6AE62C75-DA26-500B-0126-D15175823701}" name="Custom">
+      <FILE id="oM2YVp" name="LookAndFeel.cpp" compile="1" resource="0" file="Source/Custom/LookAndFeel.cpp"/>
+      <FILE id="Ic5hjF" name="LookAndFeel.h" compile="0" resource="0" file="Source/Custom/LookAndFeel.h"/>
+      <FILE id="dxwtaG" name="Params.h" compile="0" resource="0" file="Source/Custom/Params.h"/>
+      <FILE id="t2Nx6g" name="ResponseComp.cpp" compile="1" resource="0"
+            file="Source/Custom/ResponseComp.cpp"/>
+      <FILE id="U4DIhQ" name="ResponseComp.h" compile="0" resource="0" file="Source/Custom/ResponseComp.h"/>
+      <FILE id="kabtuf" name="SvgComps.h" compile="0" resource="0" file="Source/Custom/SvgComps.h"/>
+    </GROUP>
     <GROUP id="{EC1CE7D1-88B8-29E0-786B-D1F57D59B27D}" name="Assets">
       <FILE id="Nx3XP6" name="brokenlink.svg" compile="0" resource="1" file="Source/Assets/brokenlink.svg"/>
       <FILE id="njbMea" name="buttonactiveikon.svg" compile="0" resource="1"

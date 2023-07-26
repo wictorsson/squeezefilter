@@ -239,6 +239,7 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts, double
     
     auto squeezeValue = apvts.getRawParameterValue("SqueezeValue")->load();
 
+    //Clamp double Slider
     if(lowCutFreq > highCutFreq)
     {
         highCutFreq = lastHighCut;
@@ -253,7 +254,7 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts, double
             offset =  offset * std::pow(offset / 20000, 2);
             offset = jmap(offset, 0.0f, 20000.0f, 0.0f, 20000.0f - maxMin);
             settings.lowCutFreq = lowCutFreq * squeezeValue + offset;
-            settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + offset ;
+            settings.highCutFreq = 20000 - (20000 - highCutFreq) * squeezeValue  + offset;
         }
         
         else
@@ -266,7 +267,6 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts, double
         }
     
     // Clamp the values to the valid range
-   
     settings.lowCutFreq = std::clamp(settings.lowCutFreq, 20.f, 20000.0f);
     settings.highCutFreq = std::clamp(settings.highCutFreq, 20.0f, 20000.f);
     settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCutSlope")->load());
@@ -274,6 +274,9 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts, double
         
     return settings;
 }
+
+
+// DELETE?
 
 void/*SqueezeFilterAudioProcessor::*/updateCoefficients(Coefficients& old, const Coefficients& replacements)
 {

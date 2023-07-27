@@ -2,8 +2,6 @@
   ==============================================================================
 
     ResponseComp.cpp
-    Created: 27 Jul 2023 12:29:16am
-    Author:  Fredrik Wictorsson
 
   ==============================================================================
 */
@@ -14,11 +12,20 @@ ResponseCurveComponent::ResponseCurveComponent(SqueezeFilterAudioProcessor& p) :
 leftPathProducer(audioProcessor.leftChannelFifo), rightPathProducer(audioProcessor.rightChannelFifo)
 {
     const auto& params = audioProcessor.getParameters();
+    // Set freq response before timer starts
+    auto chainSettings = getChainSettings(audioProcessor.apvts,audioProcessor.lastLowCutParam,audioProcessor.lastHighCutParam);
+    auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
+    auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
+    updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+    updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+    
     for(auto param : params)
     {
         param->addListener(this);
     }
     startTimerHz(60);
+    
+   // audioProcessor.rmsLevelLeft.getCurrentValue();
 }
 
 ResponseCurveComponent::~ResponseCurveComponent()
@@ -35,79 +42,95 @@ void ResponseCurveComponent::parameterValueChanged(int parameterIndex, float new
     parametersChanged.set(true);
 }
 
-void PathProducer::process(juce::Rectangle<float>fftbounds, double sampleRate)
+void PathProducer::process(juce::Rectangle<float> fftbounds, double sampleRate)
 {
     juce::AudioBuffer<float> tempIncomingBuffer;
-    
-    while(leftChannelFifo->getNumCompleteBuffersAvailable()>0)
+
+    while (leftChannelFifo->getNumCompleteBuffersAvailable() > 0)
     {
-        if(leftChannelFifo->getAudioBuffer(tempIncomingBuffer))
+        if (leftChannelFifo->getAudioBuffer(tempIncomingBuffer))
         {
             auto size = tempIncomingBuffer.getNumSamples();
-            
-            juce::FloatVectorOperations::copy(monoBuffer.getWritePointer(0, 0), monoBuffer.getReadPointer(0, size), monoBuffer.getNumSamples()-size);
-            
-            juce::FloatVectorOperations::copy(monoBuffer.getWritePointer(0, monoBuffer.getNumSamples()-size),tempIncomingBuffer.getReadPointer(0,0), size);
-            
-            leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, -48.f);
+
+            // Create a separate copy of the tempIncomingBuffer to preserve the original audio data.
+            juce::AudioBuffer<float> originalBuffer(tempIncomingBuffer);
+
+            // Calculate the RMS value of the incoming buffer.
+            float sumOfSquares = 0.0f;
+            for (int channel = 0; channel < tempIncomingBuffer.getNumChannels(); ++channel)
+            {
+                const float* channelData = tempIncomingBuffer.getReadPointer(channel);
+                for (int i = 0; i < size; ++i)
+                {
+                    float sample = channelData[i];
+                    sumOfSquares += sample * sample;
+                }
+            }
+            float rmsValue = std::sqrt(sumOfSquares / (tempIncomingBuffer.getNumChannels() * size));
+            //float rmsValue = tempIncomingBuffer.getRMSLevel(0, 0, tempIncomingBuffer.getNumSamples());
+            if (rmsValue > 0.05)
+            {
+                //APply gain to tempIncomingBuffer - - THE FADE
+
+                // For example, you can copy the buffer to monoBuffer, apply gain, etc.
+                juce::FloatVectorOperations::copy(monoBuffer.getWritePointer(0, 0), monoBuffer.getReadPointer(0, size), monoBuffer.getNumSamples() - size);
+                juce::FloatVectorOperations::copy(monoBuffer.getWritePointer(0, monoBuffer.getNumSamples() - size), tempIncomingBuffer.getReadPointer(0, 0), size);
+                
+                leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, -48.f);
+            }
+            else
+            {
+                // If the RMS value is not greater than the threshold, do something else.
+                // For example, you can apply a different gain to the buffer.
+                monoBuffer.applyGain(0.99f);
+                leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, -48.f);
+            }
         }
     }
+
+            
+
+
+
     const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();
     const auto binWidth = sampleRate / (double)fftSize;
-    
-    while(leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks()>0)
+
+    while (leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0)
     {
         std::vector<float> fftData;
-        if(leftChannelFFTDataGenerator.getFFTData(fftData))
+        if (leftChannelFFTDataGenerator.getFFTData(fftData))
         {
-            pathProducer.generatePath(fftData, fftbounds,fftSize, binWidth, -48.f);
+            pathProducer.generatePath(fftData, fftbounds, fftSize, binWidth, -48.f);
         }
     }
-    
-    while(pathProducer.getNumPathsAvailable())
+
+    while (pathProducer.getNumPathsAvailable())
     {
         pathProducer.getPath(leftChannelFFTPath);
     }
 }
 
+
 void ResponseCurveComponent::timerCallback()
 {
-   
+    
+    if(parametersChanged.compareAndSetBool(false, true) || doOnce)
+    {
+        doOnce = !doOnce;
+        auto chainSettings = getChainSettings(audioProcessor.apvts,audioProcessor.lastLowCutParam,audioProcessor.lastHighCutParam);
+        auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
+        auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
+        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+    }
     
     if(shouldShowFFTAnalysis){
         auto fftBounds = getAnalysisArea().toFloat();
         auto sampleRate = audioProcessor.getSampleRate();
-        
         leftPathProducer.process(fftBounds, sampleRate);
         rightPathProducer.process(fftBounds, sampleRate);
     }
-
-//    if(parametersChanged.compareAndSetBool(false, true))
-//    {
-//        auto chainSettings = getChainSettings(audioProcessor.apvts);
-//        auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
-//        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-//
-//        auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
-//        auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
-//
-//        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
-//
-//        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
-//
-//    }
     
-    // REFACTOR - do only once then check if parameterchanged like above
-    auto chainSettings = getChainSettings(audioProcessor.apvts,audioProcessor.lastLowCutParam,audioProcessor.lastHighCutParam);
-//    auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
-//    updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-    
-    auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
-    auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
-  
-    updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
-    
-    updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
     repaint();
 }
 
@@ -191,9 +214,15 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
         responseCurve.lineTo(responseArea.getX() + i, map(mags[i]));
     }
    
+   
+    g.setColour(Colours::darkgrey);
+    g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f);
+    
+    g.setColour(Colours::orange);
+    g.strokePath(responseCurve, PathStrokeType(4.f));
+
     if(shouldShowFFTAnalysis)
     {
-        
         auto leftChannelFFTPath = leftPathProducer.getPath();
         leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
         
@@ -207,12 +236,6 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
         g.strokePath(rightChannelFFTPath, PathStrokeType(3));
         
     }
-    g.setColour(Colours::darkgrey);
-    g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f);
-    
-    g.setColour(Colours::orange);
-    g.strokePath(responseCurve, PathStrokeType(4.f));
-
 //    donePainting = true;
 //    DBG("REPAINTED");
 }

@@ -172,7 +172,7 @@ struct PathProducer
 {
     PathProducer(SingleChannelSampleFifo<SqueezeFilterAudioProcessor::BlockType>& scff) : leftChannelFifo(&scff)
     {
-        leftChannelFFTDataGenerator.changeOrder(FFTOrder::order16384);
+        leftChannelFFTDataGenerator.changeOrder(FFTOrder::order8192);
         monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize());
         
     }
@@ -191,10 +191,14 @@ private:
     
     juce::Path leftChannelFFTPath;
     
+    float maxSampleValue = -1.0f; // Variable to store the maximum sample value in the incoming buffer.
     
+    float fadeGain = 1.0f;
+    
+    float fadeFactor = 1.0f;
+    
+
 };
-
-
 
 
 struct ResponseCurveComponent: juce::Component, juce::AudioProcessorParameter::Listener, juce::Timer
@@ -246,4 +250,7 @@ private:
     PathProducer leftPathProducer, rightPathProducer;
     
     bool shouldShowFFTAnalysis = true;
+    
+    bool doOnce = true;
+    
 };

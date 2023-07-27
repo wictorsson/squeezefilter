@@ -61,7 +61,7 @@ private:
     juce::DrawableButton analyzerEnabledButton{ "analyzerEnabledButton", juce::DrawableButton::ButtonStyle::ImageStretched };
     juce::DrawableButton zoomOneButton{ "zoomOneButton", juce::DrawableButton::ButtonStyle::ImageStretched };
 
-    MyTwoValueSlider twoValueSlider2;
+    MyTwoValueSlider lpHpSlider;
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
     

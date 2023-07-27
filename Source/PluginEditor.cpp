@@ -11,7 +11,7 @@
 
 //==============================================================================
 SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFilterAudioProcessor& p) : AudioProcessorEditor (&p), audioProcessor
-    (p) ,twoValueSlider2(juce::Slider::SliderStyle::TwoValueHorizontal, p.apvts.getParameter("hp"), p.apvts.getParameter("lp")),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider), analyzerEnabledButtonAttachment(audioProcessor.apvts, "AnalyzerEnabled", analyzerEnabledButton) ,responseCurveComponent(audioProcessor)
+    (p) ,lpHpSlider(juce::Slider::SliderStyle::TwoValueHorizontal, p.apvts.getParameter("hp"), p.apvts.getParameter("lp")),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider), analyzerEnabledButtonAttachment(audioProcessor.apvts, "AnalyzerEnabled", analyzerEnabledButton) ,responseCurveComponent(audioProcessor)
 
 {
     
@@ -111,15 +111,13 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     addAndMakeVisible(squeezeIcon);
     addAndMakeVisible(offsetIkon);
     
-    addAndMakeVisible(twoValueSlider2);
-    twoValueSlider2.setLookAndFeel(&twoValLaf);
+    addAndMakeVisible(lpHpSlider);
+    lpHpSlider.setLookAndFeel(&twoValLaf);
     squeezeSlider.setLookAndFeel(&sliderLaf);
     offsetSlider.setLookAndFeel(&crossOverLaf);
     highCutSlopeSlider.setLookAndFeel(&slopSliderLaf);
     lowCutSlopeSlider.setLookAndFeel(&slopSliderLaf);
     
-   
-   // setWantsKeyboardFocus(true);
 }
 
 SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
@@ -129,7 +127,7 @@ SqueezeFilterAudioProcessorEditor::~SqueezeFilterAudioProcessorEditor()
     highCutSlopeSlider.setLookAndFeel(nullptr);
     lowCutSlopeSlider.setLookAndFeel(nullptr);
 
-    twoValueSlider2.setLookAndFeel(nullptr);
+    lpHpSlider.setLookAndFeel(nullptr);
   
        //    delete myKeyListener;
 }
@@ -175,7 +173,7 @@ void SqueezeFilterAudioProcessorEditor::resized()
     int buttonTop = responseCurveComponent.getBottom(); // Add a spacing of 10 pixels
     analyzerEnabledButton.setBounds(buttonLeft, buttonTop + 5, 30, 30);
     auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.001f, 0.0f);
-    twoValueSlider2.setBounds(sliderBounds);
+    lpHpSlider.setBounds(sliderBounds);
     auto filterKnobsArea = bounds.removeFromLeft(responseArea.getWidth());
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
     lowCutArea = lowCutArea.removeFromRight(lowCutArea.getWidth()*0.8).translated(responseArea.getWidth()*0.1, 0);

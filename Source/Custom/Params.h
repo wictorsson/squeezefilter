@@ -8,6 +8,7 @@
 
 #pragma once
 #include "LookAndFeel.h"
+
 class MyTwoValueSlider : public juce::Slider
     {
     public:

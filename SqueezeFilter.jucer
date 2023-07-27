@@ -4,6 +4,9 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17">
   <MAINGROUP id="YSthdU" name="SqueezeFilter">
     <GROUP id="{6AE62C75-DA26-500B-0126-D15175823701}" name="Custom">
+      <FILE id="zbS1y9" name="Fifo.h" compile="0" resource="0" file="Source/Custom/Fifo.h"/>
+      <FILE id="cprVs3" name="Filter.cpp" compile="1" resource="0" file="Source/Custom/Filter.cpp"/>
+      <FILE id="uaQBW3" name="Filter.h" compile="0" resource="0" file="Source/Custom/Filter.h"/>
       <FILE id="oM2YVp" name="LookAndFeel.cpp" compile="1" resource="0" file="Source/Custom/LookAndFeel.cpp"/>
       <FILE id="Ic5hjF" name="LookAndFeel.h" compile="0" resource="0" file="Source/Custom/LookAndFeel.h"/>
       <FILE id="dxwtaG" name="Params.h" compile="0" resource="0" file="Source/Custom/Params.h"/>

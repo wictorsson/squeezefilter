@@ -172,7 +172,7 @@ struct PathProducer
 {
     PathProducer(SingleChannelSampleFifo<SqueezeFilterAudioProcessor::BlockType>& scff) : leftChannelFifo(&scff)
     {
-        leftChannelFFTDataGenerator.changeOrder(FFTOrder::order8192);
+        leftChannelFFTDataGenerator.changeOrder(FFTOrder::order16384);
         monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize());
         
     }

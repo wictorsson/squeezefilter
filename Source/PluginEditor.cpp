@@ -11,7 +11,7 @@
 
 //==============================================================================
 SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFilterAudioProcessor& p) : AudioProcessorEditor (&p), audioProcessor
-    (p) ,lpHpSlider(juce::Slider::SliderStyle::TwoValueHorizontal, p.apvts.getParameter("hp"), p.apvts.getParameter("lp")),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider), analyzerEnabledButtonAttachment(audioProcessor.apvts, "AnalyzerEnabled", analyzerEnabledButton) ,responseCurveComponent(audioProcessor)
+    (p) ,lpHpSlider(juce::Slider::SliderStyle::TwoValueHorizontal, p.apvts.getParameter("hp"), p.apvts.getParameter("lp")),lowCutSlopeSliderAttachment(audioProcessor.apvts, "LowCutSlope", lowCutSlopeSlider),highCutSlopeSliderAttachment(audioProcessor.apvts, "HighCutSlope", highCutSlopeSlider),squeezeSliderAttachment(audioProcessor.apvts, "SqueezeValue", squeezeSlider),offsetSliderAttachment(audioProcessor.apvts, "OffsetValue", offsetSlider) /*analyzerEnabledButtonAttachment(audioProcessor.apvts, "AnalyzerEnabled", analyzerEnabledButton) */,responseCurveComponent(audioProcessor)
 
 {
     
@@ -41,9 +41,9 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
 //    };
 
    
-    analyzerEnabledButton.setToggleable(true);
-    bool isAnalyzerEnabled = *audioProcessor.apvts.getRawParameterValue("AnalyzerEnabled");
-    responseCurveComponent.toggleAnalyzerIsEnabled(isAnalyzerEnabled);
+//    analyzerEnabledButton.setToggleable(true);
+//    bool isAnalyzerEnabled = *audioProcessor.apvts.getRawParameterValue("AnalyzerEnabled");
+//    responseCurveComponent.toggleAnalyzerIsEnabled(isAnalyzerEnabled);
 
     auto analyzerEnabledImage = juce::Drawable::createFromImageData(BinaryData::buttonactiveikon_svg, BinaryData::buttonactiveikon_svgSize);
     
@@ -53,18 +53,19 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     
     auto buttonemptyiconHover = juce::Drawable::createFromImageData(BinaryData::buttonemptyiconHover_svg, BinaryData::buttonemptyiconHover_svgSize);
 
-    analyzerEnabledButton.setImages(analyzerDisabledImage.get(),buttonemptyiconHover.get(),analyzerDisabledImage.get(), analyzerDisabledImage.get(), analyzerEnabledImage.get(), buttonactiveikonHover.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get());
+//    analyzerEnabledButton.setImages(analyzerDisabledImage.get(),buttonemptyiconHover.get(),analyzerDisabledImage.get(), analyzerDisabledImage.get(), analyzerEnabledImage.get(), buttonactiveikonHover.get(), analyzerEnabledImage.get(), analyzerEnabledImage.get());
 
-    analyzerEnabledButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::transparentBlack);
-    analyzerEnabledButton.onClick = [this]()
-    {
-        bool newAnalyzerEnabledState = !analyzerEnabledButton.getToggleState();
-           analyzerEnabledButton.setToggleState(newAnalyzerEnabledState, juce::NotificationType::dontSendNotification);
-           *audioProcessor.apvts.getRawParameterValue("AnalyzerEnabled") = newAnalyzerEnabledState;
-           responseCurveComponent.toggleAnalyzerIsEnabled(newAnalyzerEnabledState);
-
-    };
-    analyzerEnabledButton.setToggleState(isAnalyzerEnabled, juce::NotificationType::dontSendNotification);
+    //FFT uncomment to use
+//    analyzerEnabledButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::transparentBlack);
+//    analyzerEnabledButton.onClick = [this]()
+//    {
+//        bool newAnalyzerEnabledState = !analyzerEnabledButton.getToggleState();
+//           analyzerEnabledButton.setToggleState(newAnalyzerEnabledState, juce::NotificationType::dontSendNotification);
+//           *audioProcessor.apvts.getRawParameterValue("AnalyzerEnabled") = newAnalyzerEnabledState;
+//           responseCurveComponent.toggleAnalyzerIsEnabled(newAnalyzerEnabledState);
+//
+//    };
+//    analyzerEnabledButton.setToggleState(isAnalyzerEnabled, juce::NotificationType::dontSendNotification);
 
     auto scaleImageButton2 = juce::Drawable::createFromImageData(BinaryData::screenscaleicon_svg, BinaryData::screenscaleicon_svgSize);
     auto scaleImageButtonHover = juce::Drawable::createFromImageData(BinaryData::screenscaleikonHover_svg, BinaryData::screenscaleikonHover_svgSize);
@@ -209,7 +210,7 @@ std::vector<juce::Component*> SqueezeFilterAudioProcessorEditor::getComps()
         &highCutSlopeSlider,
         &squeezeSlider,
         &offsetSlider,
-        &analyzerEnabledButton,
+      //  &analyzerEnabledButton,
         &responseCurveComponent
     };
 }

@@ -58,7 +58,7 @@ private:
     highCutSlopeSlider,
     squeezeSlider,offsetSlider;
     
-    juce::DrawableButton analyzerEnabledButton{ "analyzerEnabledButton", juce::DrawableButton::ButtonStyle::ImageStretched };
+    //juce::DrawableButton analyzerEnabledButton{ "analyzerEnabledButton", juce::DrawableButton::ButtonStyle::ImageStretched };
     juce::DrawableButton zoomOneButton{ "zoomOneButton", juce::DrawableButton::ButtonStyle::ImageStretched };
 
     MyTwoValueSlider lpHpSlider;
@@ -72,7 +72,7 @@ private:
     offsetSliderAttachment;
 
     using ButtonAttachment = APVTS::ButtonAttachment;
-    ButtonAttachment analyzerEnabledButtonAttachment;
+    //ButtonAttachment analyzerEnabledButtonAttachment;
 
     ResponseCurveComponent responseCurveComponent;
     std::vector<juce::Component*> getComps();

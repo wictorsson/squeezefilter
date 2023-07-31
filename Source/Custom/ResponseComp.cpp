@@ -96,19 +96,21 @@ void PathProducer::process(juce::Rectangle<float> fftbounds, double sampleRate)
     const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();
     const auto binWidth = sampleRate / (double)fftSize;
 
-    while (leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0)
-    {
-        std::vector<float> fftData;
-        if (leftChannelFFTDataGenerator.getFFTData(fftData))
-        {
-            pathProducer.generatePath(fftData, fftbounds, fftSize, binWidth, -48.f);
-        }
-    }
-
-    while (pathProducer.getNumPathsAvailable())
-    {
-        pathProducer.getPath(leftChannelFFTPath);
-    }
+    
+     // FFT uncomment to use
+//    while (leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0)
+//    {
+//        std::vector<float> fftData;
+//        if (leftChannelFFTDataGenerator.getFFTData(fftData))
+//        {
+//            pathProducer.generatePath(fftData, fftbounds, fftSize, binWidth, -48.f);
+//        }
+//    }
+//
+//    while (pathProducer.getNumPathsAvailable())
+//    {
+//        pathProducer.getPath(leftChannelFFTPath);
+//    }
 }
 
 
@@ -125,12 +127,13 @@ void ResponseCurveComponent::timerCallback()
         updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
     }
     
-    if(shouldShowFFTAnalysis){
-        auto fftBounds = getAnalysisArea().toFloat();
-        auto sampleRate = audioProcessor.getSampleRate();
-        leftPathProducer.process(fftBounds, sampleRate);
-        rightPathProducer.process(fftBounds, sampleRate);
-    }
+    // FFT uncomment to use
+//    if(shouldShowFFTAnalysis){
+//        auto fftBounds = getAnalysisArea().toFloat();
+//        auto sampleRate = audioProcessor.getSampleRate();
+//        leftPathProducer.process(fftBounds, sampleRate);
+//        rightPathProducer.process(fftBounds, sampleRate);
+//    }
     
     repaint();
 }

@@ -8,6 +8,7 @@
 
 #pragma once
 #include <JuceHeader.h>
+
 using namespace juce;
 
 class CustomSlopSlider : public juce::LookAndFeel_V4

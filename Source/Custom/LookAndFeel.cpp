@@ -10,7 +10,8 @@
 
 #include "LookAndFeel.h"
 
-using namespace juce;
+#include "colors.h"
+//using namespace juce;
 
 //CustomSlopSlider
 
@@ -84,13 +85,13 @@ void CustomSlopSlider::drawLinearSlider (juce::Graphics& g, int x, int y, int wi
 
         valueTrack.startNewSubPath (minPoint);
         valueTrack.lineTo (isThreeVal ? thumbPoint : maxPoint);
-        g.setColour (juce::Colours::lightblue);
+        g.setColour (myColourLime);
         g.strokePath (valueTrack, { trackWidth, PathStrokeType::curved, PathStrokeType::rounded });
 
 
         if (! isTwoVal)
         {
-            g.setColour (juce::Colours::lightblue);
+            g.setColour (myColourLime);
           //  g.setColour (slider.findColour (juce::Slider::backgroundColourId));
             g.fillEllipse (Rectangle<float> (static_cast<float> (thumbWidth), static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint));
             g.setColour (slider.findColour (juce::Slider::backgroundColourId));
@@ -225,14 +226,14 @@ void CustomCrossover::drawLinearSlider (juce::Graphics& g, int x, int y, int wid
         valueTrack.startNewSubPath (width * 0.5f + thumbWidth/2, startPoint.y);
         valueTrack.lineTo (maxPoint);
 
-        g.setColour (juce::Colours::lightblue);
+        g.setColour (myColourLime);
 
         g.strokePath (valueTrack, { trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
 
 
         if (! isTwoVal)
         {
-            g.setColour (juce::Colours::lightblue);
+            g.setColour (myColourLime);
           //  g.setColour (slider.findColour (juce::Slider::backgroundColourId));
             g.fillEllipse (Rectangle<float> (static_cast<float> (thumbWidth), static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint));
             g.setColour (slider.findColour (juce::Slider::backgroundColourId));
@@ -352,12 +353,12 @@ void CustomSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, int wid
 
         valueTrack.startNewSubPath (minPoint);
         valueTrack.lineTo (isThreeVal ? thumbPoint : maxPoint);
-        g.setColour (juce::Colours::lightblue);
+        g.setColour (myColourLime);
         g.strokePath (valueTrack, { trackWidth, PathStrokeType::curved, PathStrokeType::rounded });
 
         if (! isTwoVal)
         {
-            g.setColour (juce::Colours::lightblue);
+            g.setColour (myColourLime);
            // g.setColour (slider.findColour (juce::Slider::backgroundColourId));
             g.fillEllipse (Rectangle<float> (static_cast<float> (thumbWidth), static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint));
             
@@ -438,16 +439,16 @@ void CustomTwoValSliderLaf::drawPointer (Graphics& g, const float x, const float
 //        gradient = ColourGradient(Colours::orange, 0.0f, y, Colour(0x00FF7F00), 0.0f, y + diameter * lengthFactor * 0.8, false);
 //        gradient.addColour(1.0f, Colour(0x00FF7F00));
         
-        gradient = ColourGradient::vertical(Colours::orange, y,
-                                            Colours::orange.withAlpha(0.0f), y + diameter * lengthFactor );
+        gradient = ColourGradient::vertical(myColourLime, y,
+                                            myColourLime.withAlpha(0.0f), y + diameter * lengthFactor );
     }
     else if(direction == 2)
     {
 //        gradient = ColourGradient(Colours::orange, 0.0f, y, Colour(0x00FF7F00), 0.0f, y - diameter * lengthFactor * 0.5, false);
      
         
-        gradient = ColourGradient::vertical(Colours::orange, y,
-                                            Colours::orange.withAlpha(0.0f), y - diameter * lengthFactor * 0.8);
+        gradient = ColourGradient::vertical(myColourLime, y,
+                                            myColourLime.withAlpha(0.0f), y - diameter * lengthFactor * 0.8);
         //gradient.addColour(1.0f, Colours::orange);
     }
     
@@ -529,7 +530,7 @@ void CustomTwoValSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, i
                if (isTwoVal || isThreeVal)
                {
                    auto sr = jmin (trackWidth, (slider.isHorizontal() ? (float) height : (float) width) * 0.4f);
-                   auto pointerColour = juce::Colours::orange;
+                   auto pointerColour = myColourLime;
 
                    if (slider.isHorizontal())
                    {

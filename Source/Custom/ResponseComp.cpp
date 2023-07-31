@@ -7,6 +7,7 @@
 */
 
 #include "ResponseComp.h"
+#include "colors.h"
 
 ResponseCurveComponent::ResponseCurveComponent(SqueezeFilterAudioProcessor& p) : audioProcessor(p),
 leftPathProducer(audioProcessor.leftChannelFifo), rightPathProducer(audioProcessor.rightChannelFifo)
@@ -138,8 +139,9 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
 {
     using namespace juce;
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (Colour::fromFloatRGBA (0.10f, 0.11f, 0.13f, 1.0f));
+   // g.fillAll (Colour::fromFloatRGBA (0.10f, 0.11f, 0.13f, 1.0f));
 
+    g.fillAll (Colour::fromFloatRGBA(0.42f, 0.42f, 0.15f, 0.0f));
     g.drawImage(background, getLocalBounds().toFloat());
    // auto bounds = getLocalBounds();
     auto responseArea = getAnalysisArea();
@@ -217,8 +219,8 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
    
     g.setColour(Colours::darkgrey);
     g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f);
-    
-    g.setColour(Colours::orange);
+   // Colour myColourLime = Colour::fromFloatRGBA(0.5255f, 0.7098f, 0.2078f, 1.0f);
+    g.setColour(myColourLime);
     g.strokePath(responseCurve, PathStrokeType(4.f));
 
     if(shouldShowFFTAnalysis)

@@ -66,7 +66,7 @@ SqueezeFilterAudioProcessorEditor::SqueezeFilterAudioProcessorEditor (SqueezeFil
     };
     analyzerEnabledButton.setToggleState(isAnalyzerEnabled, juce::NotificationType::dontSendNotification);
 
-    auto scaleImageButton2 = juce::Drawable::createFromImageData(BinaryData::scaleicon_svg, BinaryData::scaleicon_svgSize);
+    auto scaleImageButton2 = juce::Drawable::createFromImageData(BinaryData::screenscaleicon_svg, BinaryData::screenscaleicon_svgSize);
     auto scaleImageButtonHover = juce::Drawable::createFromImageData(BinaryData::screenscaleikonHover_svg, BinaryData::screenscaleikonHover_svgSize);
 
     
@@ -153,32 +153,37 @@ void SqueezeFilterAudioProcessorEditor::resized()
     audioProcessor.setEditorSize (getWidth(), getHeight());
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    auto bounds = getLocalBounds().reduced(10,10);
-    auto menuButtons = bounds.removeFromLeft(35).removeFromTop(60);
-    auto buttonArea = menuButtons.removeFromTop(35);
+    //auto bounds = getLocalBounds().reduced(10,10);
+    auto bounds = getLocalBounds();
+    auto topRec = bounds.removeFromTop(bounds.getHeight()* 0.15);
+    offsetIkon.setBounds(topRec.removeFromBottom(topRec.getHeight()* 0.2));
+    
+    auto menuButtons = topRec.removeFromLeft(topRec.getWidth()*0.07);
+   
     //buttonArea
-    zoomOneButton.setBounds(buttonArea);
-    bounds = bounds.removeFromBottom(bounds.getHeight() * 0.95f);
+    zoomOneButton.setBounds(menuButtons.reduced(10));
+    bounds = bounds.removeFromRight(bounds.getWidth() * 0.95f);
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.8f);
     auto topSliderArea = responseArea.removeFromTop(responseArea.getHeight()* 0.3f);
     auto labelarea = topSliderArea.removeFromRight(bounds.getWidth() * 0.15f);
-    squeezeIcon.setBounds(labelarea.removeFromBottom(topSliderArea.getHeight()*0.5).removeFromTop(labelarea.getHeight()*0.8));
+    
+    squeezeIcon.setBounds(labelarea.removeFromBottom(topSliderArea.getHeight()*0.5).removeFromTop(labelarea.getHeight()*0.6).translated(0,labelarea.getHeight()*0.3));
     auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.15f);
     squeezeSlider.setBounds(modifySliderArea);
     auto offsetRec = topSliderArea.removeFromLeft(bounds.getWidth() * 0.85f).reduced(responseArea.getWidth()*0.2, 0);
     offsetSlider.setBounds(offsetRec.removeFromBottom(offsetRec.getHeight()*0.65f).translated(0, - bounds.getHeight()*0.1));
-    offsetIkon.setBounds(offsetRec.removeFromBottom(offsetRec.getHeight()*0.8));
+    //offsetIkon.setBounds(offsetRec.removeFromBottom(offsetRec.getHeight()*0.8));
     responseCurveComponent.setBounds(responseArea);
     int buttonLeft = responseCurveComponent.getX();
     int buttonTop = responseCurveComponent.getBottom(); // Add a spacing of 10 pixels
-    analyzerEnabledButton.setBounds(buttonLeft, buttonTop + 5, 30, 30);
+   // analyzerEnabledButton.setBounds(buttonLeft, buttonTop + 5, 30, 30);
     auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.001f, 0.0f);
     lpHpSlider.setBounds(sliderBounds);
     auto filterKnobsArea = bounds.removeFromLeft(responseArea.getWidth());
     auto lowCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.33f);
     lowCutArea = lowCutArea.removeFromRight(lowCutArea.getWidth()*0.8).translated(responseArea.getWidth()*0.1, 0);
     lowCutSlopeSlider.setBounds(lowCutArea.removeFromRight(lowCutArea.getWidth()* 0.6));
-    slopIcon.setBounds(lowCutArea.removeFromRight(lowCutArea.getWidth()* 0.8).translated(5,  - lowCutArea.getHeight()*0.1));
+    slopIcon.setBounds(lowCutArea.removeFromRight(lowCutArea.getWidth()* 0.6).translated(5, - lowCutArea.getHeight()*0.05));
     auto highCutArea = filterKnobsArea.removeFromLeft(filterKnobsArea.getWidth() * 0.5f);
     highCutSlopeSlider.setBounds(lowCutSlopeSlider.getBounds().translated(responseArea.getWidth()*0.4, 0));
     slopIcon2.setBounds(slopIcon.getBounds().translated(responseArea.getWidth()*0.4, 0));

@@ -4,6 +4,8 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17">
   <MAINGROUP id="YSthdU" name="SqueezeFilter">
     <GROUP id="{6AE62C75-DA26-500B-0126-D15175823701}" name="Custom">
+      <FILE id="qeQvwe" name="colors.cpp" compile="1" resource="0" file="Source/Custom/colors.cpp"/>
+      <FILE id="ACl0b3" name="colors.h" compile="0" resource="0" file="Source/Custom/colors.h"/>
       <FILE id="zbS1y9" name="Fifo.h" compile="0" resource="0" file="Source/Custom/Fifo.h"/>
       <FILE id="cprVs3" name="Filter.cpp" compile="1" resource="0" file="Source/Custom/Filter.cpp"/>
       <FILE id="uaQBW3" name="Filter.h" compile="0" resource="0" file="Source/Custom/Filter.h"/>
@@ -17,22 +19,23 @@
     </GROUP>
     <GROUP id="{EC1CE7D1-88B8-29E0-786B-D1F57D59B27D}" name="Assets">
       <FILE id="Nx3XP6" name="brokenlink.svg" compile="0" resource="1" file="Source/Assets/brokenlink.svg"/>
-      <FILE id="njbMea" name="buttonactiveikon.svg" compile="0" resource="1"
-            file="Source/Assets/buttonactiveikon.svg"/>
+      <FILE id="EJsyLI" name="buttonactiveikon.svg" compile="0" resource="1"
+            file="../../../Downloads/squeezer_icons/buttonactiveikon.svg"/>
       <FILE id="szIcnm" name="screenscaleikonHover.svg" compile="0" resource="1"
             file="Source/Assets/screenscaleikonHover.svg"/>
-      <FILE id="MsofUN" name="buttonemptyikon.svg" compile="0" resource="1"
-            file="Source/Assets/buttonemptyikon.svg"/>
+      <FILE id="TfgJ1T" name="buttonemptyikon.svg" compile="0" resource="1"
+            file="../../../Downloads/squeezer_icons/buttonemptyikon.svg"/>
       <FILE id="WzKpF3" name="buttonactiveikonHover1.svg" compile="0" resource="1"
             file="Source/Assets/buttonactiveikonHover1.svg"/>
       <FILE id="WwcTqz" name="buttonemptyiconHover.svg" compile="0" resource="1"
             file="Source/Assets/buttonemptyiconHover.svg"/>
-      <FILE id="FT2SrO" name="offsetIkon.svg" compile="0" resource="1" file="Source/Assets/offsetIkon.svg"/>
+      <FILE id="U8Zm9o" name="offsetIkon.svg" compile="0" resource="1" file="../../../Downloads/squeezer_icons/offsetIkon.svg"/>
+      <FILE id="FT2SrO" name="offsetIkon2.svg" compile="0" resource="1" file="Source/Assets/offsetIkon2.svg"/>
       <FILE id="eKBhMG" name="scaleicon.svg" compile="0" resource="1" file="Source/Assets/scaleicon.svg"/>
-      <FILE id="cIAff6" name="screenscaleikon.svg" compile="0" resource="1"
-            file="Source/Assets/screenscaleikon.svg"/>
-      <FILE id="n54of3" name="slopeicon.svg" compile="0" resource="1" file="Source/Assets/slopeicon.svg"/>
-      <FILE id="WK7AD9" name="squeezeicon.svg" compile="0" resource="1" file="Source/Assets/squeezeicon.svg"/>
+      <FILE id="XB5mwI" name="screenscaleicon.svg" compile="0" resource="1"
+            file="../../../Downloads/squeezer_icons/screenscaleicon.svg"/>
+      <FILE id="Gtom7U" name="slopeicon.svg" compile="0" resource="1" file="../../../Downloads/squeezer_icons/slopeicon.svg"/>
+      <FILE id="kUKMb5" name="squeezeicon.svg" compile="0" resource="1" file="../../../Downloads/squeezer_icons/squeezeicon.svg"/>
     </GROUP>
     <GROUP id="{AD38FE8F-FB13-E7FF-1673-5A8C6A882DC4}" name="Source">
       <FILE id="FzTCT3" name="PluginProcessor.cpp" compile="1" resource="0"

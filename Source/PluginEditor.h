@@ -14,7 +14,7 @@
 #include "Custom/LookAndFeel.h"
 #include "Custom/SvgComps.h"
 #include "Custom/ResponseComp.h"
-
+#include "Custom/colors.h"
 using namespace juce;
 
 

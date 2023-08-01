@@ -219,7 +219,7 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
     g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f);
    // Colour myColourLime = Colour::fromFloatRGBA(0.5255f, 0.7098f, 0.2078f, 1.0f);
     g.setColour(myColourLime);
-    g.strokePath(responseCurve, PathStrokeType(4.f));
+    g.strokePath(responseCurve, PathStrokeType(4.f * w * 0.002));
 
     if(shouldShowFFTAnalysis)
     {

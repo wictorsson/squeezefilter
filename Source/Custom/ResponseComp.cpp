@@ -89,15 +89,10 @@ void PathProducer::process(juce::Rectangle<float> fftbounds, double sampleRate)
         }
     }
 
-            
+// FFT uncomment to use
+//    const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();
+//    const auto binWidth = sampleRate / (double)fftSize;
 
-
-
-    const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();
-    const auto binWidth = sampleRate / (double)fftSize;
-
-    
-     // FFT uncomment to use
 //    while (leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0)
 //    {
 //        std::vector<float> fftData;

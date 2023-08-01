@@ -2,8 +2,6 @@
   ==============================================================================
 
     LookAndFeel.cpp
-    Created: 27 Jul 2023 12:07:05am
-    Author:  Fredrik Wictorsson
 
   ==============================================================================
 */
@@ -16,7 +14,6 @@
 //CustomSlopSlider
 
 CustomSlopSlider::CustomSlopSlider(){}
-
 void CustomSlopSlider::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
                                        float sliderPos,
                                        float minSliderPos,
@@ -145,6 +142,8 @@ juce::Label* CustomSlopSlider::createSliderTextBox (juce::Slider& slider)
 
 CustomCrossover::CustomCrossover(){}
 
+
+
 void CustomCrossover::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
                                        float sliderPos,
                                        float minSliderPos,
@@ -165,7 +164,7 @@ void CustomCrossover::drawLinearSlider (juce::Graphics& g, int x, int y, int wid
 
         auto trackWidth = juce::jmin (6.0f, slider.isHorizontal() ? (float) height * 0.25f : (float) width * 0.25f);
         
-        trackWidth = trackWidth * 2;
+        trackWidth = trackWidth * 2 ;
 
         juce::Point<float> startPoint (slider.isHorizontal() ? (float) x : (float) x + (float) width * 0.5f,
                                  slider.isHorizontal() ? (float) y + (float) height * 0.5f : (float) (height + y));
@@ -183,6 +182,11 @@ void CustomCrossover::drawLinearSlider (juce::Graphics& g, int x, int y, int wid
         juce::Path valueTrack;
         juce::Point<float> minPoint, maxPoint, thumbPoint;
 
+        
+        auto thumbWidth = getSliderThumbRadius (slider);
+ 
+        thumbWidth = thumbWidth * 2;
+        
         if (isTwoVal || isThreeVal)
         {
             minPoint = { slider.isHorizontal() ? minSliderPos : (float) width * 0.5f,
@@ -214,8 +218,7 @@ void CustomCrossover::drawLinearSlider (juce::Graphics& g, int x, int y, int wid
 //            g.fillRoundedRectangle (juce::Rectangle<float> (static_cast<float> (thumbWidth) * 0.2, static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint), 3);
 //        }
         
-        auto thumbWidth = getSliderThumbRadius (slider);
-        thumbWidth = thumbWidth * 2;
+
 
 //        valueTrack.startNewSubPath (minPoint);
 //        valueTrack.lineTo (isThreeVal ? thumbPoint : maxPoint);
@@ -304,13 +307,30 @@ void CustomSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, int wid
     }
     else
     {
+      
         auto isTwoVal   = (style == Slider::SliderStyle::TwoValueVertical   || style == Slider::SliderStyle::TwoValueHorizontal);
         auto isThreeVal = (style == Slider::SliderStyle::ThreeValueVertical || style == Slider::SliderStyle::ThreeValueHorizontal);
 
         auto trackWidth = jmin (6.0f, slider.isHorizontal() ? (float) height * 0.25f : (float) width * 0.25f);
-        trackWidth = trackWidth * 2;
+        auto thumbWidth = getSliderThumbRadius (slider);
+      
         
-
+        trackWidth = trackWidth * 2;
+        thumbWidth = thumbWidth * 2;
+    
+        
+//        if(width < 106)
+//        {
+//
+//
+//
+//        }
+//        else
+//        {
+//            trackWidth = trackWidth * 2;
+//            thumbWidth = thumbWidth * 2;
+//        }
+        
         Point<float> startPoint (slider.isHorizontal() ? (float) x : (float) x + (float) width * 0.5f,
                                  slider.isHorizontal() ? (float) y + (float) height * 0.5f : (float) (height + y));
 
@@ -327,6 +347,7 @@ void CustomSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, int wid
         Path valueTrack;
         Point<float> minPoint, maxPoint, thumbPoint;
 
+        
         if (isTwoVal || isThreeVal)
         {
             minPoint = { slider.isHorizontal() ? minSliderPos : (float) width * 0.5f,
@@ -344,12 +365,11 @@ void CustomSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, int wid
             auto kx = slider.isHorizontal() ? sliderPos : ((float) x + (float) width * 0.5f);
             auto ky = slider.isHorizontal() ? ((float) y + (float) height * 0.5f) : sliderPos;
 
-            minPoint = startPoint;
+            minPoint = { startPoint }; // Apply offset to the minimum value
             maxPoint = { kx, ky };
         }
 
-        auto thumbWidth = getSliderThumbRadius (slider);
-        thumbWidth = thumbWidth * 2;
+        
 
         valueTrack.startNewSubPath (minPoint);
         valueTrack.lineTo (isThreeVal ? thumbPoint : maxPoint);
@@ -398,6 +418,7 @@ void CustomSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, int wid
 }
 
 
+
 juce::Label* CustomSliderLaf::createSliderTextBox (juce::Slider& slider)
 {
     auto* l = new juce::Label();
@@ -417,45 +438,68 @@ juce::Label* CustomSliderLaf::createSliderTextBox (juce::Slider& slider)
 void CustomTwoValSliderLaf::drawPointer (Graphics& g, const float x, const float y, const float diameter,
                                   const Colour& colour, const int direction, float height)
 {
+
     Path p;
-    float lengthFactor = height * 0.035;  // Adjust the length factor as desired
-  //  diameter = diameter * height * 0.025;
-    
-    p.startNewSubPath (x + diameter * 0.5f, y);
-    p.lineTo (x + diameter, y + diameter * 0.2f * lengthFactor);
-    p.lineTo (x + diameter, y + diameter * lengthFactor);
-    p.lineTo (x, y + diameter * lengthFactor);
-    p.lineTo (x, y + diameter * 0.2f * lengthFactor);
-    p.closeSubPath();
+      float lineWidth = diameter; // Make the diameter of the circle equivalent to the line width for a vertical line.
 
-    p.applyTransform (AffineTransform::rotation ((float) direction * MathConstants<float>::halfPi,
-                                                 x + diameter * 0.5f, y + diameter * 0.5f));
+      p.startNewSubPath(x + lineWidth * 0.5f, y);
+      p.lineTo(x + lineWidth * 0.5f, y + height);
 
-    // Create a gradient from orange to transparent
-    ColourGradient gradient;
+  //    p.applyTransform(AffineTransform::rotation((float) direction * MathConstants<float>::halfPi,
+            //                                     x + lineWidth * 0.5f, y + height * 0.5f));
+
+
     
+    ColourGradient gradient(myColourLime.withAlpha(0.0f), x + lineWidth * 0.5f, y,
+                            myColourLime, x + lineWidth * 0.5f, y + height * 0.4f, false);
+
+
+       // Set the gradient as the stroke for the path
+       g.setGradientFill(gradient);
+       g.strokePath(p, PathStrokeType(lineWidth));
+    
+    if(direction == 2)
+    {
+        Path p;
+          float lineWidth = diameter * 200; // Make the diameter of the circle equivalent to the line width for a vertical line.
+
+          p.startNewSubPath(x - lineWidth * 0.5f, y);
+          p.lineTo(x - lineWidth * 0.5f, y + height);
+
+//          p.applyTransform(AffineTransform::rotation((float) direction * MathConstants<float>::halfPi,
+//                                                     x + lineWidth * 0.5f, y + height * 0.5f));
+
+
+        
+        ColourGradient gradient(myColourLime.withAlpha(0.0f), x + lineWidth * 0.5f, y,
+                                myColourLime.withAlpha(0.10f), x + lineWidth * 0.5f, y + height * 0.4f, false);
+
+
+           // Set the gradient as the stroke for the path
+           g.setGradientFill(gradient);
+           g.strokePath(p, PathStrokeType(lineWidth));
+    }
     if(direction == 4)
     {
-//        gradient = ColourGradient(Colours::orange, 0.0f, y, Colour(0x00FF7F00), 0.0f, y + diameter * lengthFactor * 0.8, false);
-//        gradient.addColour(1.0f, Colour(0x00FF7F00));
+        Path p;
+          float lineWidth = diameter * 200; // Make the diameter of the circle equivalent to the line width for a vertical line.
+
+          p.startNewSubPath(x + lineWidth * 0.5f, y);
+          p.lineTo(x + lineWidth * 0.5f, y + height);
+
+//          p.applyTransform(AffineTransform::rotation((float) direction * MathConstants<float>::halfPi,
+//                                                     x + lineWidth * 0.5f, y + height * 0.5f));
+
+
         
-        gradient = ColourGradient::vertical(myColourLime, y,
-                                            myColourLime.withAlpha(0.0f), y + diameter * lengthFactor );
+        ColourGradient gradient(myColourLime.withAlpha(0.0f), x + lineWidth * 0.5f, y,
+                                myColourLime.withAlpha(0.10f), x + lineWidth * 0.5f, y + height * 0.4f, false);
+
+
+           // Set the gradient as the stroke for the path
+           g.setGradientFill(gradient);
+           g.strokePath(p, PathStrokeType(lineWidth));
     }
-    else if(direction == 2)
-    {
-//        gradient = ColourGradient(Colours::orange, 0.0f, y, Colour(0x00FF7F00), 0.0f, y - diameter * lengthFactor * 0.5, false);
-     
-        
-        gradient = ColourGradient::vertical(myColourLime, y,
-                                            myColourLime.withAlpha(0.0f), y - diameter * lengthFactor * 0.8);
-        //gradient.addColour(1.0f, Colours::orange);
-    }
-    
-    g.setGradientFill(gradient);
-    
-  //  g.setColour (colour);
-    g.fillPath (p);
 }
 
 
@@ -527,30 +571,63 @@ void CustomTwoValSliderLaf::drawLinearSlider (juce::Graphics& g, int x, int y, i
 //                   g.fillEllipse (Rectangle<float> (static_cast<float> (thumbWidth), static_cast<float> (thumbWidth)).withCentre (isThreeVal ? thumbPoint : maxPoint));
                }
 
+//               if (slider.isHorizontal())
+//               {
+//                   drawPointer (g, minSliderPos - sr,
+//                                jmax (0.0f, (float) y + (float) (height/2) * 0.5f - trackWidth * 2.0f),
+//                                trackWidth * height * 0.01f, pointerColour, 2, height/2);
+//
+//                   drawPointer (g, maxSliderPos - trackWidth,
+//                                jmin ((float) (y + height * 2.f) - trackWidth * 2.0f, (float) y + (float) (height) * 0.7f),
+//                                trackWidth * height * 0.01 , pointerColour, 4,height/2);
+//               }
+//               else
+//               {
+//                   drawPointer (g, jmax (0.0f, (float) x + (float) width * 0.5f - trackWidth * 2.0f),
+//                                minSliderPos - trackWidth,
+//                                trackWidth * 2.0f, pointerColour, 1,height);
+//
+//                   drawPointer (g, jmin ((float) (x + width) - trackWidth * 2.0f, (float) x + (float) width * 0.5f), maxSliderPos - sr,
+//                                trackWidth * 2.0f, pointerColour, 3, height);
+//               }
+               
                if (isTwoVal || isThreeVal)
-               {
-                   auto sr = jmin (trackWidth, (slider.isHorizontal() ? (float) height : (float) width) * 0.4f);
-                   auto pointerColour = myColourLime;
+                    {
+                    auto sr = jmin (trackWidth, (slider.isHorizontal() ? (float) height : (float) width) * 0.4f);
+                       auto pointerColour = myColourLime;
 
-                   if (slider.isHorizontal())
-                   {
-                       drawPointer (g, minSliderPos - sr,
-                                    jmax (0.0f, (float) y + (float) (height - 18) * 0.5f - trackWidth * 2.0f),
-                                    trackWidth * 2.0f, pointerColour, 2, height);
+//                       if (slider.isHorizontal())
+//                       {
+//                           drawPointer (g, minSliderPos - sr,
+//                                        jmax (0.0f, (float) y + (float) (height - 18) * 0.5f - trackWidth * 2.0f),
+//                                        trackWidth * 2.0f, pointerColour, 2, height);
+//
+//                           drawPointer (g, maxSliderPos - trackWidth,
+//                                        jmin ((float) (y + height) - trackWidth * 2.0f, (float) y + (float) (height + 18) * 0.5f),
+//                                        trackWidth * 2.0f, pointerColour, 4,height);
+//                       }
+                        
+                        if (slider.isHorizontal())
+                        {
+                            drawPointer(g, minSliderPos - sr, y , height * 0.025, pointerColour, 2, height);
+                            
+                            drawPointer(g, maxSliderPos - trackWidth, y , height * 0.025, pointerColour, 4, height);
+//                              drawPointer(g, maxSliderPos - trackWidth, y + (height + 18) * 0.5f, height, pointerColour, 0, height);
 
-                       drawPointer (g, maxSliderPos - trackWidth,
-                                    jmin ((float) (y + height) - trackWidth * 2.0f, (float) y + (float) (height + 18) * 0.5f),
-                                    trackWidth * 2.0f, pointerColour, 4,height);
-                   }
-                   else
-                   {
-                       drawPointer (g, jmax (0.0f, (float) x + (float) width * 0.5f - trackWidth * 2.0f),
-                                    minSliderPos - trackWidth,
-                                    trackWidth * 2.0f, pointerColour, 1,height);
+//                            drawPointer (g, maxSliderPos - trackWidth,
+//                                         jmin ((float) (y + height) - trackWidth * 2.0f, (float) y + (float) (height + 18) * 0.5f),
+//                                         trackWidth * 2.0f, pointerColour, 4,height);
+                        }
+                        
+                       else
+                       {
+                           drawPointer (g, jmax (0.0f, (float) x + (float) width * 0.5f - trackWidth * 2.0f),
+                                        minSliderPos - trackWidth,
+                                        trackWidth * 2.0f, pointerColour, 1,height);
 
-                       drawPointer (g, jmin ((float) (x + width) - trackWidth * 2.0f, (float) x + (float) width * 0.5f), maxSliderPos - sr,
-                                    trackWidth * 2.0f, pointerColour, 3, height);
-                   }
-               }
-           }
+                           drawPointer (g, jmin ((float) (x + width) - trackWidth * 2.0f, (float) x + (float) width * 0.5f), maxSliderPos - sr,
+                                        trackWidth * 2.0f, pointerColour, 3, height);
+                       }
        }
+   }
+}

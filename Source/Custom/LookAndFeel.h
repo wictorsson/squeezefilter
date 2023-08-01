@@ -26,6 +26,8 @@ class CustomCrossover : public juce::LookAndFeel_V4
 {
 public:
     CustomCrossover();
+ 
+    
     void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
                            float sliderPos, float minSliderPos, float maxSliderPos,
                            const juce::Slider::SliderStyle, juce::Slider&) override;
@@ -36,6 +38,8 @@ class CustomSliderLaf : public juce::LookAndFeel_V4
 {
 public:
     CustomSliderLaf();
+
+    
     void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
                            float sliderPos, float minSliderPos, float maxSliderPos,
                            const juce::Slider::SliderStyle, juce::Slider&) override;
@@ -51,7 +55,7 @@ class CustomTwoValSliderLaf : public juce::LookAndFeel_V4
 public:
    
     void drawPointer (Graphics&, float x, float y, float diameter,
-                      const Colour&, int direction,float height) ;
+                      const Colour&, int direction,float height);
     
     void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
                            float sliderPos, float minSliderPos, float maxSliderPos,

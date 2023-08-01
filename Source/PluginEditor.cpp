@@ -168,15 +168,17 @@ void SqueezeFilterAudioProcessorEditor::resized()
     auto topSliderArea = responseArea.removeFromTop(responseArea.getHeight()* 0.3f);
     auto labelarea = topSliderArea.removeFromRight(bounds.getWidth() * 0.15f);
     
-    squeezeIcon.setBounds(labelarea.removeFromBottom(topSliderArea.getHeight()*0.5).removeFromTop(labelarea.getHeight()*0.6).translated(0,labelarea.getHeight()*0.3));
+    squeezeIcon.setBounds(labelarea.removeFromBottom(topSliderArea.getHeight()*0.5).removeFromTop(labelarea.getHeight()*0.6).translated(0,labelarea.getHeight()*0.1));
     auto modifySliderArea = responseArea.removeFromRight(bounds.getWidth() * 0.15f);
+    
+    
     squeezeSlider.setBounds(modifySliderArea);
     auto offsetRec = topSliderArea.removeFromLeft(bounds.getWidth() * 0.85f).reduced(responseArea.getWidth()*0.2, 0);
     offsetSlider.setBounds(offsetRec.removeFromBottom(offsetRec.getHeight()*0.65f).translated(0, - bounds.getHeight()*0.1));
     //offsetIkon.setBounds(offsetRec.removeFromBottom(offsetRec.getHeight()*0.8));
     responseCurveComponent.setBounds(responseArea);
-    int buttonLeft = responseCurveComponent.getX();
-    int buttonTop = responseCurveComponent.getBottom(); // Add a spacing of 10 pixels
+//    int buttonLeft = responseCurveComponent.getX();
+//    int buttonTop = responseCurveComponent.getBottom(); // Add a spacing of 10 pixels
    // analyzerEnabledButton.setBounds(buttonLeft, buttonTop + 5, 30, 30);
     auto sliderBounds = responseArea.reduced(responseArea.getWidth() * 0.001f, 0.0f);
     lpHpSlider.setBounds(sliderBounds);

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="UKaksO" name="SqueezeFilter" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17"
+              pluginName="SqueezeFilterV007" pluginManufacturer="Limelid">
   <MAINGROUP id="YSthdU" name="SqueezeFilter">
     <GROUP id="{6AE62C75-DA26-500B-0126-D15175823701}" name="Custom">
       <FILE id="qeQvwe" name="colors.cpp" compile="1" resource="0" file="Source/Custom/colors.cpp"/>
@@ -19,23 +20,23 @@
     </GROUP>
     <GROUP id="{EC1CE7D1-88B8-29E0-786B-D1F57D59B27D}" name="Assets">
       <FILE id="Nx3XP6" name="brokenlink.svg" compile="0" resource="1" file="Source/Assets/brokenlink.svg"/>
-      <FILE id="EJsyLI" name="buttonactiveikon.svg" compile="0" resource="1"
-            file="../../../Downloads/squeezer_icons/buttonactiveikon.svg"/>
       <FILE id="o5rUOx" name="screenscaleikonHover.svg" compile="0" resource="1"
             file="../../../Downloads/screenscaleikonHover.svg"/>
-      <FILE id="TfgJ1T" name="buttonemptyikon.svg" compile="0" resource="1"
-            file="../../../Downloads/squeezer_icons/buttonemptyikon.svg"/>
       <FILE id="WzKpF3" name="buttonactiveikonHover1.svg" compile="0" resource="1"
             file="Source/Assets/buttonactiveikonHover1.svg"/>
       <FILE id="WwcTqz" name="buttonemptyiconHover.svg" compile="0" resource="1"
             file="Source/Assets/buttonemptyiconHover.svg"/>
-      <FILE id="U8Zm9o" name="offsetIkon.svg" compile="0" resource="1" file="../../../Downloads/squeezer_icons/offsetIkon.svg"/>
+      <FILE id="BfFv4l" name="buttonactiveikon.svg" compile="0" resource="1"
+            file="Source/Assets/buttonactiveikon.svg"/>
+      <FILE id="s1riJY" name="buttonemptyikon.svg" compile="0" resource="1"
+            file="Source/Assets/buttonemptyikon.svg"/>
+      <FILE id="VD6zfk" name="offsetIkon.svg" compile="0" resource="1" file="Source/Assets/offsetIkon.svg"/>
+      <FILE id="rocTLV" name="screenscaleicon.svg" compile="0" resource="1"
+            file="Source/Assets/screenscaleicon.svg"/>
+      <FILE id="c07Jg5" name="slopeicon.svg" compile="0" resource="1" file="Source/Assets/slopeicon.svg"/>
+      <FILE id="LTTDCo" name="squeezeicon.svg" compile="0" resource="1" file="Source/Assets/squeezeicon.svg"/>
       <FILE id="FT2SrO" name="offsetIkon2.svg" compile="0" resource="1" file="Source/Assets/offsetIkon2.svg"/>
       <FILE id="eKBhMG" name="scaleicon.svg" compile="0" resource="1" file="Source/Assets/scaleicon.svg"/>
-      <FILE id="XB5mwI" name="screenscaleicon.svg" compile="0" resource="1"
-            file="../../../Downloads/squeezer_icons/screenscaleicon.svg"/>
-      <FILE id="Gtom7U" name="slopeicon.svg" compile="0" resource="1" file="../../../Downloads/squeezer_icons/slopeicon.svg"/>
-      <FILE id="kUKMb5" name="squeezeicon.svg" compile="0" resource="1" file="../../../Downloads/squeezer_icons/squeezeicon.svg"/>
     </GROUP>
     <GROUP id="{AD38FE8F-FB13-E7FF-1673-5A8C6A882DC4}" name="Source">
       <FILE id="FzTCT3" name="PluginProcessor.cpp" compile="1" resource="0"

@@ -20,10 +20,10 @@
     </GROUP>
     <GROUP id="{EC1CE7D1-88B8-29E0-786B-D1F57D59B27D}" name="Assets">
       <FILE id="Nx3XP6" name="brokenlink.svg" compile="0" resource="1" file="Source/Assets/brokenlink.svg"/>
-      <FILE id="o5rUOx" name="screenscaleikonHover.svg" compile="0" resource="1"
-            file="../../../Downloads/screenscaleikonHover.svg"/>
       <FILE id="WzKpF3" name="buttonactiveikonHover1.svg" compile="0" resource="1"
             file="Source/Assets/buttonactiveikonHover1.svg"/>
+      <FILE id="cfOUkm" name="screenscaleikonHover.svg" compile="0" resource="1"
+            file="Source/Assets/screenscaleikonHover.svg"/>
       <FILE id="WwcTqz" name="buttonemptyiconHover.svg" compile="0" resource="1"
             file="Source/Assets/buttonemptyiconHover.svg"/>
       <FILE id="BfFv4l" name="buttonactiveikon.svg" compile="0" resource="1"

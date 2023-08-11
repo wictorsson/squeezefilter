@@ -221,21 +221,21 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
     g.setColour(myColourLime);
     g.strokePath(responseCurve, PathStrokeType(4.f * w * 0.002));
 
-    if(shouldShowFFTAnalysis)
-    {
-        auto leftChannelFFTPath = leftPathProducer.getPath();
-        leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
-        
-        g.setColour(Colours::lightblue);
-        g.strokePath(leftChannelFFTPath, PathStrokeType(3));
-        
-        auto rightChannelFFTPath = rightPathProducer.getPath();
-        rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
-        
-        g.setColour(Colours::lightblue);
-        g.strokePath(rightChannelFFTPath, PathStrokeType(3));
-        
-    }
+//    if(shouldShowFFTAnalysis)
+//    {
+//        auto leftChannelFFTPath = leftPathProducer.getPath();
+//        leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
+//        
+//        g.setColour(Colours::lightblue);
+//        g.strokePath(leftChannelFFTPath, PathStrokeType(3));
+//        
+//        auto rightChannelFFTPath = rightPathProducer.getPath();
+//        rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(),responseArea.getY()));
+//        
+//        g.setColour(Colours::lightblue);
+//        g.strokePath(rightChannelFFTPath, PathStrokeType(3));
+//        
+//    }
 //    donePainting = true;
 //    DBG("REPAINTED");
 }
